@@ -1,0 +1,148 @@
+<html>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script>
+    const TEST_CASES = [
+      {
+        id: '1.0',
+        type: 'ByAttribute',
+        case: 'element with unique id',
+        html: `<div cypress-id="unique-id">This is the one</div>`,
+      },
+      {
+        id: '1.1',
+        type: 'ByAttribute',
+        case: '2 elements with the same id',
+        html: `
+          <div cypress-id="non-unique-id">This is the first</div>
+          <div cypress-id="non-unique-id">This is the second</div>
+        `,
+      },
+      {
+        id: '1.2',
+        type: 'ByAttribute',
+        case: 'element with unique attribute inside element with unique id',
+        html: `
+          <div cypress-id="parent-a">
+            <div cypress-id="child-a">child-a</div>
+          </div>
+        `,
+      },
+      {
+        id: '1.3',
+        type: 'ByAttribute',
+        case: 'element with unique id with 2 parents',
+        html: `
+          <div cypress-id="parent-a">
+            <div cypress-id="parent-b">
+              <div cypress-id="child-a-b">child-a-b</div>
+            </div>
+          </div>
+        `,
+      },
+      {
+        id: '1.4',
+        type: 'ByAttribute',
+        case: '2 elements with the same attribute inside parents with different attributes',
+        html: `
+          <div cypress-id="parent-a">
+            <div cypress-id="child-a">'child-a' of 'parent-a'</div>
+          </div>
+
+          <div cypress-id="parent-b">
+            <div cypress-id="child-a">'child-a' of 'parent-b'</div>
+          </div>
+        `,
+      },
+      {
+        id: '1.5',
+        type: 'ByAttribute',
+        case: '2 elements with the same attribute inside parents with same attributes',
+        html: `
+          <div cypress-id="parent-a">
+            <div cypress-id="child-a">'child-a' of 'parent-a'</div>
+          </div>
+
+          <div cypress-id="parent-a">
+            <div cypress-id="child-a">'child-a' of 'parent-a'</div>
+          </div>
+        `,
+      },
+    ];
+  </script>
+  <style>
+    div {
+      padding: 5px;
+    }
+
+    #test {
+      width: 15rem;
+      height: 10rem;
+      border: 1px solid red;
+    }
+  </style>
+
+  <script>
+    const renderTestCase = ({ id, type, case: caseInfo, html }) => {
+      $('#id').text(`Test ID: ${id}`);
+      $('#type').text(`Type: ${type}`);
+      $('#case').text(`Case: ${caseInfo}`);
+      $('#test').html(html);
+    };
+    const throwErrorAndClear = (testId) => {
+      $('#test').html('<h1>ERROR</h1>');
+      alert(`Failed to find a test case with the id: ${testId}`);
+    };
+  </script>
+
+  <script>
+    const onHashChange = () => {
+      const testId = location.hash.replace('#', '');
+      const testCase = TEST_CASES.find(({ id }) => id === testId);
+      window.currentTestCaseId = testCase ? testCase.id : undefined;
+
+      if (testCase) renderTestCase(testCase);
+      else throwErrorAndClear(testId);
+    };
+  </script>
+
+  <script>
+    const loadNextTestCase = () => {
+      if (window.currentTestCaseId) {
+        const [caseId, caseSubId] = window.currentTestCaseId.split('.');
+        const nextTestCaseId = `${caseId}.${parseInt(caseSubId) + 1}`;
+
+        if (TEST_CASES.find(({ id }) => id === nextTestCaseId))
+          window.location.hash = `#${nextTestCaseId}`;
+      }
+    };
+
+    const loadPreviousTestCase = () => {
+      if (window.currentTestCaseId) {
+        const [caseId, caseSubId] = window.currentTestCaseId.split('.');
+        const previousTestCaseId = `${caseId}.${parseInt(caseSubId) - 1}`;
+
+        if (TEST_CASES.find(({ id }) => id === previousTestCaseId))
+          window.location.hash = `#${previousTestCaseId}`;
+      }
+    };
+  </script>
+
+  <script>
+    $(document).ready(onHashChange);
+  </script>
+
+  <body onhashchange="onHashChange()">
+    <div id="meta">
+      <div id="id"></div>
+      <div id="type"></div>
+      <div id="case"></div>
+    </div>
+
+    <div id="nav">
+      <button onclick="loadPreviousTestCase()">Prev</button>
+      <button onclick="loadNextTestCase()">Next</button>
+    </div>
+
+    <div id="test"></div>
+  </body>
+</html>

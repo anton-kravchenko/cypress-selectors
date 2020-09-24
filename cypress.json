@@ -1,0 +1,5 @@
+{
+  "baseUrl": "http://localhost:5333",
+  "video": false,
+  "testFiles": "**/*spec.{js,jsx,ts,tsx}"
+}

@@ -44,6 +44,10 @@ context('ByAttribute selector', () => {
 
     @ByAttribute({ value: 'child-a-b', parentAlias: 'parentB' })
     static childrenOfSibling: Chainable;
+
+    // @ByAttribute('' { value: 'child-a-b', parentAlias: 'parentB' })
+    @ByAttribute('child-a-b', 'parentB')
+    static childrenOfSibling1: Chainable;
   }
   it('should locate element by attribute inside 2 parents', () => {
     cy.visit('/TestPage.html#1.3');

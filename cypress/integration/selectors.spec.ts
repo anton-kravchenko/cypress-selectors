@@ -3,7 +3,7 @@ type Chainable = Cypress.Chainable;
 
 context('ByAttribute selector', () => {
   class Case1_0 {
-    @ByAttribute({ value: 'unique-id' })
+    @ByAttribute('unique-id')
     static element: Chainable;
   }
   it('should locate an element by attribute', () => {
@@ -12,7 +12,7 @@ context('ByAttribute selector', () => {
   });
 
   class Case1_1 {
-    @ByAttribute({ value: 'non-unique-id' })
+    @ByAttribute('non-unique-id')
     static element: Chainable;
   }
   it('should find 2 elements with the same attribute', () => {
@@ -21,10 +21,10 @@ context('ByAttribute selector', () => {
   });
 
   class Case1_2 {
-    @ByAttribute({ value: 'parent-a', alias: 'parent' })
+    @ByAttribute('parent-a', { alias: 'parent' })
     static parent: Chainable;
 
-    @ByAttribute({ value: 'child-a', parentAlias: 'parent' })
+    @ByAttribute('child-a', { parentAlias: 'parent' })
     static child: Chainable;
   }
   it('should find element by attribute inside its parent located by attribute', () => {
@@ -33,20 +33,19 @@ context('ByAttribute selector', () => {
   });
 
   class Case1_3 {
-    @ByAttribute({ value: 'parent-a', alias: 'parentA' })
+    @ByAttribute('parent-a', { alias: 'parentA' })
     static parent: Chainable;
     // TODO: pass attribute name (in case non default attribute required)
     // TODO: can't we use ^ prop name as an alias?? we have it anyway
     // TODO: can we type-check aliases? in that case ^ ? THAT WOULD BE super awesome
 
-    @ByAttribute({ value: 'parent-b', alias: 'parentB', parentAlias: 'parentA' })
+    @ByAttribute('parent-b', { alias: 'parentB', parentAlias: 'parentA' })
     static sibling: Chainable;
 
-    @ByAttribute({ value: 'child-a-b', parentAlias: 'parentB' })
+    @ByAttribute('child-a-b', { parentAlias: 'parentB' })
     static childrenOfSibling: Chainable;
 
-    // @ByAttribute('' { value: 'child-a-b', parentAlias: 'parentB' })
-    @ByAttribute('child-a-b', 'parentB')
+    @ByAttribute('child-a-b', { parentAlias: 'parentB' })
     static childrenOfSibling1: Chainable;
   }
   it('should locate element by attribute inside 2 parents', () => {
@@ -55,14 +54,14 @@ context('ByAttribute selector', () => {
   });
 
   class Case1_4 {
-    @ByAttribute({ value: 'parent-a', alias: 'parentA' })
+    @ByAttribute('parent-a', { alias: 'parentA' })
     static parentA: Chainable;
-    @ByAttribute({ value: 'child-a', parentAlias: 'parentA' })
+    @ByAttribute('child-a', { parentAlias: 'parentA' })
     static childA: Chainable;
 
-    @ByAttribute({ value: 'parent-b', alias: 'parentB' })
+    @ByAttribute('parent-b', { alias: 'parentB' })
     static parentB: Chainable;
-    @ByAttribute({ value: 'child-a', parentAlias: 'parentB' })
+    @ByAttribute('child-a', { parentAlias: 'parentB' })
     static childB: Chainable;
   }
   it('should select the element with right attribute inside right parent', () => {
@@ -71,14 +70,14 @@ context('ByAttribute selector', () => {
   });
 
   class Case1_5 {
-    @ByAttribute({ value: 'parent-a', alias: 'parentA' })
+    @ByAttribute('parent-a', { alias: 'parentA' })
     static parentA: Chainable;
-    @ByAttribute({ value: 'child-a', parentAlias: 'parentA' })
+    @ByAttribute('child-a', { parentAlias: 'parentA' })
     static childA: Chainable;
 
-    @ByAttribute({ value: 'parent-a', alias: 'parentA' })
+    @ByAttribute('parent-a', { alias: 'parentA' })
     static parentB: Chainable;
-    @ByAttribute({ value: 'child-a', parentAlias: 'parentA' })
+    @ByAttribute('child-a', { parentAlias: 'parentA' })
     static childB: Chainable;
   }
   it('should find 2 elements with same attribute inside parents with same attribute', () => {

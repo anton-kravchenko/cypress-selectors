@@ -7,7 +7,12 @@
 
 const selectorsByAliasKey: unique symbol = Symbol('SELECTORS_BY_ALIAS_STORAGE');
 
-type CommonSelectorConfig = { value: string; alias?: string; parentAlias?: string };
+type CommonSelectorConfig = {
+  value: string;
+  alias?: string;
+  parentAlias?: string;
+  attribute?: string;
+};
 type SelectorConfig = CommonSelectorConfig &
   (
     | { type: 'attribute'; attribute?: string }

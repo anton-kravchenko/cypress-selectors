@@ -3,14 +3,15 @@
 // TODO: add instr
 // https://stackoverflow.com/questions/52262084/syntax-error-support-for-the-experimental-syntax-decorators-legacy-isnt-cur
 // TODO: configure the attribute: cypress-id, cy-id, cy-date, e.t.c
-const selectorsByAliasKey: unique symbol = Symbol("SELECTORS_BY_ALIAS_STORAGE");
+// TODO: investigate the rest of selectors supported by jQuery https://api.jquery.com/category/selectors/
+const selectorsByAliasKey: unique symbol = Symbol('SELECTORS_BY_ALIAS_STORAGE');
 
 type TargetWithMeta = Record<string, any> & MetaStorage;
 type MetaStorage = { [selectorsByAliasKey]: { [key: string]: SelectorData } };
 
 type SelectorData = {
   value: string;
-  type: "by-attribute" | "by-id" | "by-class" | "by-type"; // <- store that too
+  type: 'by-attribute' | 'by-id' | 'by-class' | 'by-type'; // <- store that too
   alias?: string;
   parentAlias?: string;
 };
@@ -30,14 +31,14 @@ const registerSelectorInStorage = (target: MetaStorage, selector: SelectorData):
 
 const buildSelector = (selectors: Array<SelectorData>): string => {
   const mappedSelectors: Array<string> = selectors.map(({ type, value }) => {
-    if (type === "by-attribute") return `[cypress-id="${value}"]`;
-    else if (type === "by-class") return `.${value}`;
-    else if (type === "by-id") return `#${value}`;
-    else if (type === "by-type") return `${value}`;
+    if (type === 'by-attribute') return `[cypress-id="${value}"]`;
+    else if (type === 'by-class') return `.${value}`;
+    else if (type === 'by-id') return `#${value}`;
+    else if (type === 'by-type') return `${value}`;
     throw Error(`Unsupported selector type: ${type}`);
   });
 
-  return mappedSelectors.join(" "); // FIXME: investigate which one is right ' > ' or ' '
+  return mappedSelectors.join(' '); // FIXME: investigate which one is right ' > ' or ' '
 };
 
 export const collectSelectors = (
@@ -57,9 +58,9 @@ export const collectSelectorsChain = (
   alias: string,
   selectorsChain: Array<string> = [],
 ): Array<string> => {
-  console.log("[selector] collectSelectorsChain:", storage);
-  console.log("     [selector] alias", alias);
-  console.log("     [selector] selectorsChain", selectorsChain);
+  console.log('[selector] collectSelectorsChain:', storage);
+  console.log('     [selector] alias', alias);
+  console.log('     [selector] selectorsChain', selectorsChain);
 
   const { value, parentAlias } = storage[alias];
   selectorsChain = [value, ...selectorsChain];
@@ -75,11 +76,11 @@ const generateGetter = (storage: TargetWithMeta, selectorData: SelectorData) => 
   return cy.get(selector);
 };
 
-const ByAttribute = (briefSelectorData: Omit<SelectorData, "type">) => (
+const ByAttribute = (briefSelectorData: Omit<SelectorData, 'type'>) => (
   target: { [key: string]: any },
   propertyName: string,
 ) => {
-  const selectorData: SelectorData = { ...briefSelectorData, type: "by-attribute" };
+  const selectorData: SelectorData = { ...briefSelectorData, type: 'by-attribute' };
 
   const storage = registerMetaStorageIfNotRegistered(target);
   registerSelectorInStorage(storage, selectorData);
@@ -88,7 +89,7 @@ const ByAttribute = (briefSelectorData: Omit<SelectorData, "type">) => (
 
   if (delete target[propertyName]) {
     // TODO: what delete returns?
-    console.log("[Selector] Setting ", selectorData.value);
+    console.log('[Selector] Setting ', selectorData.value);
     return Object.defineProperty(target, propertyName, {
       get: getter,
       // TODO: check that false works fine and what else may be passed + what if setter is not passed OR write a warning in setter

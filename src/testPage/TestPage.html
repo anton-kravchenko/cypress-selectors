@@ -1,5 +1,10 @@
 <html>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <link
+    rel="stylesheet"
+    href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.1.2/build/styles/default.min.css"
+  />
+  <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.1.2/build/highlight.min.js"></script>
   <script>
     const TEST_CASES = [
       {
@@ -59,11 +64,11 @@
         case: '2 elements with the same attribute inside parents with same attributes',
         html: `
           <div cypress-id="parent-a">
-            <div cypress-id="child-a">'child-a' of 'parent-a'</div>
+            <div cypress-id="child-a">first 'child-a' of 'parent-a'</div>
           </div>
 
           <div cypress-id="parent-a">
-            <div cypress-id="child-a">'child-a' of 'parent-a'</div>
+            <div cypress-id="child-a">second 'child-a' of 'parent-a'</div>
           </div>
         `,
       },
@@ -86,6 +91,7 @@
       $('#id').text(`Test ID: ${id}`);
       $('#type').text(`Type: ${type}`);
       $('#case').text(`Case: ${caseInfo}`);
+      $('#html').text(html);
       $('#test').html(html);
     };
     const throwErrorAndClear = (testId) => {
@@ -135,6 +141,10 @@
     <div id="meta">
       <div id="id"></div>
       <div id="type"></div>
+      <div>
+        HTML:
+        <pre><code id="html" class="html"></code></pre>
+      </div>
       <div id="case"></div>
     </div>
 

@@ -36,6 +36,7 @@ context('ByAttribute selector', () => {
   class Case1_3 {
     @ByAttribute({ value: 'parent-a', alias: 'parentA' })
     static parent: Chainable;
+    // TODO: pass attribute name (in case non default attribute required)
     // TODO: can't we use ^ prop name as an alias?? we have it anyway
     // TODO: can we type-check aliases? in that case ^ ? THAT WOULD BE super awesome
 
@@ -48,5 +49,45 @@ context('ByAttribute selector', () => {
   it('should locate element by attribute inside 2 parents', () => {
     cy.visit('/TestPage.html#1.3');
     Case1_3.childrenOfSibling.should('have.text', 'child-a-b');
+  });
+
+  class Case1_4 {
+    @ByAttribute({ value: 'parent-a', alias: 'parentA' })
+    static parentA: Chainable;
+    @ByAttribute({ value: 'child-a', parentAlias: 'parentA' })
+    static childA: Chainable;
+
+    @ByAttribute({ value: 'parent-b', alias: 'parentB' })
+    static parentB: Chainable;
+    @ByAttribute({ value: 'child-a', parentAlias: 'parentB' })
+    static childB: Chainable;
+  }
+  it('should select the element with right attribute inside right parent', () => {
+    cy.visit('/TestPage.html#1.4');
+    Case1_4.childA.should('have.length', '1').and('have.text', `'child-a' of 'parent-a'`);
+  });
+
+  class Case1_5 {
+    @ByAttribute({ value: 'parent-a', alias: 'parentA' })
+    static parentA: Chainable;
+    @ByAttribute({ value: 'child-a', parentAlias: 'parentA' })
+    static childA: Chainable;
+
+    @ByAttribute({ value: 'parent-a', alias: 'parentA' })
+    static parentB: Chainable;
+    @ByAttribute({ value: 'child-a', parentAlias: 'parentA' })
+    static childB: Chainable;
+  }
+  it('should find 2 elements with same attribute inside parents with same attribute', () => {
+    cy.visit('/TestPage.html#1.5');
+    Case1_5.childA
+      .should('have.length', '2')
+      .eq(0)
+      .should('have.text', `first 'child-a' of 'parent-a'`);
+
+    Case1_5.childA
+      .should('have.length', '2')
+      .eq(1)
+      .should('have.text', `second 'child-a' of 'parent-a'`);
   });
 });

@@ -1,4 +1,3 @@
-import { curry } from 'cypress/types/lodash';
 import { ByAttribute } from '../../src/selectors';
 type Chainable = Cypress.Chainable;
 

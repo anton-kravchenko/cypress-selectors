@@ -1,5 +1,9 @@
-import { ByAttribute } from '../../src/selectors';
+import { ByAttribute, ById } from '../../src/selectors';
+import { CONFIG_HANDLER, ConfigureSelectors } from '../../src/ConfigureSelectors';
+
 type Chainable = Cypress.Chainable;
+
+beforeEach(CONFIG_HANDLER.reset);
 
 context('ByAttribute selector', () => {
   class Case1_0 {
@@ -101,8 +105,67 @@ context('ByAttribute selector', () => {
   }
   it('should find element by custom attribute name inside parent with custom attribute name', () => {
     cy.visit('/TestPage.html#1.6');
-
     Case1_6.child.should('have.text', 'children of [custom-id]="parent"');
+  });
+
+  class Case1_7 {
+    @ByAttribute('unique-id', { attribute: 'id' })
+    static element: Chainable;
+  }
+  it('should find an element by `id` attribute', () => {
+    cy.visit('/TestPage.html#1.7');
+    Case1_7.element.should('have.text', `by 'id' attribute`);
+  });
+
+  class Case1_8 {
+    @ByAttribute('id')
+    static firstElement: Chainable;
+
+    @ByAttribute('another-id')
+    static secondElement: Chainable;
+  }
+  it('should find element by custom id (configured globally)', () => {
+    cy.visit('/TestPage.html#1.8');
+
+    ConfigureSelectors({ defaultAttribute: 'first-custom-attribute' });
+    Case1_8.firstElement.should('have.text', `[first-custom-attribute=id]`);
+
+    ConfigureSelectors({ defaultAttribute: 'second-custom-attribute' });
+    Case1_8.secondElement.should('have.text', `[second-custom-attribute=another-id]`);
+  });
+});
+
+context('ById selector', () => {
+  class Case2_0 {
+    @ById('id-1')
+    static firstElement: Chainable;
+
+    @ById('id-2')
+    static secondElement: Chainable;
+  }
+  it('should locate elements by id', () => {
+    cy.visit('/TestPage.html#2.0');
+    Case2_0.firstElement.should('have.text', 'id is "id-1"');
+    Case2_0.secondElement.should('have.text', 'id is "id-2"');
+  });
+
+  class Case2_1 {
+    @ById('non-unique-id')
+    static elements: Chainable;
+  }
+  it('should find only first occurrence among 2 elements with the same id', () => {
+    cy.visit('/TestPage.html#2.1');
+    Case2_1.elements.should('have.text', 'first element with an id "non-unique-id"');
+  });
+
+  class Case2_2 {
+    @ById('parent-a', { alias: 'parentA' }) static parentA: Chainable;
+    @ById('children', { parentAlias: 'parentA' }) static children: Chainable;
+    @ById('parent-b') static parentB: Chainable;
+  }
+  it('should find proper child by id inside proper child by id', () => {
+    cy.visit('/TestPage.html#2.2');
+    Case2_2.children.should('have.text', `children of 'parent-a'`);
   });
 });
 

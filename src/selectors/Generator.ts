@@ -77,13 +77,13 @@ const getSelectorOrThrow = (storage: SelectorsStorage, alias: string) => {
   else throw Error(`[cypress-selectors] INTERNAL ERROR: Failed to retrieve selector "${alias}"`);
 };
 
-const generateElementGetter = (storage: HostWithSelectors, selectorData: SelectorConfig) => {
+const generateElementGetter = (storage: HostWithSelectors, selectorData: SelectorConfig) => () => {
   const chainOfSelectors = collectSelectorsChain(storage[selectorsByAliasKey], selectorData);
   const selector = generateSelector(chainOfSelectors);
   // TODO: throw if: parent alias is not registered
   console.log(`[Selector] Querying: ${selector}`);
 
-  return () => cy.get(selector);
+  return cy.get(selector);
 };
 
 // TODO: check why not PropertyDescriptor?

@@ -3,8 +3,7 @@ type Chainable = Cypress.Chainable;
 
 context('ByAttribute selector', () => {
   class Case1_0 {
-    @ByAttribute('unique-id')
-    static element: Chainable;
+    @ByAttribute('unique-id') static element: Chainable;
   }
   it('should locate an element by attribute', () => {
     cy.visit('/TestPage.html#1.0');
@@ -92,4 +91,24 @@ context('ByAttribute selector', () => {
       .eq(1)
       .should('have.text', `second 'child-a' of 'parent-a'`);
   });
+
+  class Case1_6 {
+    @ByAttribute('parent', { attribute: 'custom-id', alias: 'parent' })
+    static parent: Chainable;
+
+    @ByAttribute('child', { attribute: 'custom-id', parentAlias: 'parent' })
+    static child: Chainable;
+  }
+  it('should find element by custom attribute name inside parent with custom attribute name', () => {
+    cy.visit('/TestPage.html#1.6');
+
+    Case1_6.child.should('have.text', 'children of [custom-id]="parent"');
+  });
 });
+
+/*
+Cases to add:
+ - custom attribute overrides default one
+ - set global default attribute
+ - custom attribute overrides global one
+*/

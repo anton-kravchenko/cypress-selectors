@@ -42,9 +42,10 @@ const registerSelectorInStorage = (host: HostWithSelectors, selector: SelectorCo
 const getSelectorsStorage = (host: HostWithSelectors): SelectorsStorage =>
   host[selectorsByAliasKey];
 
+const DEFAULT_ATTRIBUTE = 'cypress-id';
 const generateSelector = (selectors: Array<SelectorConfig>): string => {
-  const mappedSelectors: Array<string> = selectors.map(({ type, value }) => {
-    if (type === 'attribute') return `[cypress-id="${value}"]`;
+  const mappedSelectors: Array<string> = selectors.map(({ type, value, attribute }) => {
+    if (type === 'attribute') return `[${attribute ?? DEFAULT_ATTRIBUTE}="${value}"]`;
     else if (type === 'class') return `.${value}`;
     else if (type === 'id') return `#${value}`;
     else if (type === 'type') return `${value}`;

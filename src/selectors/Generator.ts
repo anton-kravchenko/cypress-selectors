@@ -1,9 +1,11 @@
 /* eslint-disable */
 /// <reference types="cypress" />
+
 // TODO: add instr
 // https://stackoverflow.com/questions/52262084/syntax-error-support-for-the-experimental-syntax-decorators-legacy-isnt-cur
 // TODO: configure the attribute: cypress-id, cy-id, cy-date, e.t.c
 // TODO: investigate the rest of selectors supported by jQuery https://api.jquery.com/category/selectors/
+import { CONFIG_HANDLER } from '../ConfigureSelectors';
 
 const selectorsByAliasKey: unique symbol = Symbol('SELECTORS_BY_ALIAS_STORAGE');
 
@@ -25,11 +27,12 @@ type SelectorType = SelectorConfig['type'];
 
 type Host = { [key: string]: any };
 // TODO: use map?
-type SelectorsStorage = { [key: string]: SelectorConfig };
+type SelectorsStorage = Map<string, SelectorConfig>;
 type HostWithSelectors = Host & { [selectorsByAliasKey]: SelectorsStorage };
 
 const registerSelectorsStorageIfNotRegistered = (host: Host): HostWithSelectors => {
-  if (hasSelectorsStorage(host) === false) (host as HostWithSelectors)[selectorsByAliasKey] = {};
+  if (hasSelectorsStorage(host) === false)
+    (host as HostWithSelectors)[selectorsByAliasKey] = new Map();
   return host as HostWithSelectors;
 };
 
@@ -37,15 +40,15 @@ const hasSelectorsStorage = (host: Host): boolean => host.hasOwnProperty(selecto
 
 const registerSelectorInStorage = (host: HostWithSelectors, selector: SelectorConfig) =>
   // TODO: 1) check for duplicates before writing new data 2) check for non empty alias and value
-  (getSelectorsStorage(host)[selector.alias ?? selector.value] = selector);
+  getSelectorsStorage(host).set(selector.alias ?? selector.value, selector);
 
 const getSelectorsStorage = (host: HostWithSelectors): SelectorsStorage =>
   host[selectorsByAliasKey];
 
-const DEFAULT_ATTRIBUTE = 'cypress-id';
 const generateSelector = (selectors: Array<SelectorConfig>): string => {
   const mappedSelectors: Array<string> = selectors.map(({ type, value, attribute }) => {
-    if (type === 'attribute') return `[${attribute ?? DEFAULT_ATTRIBUTE}="${value}"]`;
+    if (type === 'attribute')
+      return `[${attribute ?? CONFIG_HANDLER.getDefaultAttribute()}="${value}"]`;
     else if (type === 'class') return `.${value}`;
     else if (type === 'id') return `#${value}`;
     else if (type === 'type') return `${value}`;
@@ -62,10 +65,16 @@ export const collectSelectorsChain = (
   selectorsChain: Array<SelectorConfig> = [],
 ): Array<SelectorConfig> => {
   selectorsChain = [entrySelector, ...selectorsChain];
+  const { parentAlias } = entrySelector;
 
-  return entrySelector.parentAlias
-    ? collectSelectorsChain(storage, storage[entrySelector.parentAlias], selectorsChain)
+  return parentAlias
+    ? collectSelectorsChain(storage, getSelectorOrThrow(storage, parentAlias), selectorsChain)
     : selectorsChain;
+};
+
+const getSelectorOrThrow = (storage: SelectorsStorage, alias: string) => {
+  if (storage.has(alias)) return storage.get(alias) as SelectorConfig;
+  else throw Error(`[cypress-selectors] INTERNAL ERROR: Failed to retrieve selector "${alias}"`);
 };
 
 const generateElementGetter = (storage: HostWithSelectors, selectorData: SelectorConfig) => {

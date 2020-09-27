@@ -33,5 +33,5 @@ jobs:
           node-version: '12'
       - name: Build
         run: |
-          npm ci
+          CYPRESS_INSTALL_BINARY=0 npm ci
           npm run build

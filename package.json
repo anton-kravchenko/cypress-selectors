@@ -23,6 +23,11 @@
     "test": "npm-run-all unit e2e:run:ci",
     "ci": "npm-run-all type-check lint test build"
   },
+  "jest": {
+    "modulePathIgnorePatterns": [
+      "<rootDir>/dist/"
+    ]
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/anton-kravchenko/cypress-selectors.git"

@@ -1,71 +1,95 @@
-# ObjectBuilder
+# cypress-selectors
 
-![](https://github.com/anton-kravchenko/ObjectBuilder/workflows/CI/badge.svg)
+![](https://github.com/anton-kravchenko/cypress-selectors/workflows/CI/badge.svg)
 
-`ObjectBuilder` is a **type-safe** implementation of `Builder` pattern with smart type inference.
+`cypress-selectors` is a library that provides bunch of convenient selectors for Cypress.
+
+It helps to organize and re-use selectors and turns this:
+
+```TypeScript
+const getSearchInput = () => cy.get('input');
+const getSubmitSearchButton = () => cy.get('[cypress-id]="submit-search"');
+const getSearchResults = () => cy.get('.search-result');
+```
+
+into that:
+
+```TypeScript
+class HomePage {
+  @ByType('input') searchInput: Cypress.Chainable;
+  @ByAttribute('submit-search') submitSearch: Cypress.Chainable;
+  @ByClass('search-result') searchResults: Cypress.Chainable;
+}
+```
+
+## Installation
+
+```sh
+npm i -D cypress-selectors
+```
 
 ## Usage
 
-`ObjectBuilder.new`
+1. Searching elements by `attribute`, `class`, `id`, `type` and `selector`:
 
-```typescript
-import { ObjectBuilder } from 'typescript-object-builder';
+```TypeScript
+import { ByAttribute, ByClass, ById, BySelector, ByType } from 'cypress-selectors';
 
-type Endpoint = { url: string; method: string; description?: string };
-
-const endpoint = ObjectBuilder.new<Endpoint>()
-  .with('url', `/status/`)
-  .with('method', 'GET')
-  .with('description', 'Health check')
-  .build(); /* OK - all of the required fields are set - `build` method becomes available */
-
-const invalidEndpoint = ObjectBuilder.new<Endpoint>()
-  .with('url', `/status/`)
-  .with('description', 'Health check')
-  .build(); /* Error - build method is not available since one of the required fields is not set */
+class HomePageSelectors {
+  @ById('main') static main: Chainable; // equivalent of - cy.get('#main')
+  @ByType('input') static input: Chainable; // equivalent of - cy.get('input')
+  @ByClass('button') static button: Chainable; // equivalent of - cy.get('.button')
+  @ByAttribute('header') static header: Chainable; // equivalent of - cy.get('[cypress-id=header')
+  @BySelector('ul > li .focus') static listItem: Chainable; // equivalent of - cy.get('ul > li .focus')
+}
 ```
 
-`ObjectBuilder.fromBase`
+2. Searching child elements
 
-```typescript
-import { ObjectBuilder } from 'typescript-object-builder';
-
-type Endpoint = { url: string; method: string; description?: string };
-
-const base = { url: '/status', description: 'Health check' };
-
-const endpoint = ObjectBuilder.fromBase<Endpoint, typeof base>(base)
-  .with('method', 'GET')
-  .build(); /* OK - all of the required fields are set (via base object and `with`) */
-
-const invalidEndpoint = ObjectBuilder.fromBase<Endpoint, typeof base>(base)
-  .with('description', 'desc')
-  .build(); /* Error - build method is not available since one of the required fields is not set */
+```TypeScript
+class Selectors {
+  @ById('main', { alias: 'root' }) static parent: Chainable;
+  @ByClass('button', { parentAlias: 'root' }) static children: Chainable; // equivalent of - cy.get('#root .button')
+}
 ```
 
-## Utility types
+3. Implementing Page Objects ([PageObject is considered to be an anti-pattern](https://www.cypress.io/blog/2019/01/03/stop-using-page-objects-and-start-using-app-actions/) although)
 
-`ObjectBuilder.PickNonOptionalFieldsKeys`
+```TypeScript
+class SearchPagePO {
+  @ById('input') searchInput!: Cypress.Chainable;
+  @ByAttribute('submit-search') submitSearch!: Cypress.Chainable;
 
-```typescript
-import type { PickNonOptionalFieldsKeys } from 'typescript-object-builder';
-
-type Endpoint = { url: string; method: string; description?: string };
-
-type T = PickNonOptionalFieldsKeys<Endpoint>; /* T is "url" | "method" */
+  searchFor(term: string): SearchPagePO {
+    this.searchInput.type(term);
+    this.submitSearch.click();
+    return this;
+  }
+}
 ```
 
-`ObjectBuilder.PickNonOptionalFields`
+4. Searching by non-default attribute (by default `ByAttribute` uses `cypress-id`)
 
-```typescript
-import type { PickNonOptionalFields } from 'typescript-object-builder';
-
-type Endpoint = { url: string; method: string; description?: string };
-
-type T = PickNonOptionalFields<Endpoint>; /* T is { url: string; method: string; } */
+```TypeScript
+class Selector {
+  @ByAttribute('submit', { attribute: 'cy-data' }) customAttribute!: Cypress.Chainable;
+}
 ```
 
-## Features
+## Configuration
 
-- type-safe - it doesn't allow to call build method unless all non optional fields have been set
-- smart type inference - builder offers (via autocomplete) only those fields which have not been set yet
+```TypeScript
+import { ResetSelectorsConfiguration, ConfigureSelectors } from 'cypress-selectors';
+
+/* Setting configuration */
+ConfigureSelectors({
+  defaultAttribute: 'cy-id', // Default: 'cypress-id' - sets default attribute to be used by @ByAttribute selector:
+  isLoggingEnabled: true, // Default: false - logs generated selectors before accessing elements
+  searchOnlyFirstLevelDescendants: true, /* Default: false
+                                              => if true: searches ONLY for first-level descendants (via '>') - https://api.jquery.com/child-selector/
+                                              => if false: searches for any-level descendants (via ' ') - https://api.jquery.com/descendant-selector/ */
+});
+
+/* Re-setting configuration to defaults */
+ResetSelectorsConfiguration();
+```

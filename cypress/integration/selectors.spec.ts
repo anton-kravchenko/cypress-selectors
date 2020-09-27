@@ -287,7 +287,6 @@ context('BySelector', () => {
     @BySelector('.children', { alias: 'lvl-3-a', parentAlias: 'lvl-2-a' }) static lvl3A: Chainable;
     @BySelector('[cypress-id=the-element]', { alias: 'lvl-4-a', parentAlias: 'lvl-3-a' })
     static lvl4A: Chainable;
-
     @BySelector('p', { parentAlias: 'lvl-4-a' }) static elementA: Chainable;
 
     @BySelector('#tree-b', { alias: 'lvl-1-b' }) static lvl1B: Chainable;
@@ -295,7 +294,6 @@ context('BySelector', () => {
     @BySelector('.children', { alias: 'lvl-3-b', parentAlias: 'lvl-2-b' }) static lvl3B: Chainable;
     @BySelector('[cypress-id=the-element]', { alias: 'lvl-4-b', parentAlias: 'lvl-3-b' })
     static lvl4B: Chainable;
-
     @BySelector('span', { parentAlias: 'lvl-4-b' }) static elementB: Chainable;
   }
   it('should properly chain custom selectors to find elements', () => {
@@ -305,10 +303,37 @@ context('BySelector', () => {
     Case5_2.elementB.should('have.text', '[B-tree] span tag');
   });
 });
+// TODO: non static fields require ! - write about that in docs
 
-/*
-Cases to add:
- - custom attribute overrides default one
- - set global default attribute
- - custom attribute overrides global one
-*/
+context('Configuration', () => {
+  class Case6_0 {
+    @ByAttribute('first-id') static first: Chainable;
+    @ByAttribute('second-id', { attribute: 'another-cypress-id' }) static second: Chainable;
+  }
+  it('custom attribute should override default one', () => {
+    cy.visit('/TestPage.html#6.0');
+
+    Case6_0.first.should('have.text', '[cypress-id=first-id]');
+    Case6_0.second.should('have.text', '[another-cypress-id=second-id]');
+  });
+
+  class Case6_1 {
+    @ByAttribute('attr') static element: Chainable;
+  }
+  it('should use global attribute value if it is set', () => {
+    cy.visit('/TestPage.html#6.1');
+
+    ConfigureSelectors({ defaultAttribute: 'non-standard-attribute' });
+    Case6_1.element.should('have.text', '[non-standard-attribute=attr]');
+  });
+
+  class Case6_2 {
+    @ByAttribute('attr', { attribute: 'custom-attribute' }) static element: Chainable;
+  }
+  it('should prefer custom attribute even if global one is overridden', () => {
+    cy.visit('/TestPage.html#6.2');
+
+    ConfigureSelectors({ defaultAttribute: 'non-standard-attribute' });
+    Case6_2.element.should('have.text', '[custom-attribute=attr]');
+  });
+});

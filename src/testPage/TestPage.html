@@ -269,6 +269,31 @@
           </div>
         `,
       },
+      {
+        id: '6.0',
+        type: 'Configuration',
+        case: '2 elements with different attributes',
+        html: `
+          <div cypress-id="first-id">[cypress-id=first-id]</div>
+          <div another-cypress-id="second-id">[another-cypress-id=second-id]</div>
+        `,
+      },
+      {
+        id: '6.1',
+        type: 'Configuration',
+        case: '1 elements with custom attributes',
+        html: `
+          <div non-standard-attribute="attr">[non-standard-attribute=attr]</div>
+        `,
+      },
+      {
+        id: '6.2',
+        type: 'Configuration',
+        case: '1 elements with custom attributes',
+        html: `
+          <div custom-attribute="attr">[custom-attribute=attr]</div>
+        `,
+      },
     ];
   </script>
   <style>

@@ -6,21 +6,22 @@
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
   "scripts": {
-    "prepare": "npm-run-all ci build",
+    "prepare": "npm run ci",
     "prebuild": "npm run clean",
     "build": "webpack",
     "lint": "eslint '**/*.ts'",
-    "test": "jest",
     "type-check": "tsc --project tsconfig.json",
-    "test:watch": "jest --watch",
+    "unit": "CI=true jest",
+    "unit:watch": "jest --watch",
     "pretest:coverage": "npm run clean",
-    "test:coverage": "jest --coverage",
+    "unit:coverage": "jest --coverage",
     "start-test-page": "serve TestPage/ -p 5333",
     "e2e:open": "start-server-and-test start-test-page 5333 'cypress open'",
     "e2e:run": "start-server-and-test start-test-page 5333 'cypress run --browser chrome'",
     "e2e:run:ci": "export BROWSER=none; start-server-and-test start-test-page 5333 'cypress run --browser chrome --headless'",
-    "ci": "npm-run-all type-check lint test e2e:run:ci",
-    "clean": "rimraf coverage dist"
+    "clean": "rimraf coverage dist",
+    "test": "npm-run-all unit e2e:run:ci",
+    "ci": "npm-run-all type-check lint test build"
   },
   "husky": {
     "hooks": {
@@ -42,7 +43,7 @@
     "url": "https://github.com/anton-kravchenko/cypress-selectors/issues"
   },
   "devDependencies": {
-    "@types/jest": "^26.0.4",
+    "@types/jest": "^26.0.14",
     "@typescript-eslint/eslint-plugin": "^3.6.0",
     "@typescript-eslint/parser": "^3.6.0",
     "eslint": "^7.4.0",

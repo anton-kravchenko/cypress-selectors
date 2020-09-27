@@ -22,13 +22,13 @@ type SelectorsStorage = Map<string, Selector>;
 type HostWithSelectors = Host & { [selectorsByAliasKey]: SelectorsStorage };
 type GetBySelector = (selector: string) => Cypress.Chainable;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const buildSelector = (
   selector: Selector,
   host: Host,
   propertyName: string,
   getConfig: () => Configuration,
   getBySelector: GetBySelector,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): any => {
   const storage = registerStorageAndSelector(selector, host);
   const getter = generateElementGetter(storage, selector, getConfig, getBySelector);

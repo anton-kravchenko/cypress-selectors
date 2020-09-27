@@ -136,6 +136,71 @@
           </div>
         `,
       },
+      {
+        id: '3.0',
+        type: 'ByClass',
+        case: '2 elements with different class names',
+        html: `
+          <div class="class-a">class-a</div>
+          <div class="class-b">class-b</div>
+        `,
+      },
+      {
+        id: '3.1',
+        type: 'ByClass',
+        case: '2 elements with the same class name',
+        html: `
+          <div class="class-a">first "class-a"</div>
+          <div class="class-a">second "class-a"</div>
+        `,
+      },
+      {
+        id: '3.2',
+        type: 'ByClass',
+        case: '2 elements with the same class names inside parents with different class names',
+        html: `
+          <div class="parent-a">
+            <div class="children">children of "parent-a"</div>
+          </div>
+          <div class="parent-b">
+            <div class="children">children of "parent-b"</div>
+          </div>
+        `,
+      },
+      {
+        id: '4.0',
+        type: 'ByType',
+        case: '3 elements with different types',
+        html: `
+          <div>div</div>
+          <p>p</p>
+          <input type="text" value="input" />
+        `,
+      },
+      {
+        id: '4.1',
+        type: 'ByType',
+        case: '3 elements with the same type',
+        html: `
+            <h1>first H1</h1>
+            <h1>second H1</h1>
+            <h1>third H1</h1>
+        `,
+      },
+      {
+        id: '4.2',
+        type: 'ByType',
+        case: '2 elements with the same type inside parents with different types',
+        html: `
+          <div>
+            <h1>first H1</h1>
+          </div>
+
+          <span>
+            <h1>second H1</h1>
+          <span>
+        `,
+      },
     ];
   </script>
   <style>
@@ -143,9 +208,7 @@
       padding: 5px;
     }
 
-    #test {
-      width: 25rem;
-      height: 10rem;
+    #TEST_CASE_rendered-html {
       border: 1px solid red;
     }
   </style>
@@ -159,14 +222,14 @@
     };
 
     const renderTestCase = ({ id, type, case: caseInfo, html }) => {
-      $('#id').text(`Test ID: ${id}`);
-      $('#type').text(`Type: ${type}`);
-      $('#case').text(`Case: ${caseInfo}`);
-      $('#html').text(trim(html));
-      $('#test').html(html);
+      $('#TEST_CASE_id').text(`Test ID: ${id}`);
+      $('#TEST_CASE_type').text(`Type: ${type}`);
+      $('#TEST_CASE_case').text(`Case: ${caseInfo}`);
+      $('#TEST_CASE_html').text(trim(html));
+      $('#TEST_CASE_rendered-html').html(html);
     };
     const throwErrorAndClear = (testId) => {
-      $('#test').html('<h1>ERROR</h1>');
+      $('#rendered-html').html('<h1>ERROR</h1>');
       alert(`Failed to find a test case with the id: ${testId}`);
     };
   </script>
@@ -204,20 +267,21 @@
   </script>
 
   <body onhashchange="onHashChange()">
-    <div id="meta">
-      <div id="nav">
+    <div id="TEST_CASE_meta">
+      <div id="TEST_CASE_nav">
         <button onclick="loadPreviousTestCase()">Prev</button>
         <button onclick="loadNextTestCase()">Next</button>
       </div>
-      <div id="id"></div>
-      <div id="type"></div>
-      <div id="case"></div>
+      <div id="TEST_CASE_id"></div>
+      <div id="TEST_CASE_type"></div>
+      <div id="TEST_CASE_case"></div>
       <div>
         HTML:
-        <pre><code id="html" class="language-html"></code></pre>
+        <pre><code id="TEST_CASE_html" class="language-html"></code></pre>
       </div>
     </div>
 
-    <div id="test"></div>
+    <div>Rendered:</div>
+    <div id="TEST_CASE_rendered-html"></div>
   </body>
 </html>

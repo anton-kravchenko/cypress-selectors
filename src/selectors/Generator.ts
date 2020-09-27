@@ -56,7 +56,7 @@ const generateSelector = (selectors: Array<SelectorConfig>): string => {
     throw Error(`Unsupported selector type: ${type}`);
   });
 
-  return mappedSelectors.join(' '); // FIXME: investigate which one is right ' > ' or ' '
+  return mappedSelectors.join(' > '); // FIXME: investigate which one is right ' > ' or ' '
 };
 
 export const collectSelectorsChain = (

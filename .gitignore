@@ -12,3 +12,4 @@ package-lock.json
 .nyc_output/
 .vscode
 internal.ts
+list.todo

@@ -1,9 +1,9 @@
 import { ByAttribute, ByClass, ById, BySelector, ByType } from '../../src/Selectors';
-import { CONFIG_HANDLER, ConfigureSelectors } from '../../src/ConfigureSelectors';
+import { ResetSelectorsConfiguration, ConfigureSelectors } from '../../src/ConfigureSelectors';
 
 type Chainable = Cypress.Chainable;
 
-beforeEach(CONFIG_HANDLER.reset);
+beforeEach(ResetSelectorsConfiguration);
 
 context('ByAttribute selector', () => {
   class Case1_0 {
@@ -299,7 +299,6 @@ context('BySelector', () => {
     Case5_2.elementB.should('have.text', '[B-tree] span tag');
   });
 });
-// TODO: non static fields require ! - write about that in docs
 
 context('Configuration', () => {
   class Case6_0 {

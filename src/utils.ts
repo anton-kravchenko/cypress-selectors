@@ -1,12 +1,12 @@
-import type { Host, SelectorConfig } from './SelectorBuilder';
+import type { Host, Selector } from './SelectorBuilder';
 
 const LOG_PREFIX = `[cypress-selectors]`;
 
 const buildException = (message: string, kind = 'INTERNAL ERROR'): Error =>
   new Error(`${LOG_PREFIX} Error type: ${kind}, message: ${message}`);
 
-const logSelector = (selector: SelectorConfig): void =>
-  selecto.alias
+const logSelector = (selector: Selector): void =>
+  selector.alias
     ? log(`Querying "${selector.alias}" by selector: ${selector}`)
     : log(`Querying by selector: ${selector}`);
 

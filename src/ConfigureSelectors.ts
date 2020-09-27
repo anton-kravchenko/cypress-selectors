@@ -1,23 +1,30 @@
 const DEFAULT_ATTRIBUTE = 'cypress-id';
 const DEFAULT_LOGGING = false;
-const DEFAULT_CONFIG = { defaultAttribute: DEFAULT_ATTRIBUTE, logging: DEFAULT_LOGGING };
+const DEFAULT_SEARCH_ONLY_FIRST_LEVEL_DESCENDANTS = false;
+
+const DEFAULT_CONFIG = {
+  defaultAttribute: DEFAULT_ATTRIBUTE,
+  isLoggingEnabled: DEFAULT_LOGGING,
+  searchOnlyFirstLevelDescendants: DEFAULT_SEARCH_ONLY_FIRST_LEVEL_DESCENDANTS,
+};
 
 type Configuration = {
   defaultAttribute: string;
-  logging: boolean;
+  isLoggingEnabled: boolean;
+  searchOnlyFirstLevelDescendants: boolean;
 };
 
 const CONFIG_HANDLER = {
-  getDefaultAttribute: (): string => CONFIG_HANDLER.config.defaultAttribute,
-  isLoggingEnabled: (): boolean => CONFIG_HANDLER.config.logging,
   reset: (): Configuration => (CONFIG_HANDLER.config = { ...DEFAULT_CONFIG }),
   configure: ({
     defaultAttribute = DEFAULT_ATTRIBUTE,
-    logging = false,
+    isLoggingEnabled = DEFAULT_LOGGING,
+    searchOnlyFirstLevelDescendants = DEFAULT_SEARCH_ONLY_FIRST_LEVEL_DESCENDANTS,
   }: Partial<Configuration>): Configuration => {
     const { config } = CONFIG_HANDLER;
     config.defaultAttribute = defaultAttribute;
-    config.logging = logging;
+    config.isLoggingEnabled = isLoggingEnabled;
+    config.searchOnlyFirstLevelDescendants = searchOnlyFirstLevelDescendants;
 
     return config;
   },
@@ -25,5 +32,8 @@ const CONFIG_HANDLER = {
 };
 
 const ConfigureSelectors = CONFIG_HANDLER.configure;
+const ResetSelectorsConfiguration = CONFIG_HANDLER.reset;
+const getConfiguration = (): typeof CONFIG_HANDLER['config'] => ({ ...CONFIG_HANDLER.config });
 
-export { ConfigureSelectors, CONFIG_HANDLER };
+export { ConfigureSelectors, getConfiguration, ResetSelectorsConfiguration };
+export type { Configuration };

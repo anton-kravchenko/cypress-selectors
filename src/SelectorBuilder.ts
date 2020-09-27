@@ -1,7 +1,5 @@
-/// <reference types="cypress" />
-
-import { CONFIG_HANDLER } from './ConfigureSelectors';
-import { buildException, isConfigurableProperty, log, logSelector } from './utils';
+import type { Configuration } from './ConfigureSelectors';
+import { buildException, isConfigurableProperty, logSelector } from './utils';
 const selectorsByAliasKey: unique symbol = Symbol('SELECTORS_BY_ALIAS_STORAGE');
 
 type CommonSelectorConfig = {
@@ -10,7 +8,7 @@ type CommonSelectorConfig = {
   parentAlias?: string;
   attribute?: string;
 };
-type SelectorConfig = CommonSelectorConfig &
+type Selector = CommonSelectorConfig &
   (
     | { type: 'attribute'; attribute?: string }
     | { type: 'id' }
@@ -18,33 +16,37 @@ type SelectorConfig = CommonSelectorConfig &
     | { type: 'type' }
     | { type: 'selector' }
   );
-type SelectorType = SelectorConfig['type'];
+type SelectorType = Selector['type'];
 type Host = { [key: string]: any }; // eslint-disable-line @typescript-eslint/no-explicit-any
-type SelectorsStorage = Map<string, SelectorConfig>;
+type SelectorsStorage = Map<string, Selector>;
 type HostWithSelectors = Host & { [selectorsByAliasKey]: SelectorsStorage };
+type GetBySelector = (selector: string) => Cypress.Chainable;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const buildSelector = (selectorConfig: SelectorConfig, host: Host, name: string): any => {
-  const storage = registerStorageAndSelector(selectorConfig, host);
-  const getter = generateElementGetter(storage, selectorConfig);
+const buildSelector = (
+  selector: Selector,
+  host: Host,
+  propertyName: string,
+  getConfig: () => Configuration,
+  getBySelector: GetBySelector,
+): any => {
+  const storage = registerStorageAndSelector(selector, host);
+  const getter = generateElementGetter(storage, selector, getConfig, getBySelector);
 
-  if (isConfigurableProperty(host, name)) {
-    delete host[name];
+  if (isConfigurableProperty(host, propertyName)) {
+    delete host[propertyName];
     const descriptor = { get: getter, enumerable: false, configurable: false };
-    return Object.defineProperty(host, name, descriptor);
+    return Object.defineProperty(host, propertyName, descriptor);
   }
   throw buildException(
-    `Failed to assign selector - property "${name}" is not 'configurable'`,
+    `Failed to assign selector - property "${propertyName}" is not 'configurable'`,
     'NON CONFIGURABLE FIELD',
   );
 };
 
-const registerStorageAndSelector = (
-  selectorConfig: SelectorConfig,
-  host: Host,
-): HostWithSelectors => {
+const registerStorageAndSelector = (selector: Selector, host: Host): HostWithSelectors => {
   const hostWithStorage = registerSelectorsStorageIfNotRegistered(host);
-  if (shouldSelectorBeRegistered(selectorConfig)) registerSelector(selectorConfig, hostWithStorage);
+  if (shouldSelectorBeRegistered(selector)) registerSelector(selector, hostWithStorage);
 
   return hostWithStorage;
 };
@@ -57,46 +59,51 @@ const registerSelectorsStorageIfNotRegistered = (host: Host): HostWithSelectors 
 
 const hasSelectorsStorage = (host: Host): boolean => host.hasOwnProperty(selectorsByAliasKey);
 
-const shouldSelectorBeRegistered = (selector: SelectorConfig) => typeof selector.alias === 'string';
+const shouldSelectorBeRegistered = (selector: Selector) => typeof selector.alias === 'string';
 
-const registerSelector = (selectorConfig: SelectorConfig, hostWithStorage: HostWithSelectors) => {
-  const alias = selectorConfig.alias as string;
-  throwIfSelectorHasAlreadyBeenRegisteredByAlias(getSelectorsStorage(hostWithStorage), alias);
-  registerSelectorInStorageByAlias(hostWithStorage, alias, selectorConfig);
+const registerSelector = (selector: Selector, hostWithStorage: HostWithSelectors) => {
+  const alias = selector.alias as string;
+  const selectorStorage = getSelectorsStorage(hostWithStorage);
+  registerSelectorInStorageByAlias(selectorStorage, alias, selector);
 };
-const throwIfSelectorHasAlreadyBeenRegisteredByAlias = (
+
+const getSelectorsStorage = (host: HostWithSelectors): SelectorsStorage =>
+  host[selectorsByAliasKey];
+
+const registerSelectorInStorageByAlias = (
   storage: SelectorsStorage,
   alias: string,
-): void => {
+  selector: Selector,
+): SelectorsStorage => {
   if (storage.has(alias))
     throw buildException(
       `Element with the alias "${alias}" is already registered.`,
       'DUPLICATE ALIAS',
     );
+
+  return storage.set(alias, selector);
 };
-const getSelectorsStorage = (host: HostWithSelectors): SelectorsStorage =>
-  host[selectorsByAliasKey];
 
-const registerSelectorInStorageByAlias = (
-  host: HostWithSelectors,
-  alias: string,
-  selector: SelectorConfig,
-): SelectorsStorage => getSelectorsStorage(host).set(alias, selector);
-
-const generateElementGetter = (storage: HostWithSelectors, selector: SelectorConfig) => () => {
+const generateElementGetter = (
+  storage: HostWithSelectors,
+  selector: Selector,
+  getConfig: () => Configuration,
+  getBySelector: GetBySelector,
+) => () => {
+  const configuration = getConfig();
   const chainOfSelectors = collectSelectorsChain(storage[selectorsByAliasKey], selector);
-  const mappedSelector = mapSelectorConfigToSelectorString(chainOfSelectors);
+  const mappedSelector = mapSelectorConfigToSelectorString(chainOfSelectors, configuration);
 
-  if (CONFIG_HANDLER.isLoggingEnabled()) logSelector(selector);
+  if (configuration.isLoggingEnabled) logSelector(selector);
 
-  return cy.get(mappedSelector);
+  return getBySelector(mappedSelector);
 };
 
 export const collectSelectorsChain = (
   storage: SelectorsStorage,
-  entrySelector: SelectorConfig,
-  selectorsChain: Array<SelectorConfig> = [],
-): Array<SelectorConfig> => {
+  entrySelector: Selector,
+  selectorsChain: Array<Selector> = [],
+): Array<Selector> => {
   selectorsChain = [entrySelector, ...selectorsChain];
   const { parentAlias } = entrySelector;
 
@@ -106,17 +113,19 @@ export const collectSelectorsChain = (
 };
 
 const getParentSelectorOrThrow = (storage: SelectorsStorage, alias: string) => {
-  if (storage.has(alias)) return storage.get(alias) as SelectorConfig;
+  if (storage.has(alias)) return storage.get(alias) as Selector;
   else throw buildException(`Failed to retrieve parent selector by "${alias}"`, 'NO SUCH ALIAS');
 };
 
-const ANY_LEVEL_ASCENDANT = ' ';
-const FIRST_LEVEL_ASCENDANT = ' > ';
+const ANY_LEVEL_DESCENDANT = ' ';
+const FIRST_LEVEL_DESCENDANT = '>';
 
-const mapSelectorConfigToSelectorString = (selectors: Array<SelectorConfig>): string => {
+const mapSelectorConfigToSelectorString = (
+  selectors: Array<Selector>,
+  configuration: Configuration,
+): string => {
   const mappedSelectors: Array<string> = selectors.map(({ type, value, attribute }) => {
-    if (type === 'attribute')
-      return `[${attribute ?? CONFIG_HANDLER.getDefaultAttribute()}="${value}"]`;
+    if (type === 'attribute') return `[${attribute ?? configuration.defaultAttribute}="${value}"]`;
     else if (type === 'class') return `.${value}`;
     else if (type === 'id') return `#${value}`;
     else if (type === 'type') return `${value}`;
@@ -124,10 +133,12 @@ const mapSelectorConfigToSelectorString = (selectors: Array<SelectorConfig>): st
     throw buildException(`Unsupported selector type: ${type}`, 'INTERNAL ERROR');
   });
 
-  return mappedSelectors.join(FIRST_LEVEL_ASCENDANT);
-  // ` > ` => selects only first-level descendants
-  // ` ` => selects any-level descendants
+  const descendance = configuration.searchOnlyFirstLevelDescendants
+    ? FIRST_LEVEL_DESCENDANT
+    : ANY_LEVEL_DESCENDANT;
+
+  return mappedSelectors.join(descendance);
 };
 
 export { buildSelector };
-export type { Host, CommonSelectorConfig, SelectorConfig, SelectorType };
+export type { Host, CommonSelectorConfig, Selector, SelectorType };

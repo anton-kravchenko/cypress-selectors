@@ -1,4 +1,4 @@
-import { ByAttribute, ByClass, ById, BySelector, ByType } from '../../src/selectors';
+import { ByAttribute, ByClass, ById, BySelector, ByType } from '../../src/Selectors';
 import { CONFIG_HANDLER, ConfigureSelectors } from '../../src/ConfigureSelectors';
 
 type Chainable = Cypress.Chainable;
@@ -38,9 +38,6 @@ context('ByAttribute selector', () => {
   class Case1_3 {
     @ByAttribute('parent-a', { alias: 'parentA' })
     static parent: Chainable;
-    // TODO: pass attribute name (in case non default attribute required)
-    // TODO: can't we use ^ prop name as an alias?? we have it anyway
-    // TODO: can we type-check aliases? in that case ^ ? THAT WOULD BE super awesome
 
     @ByAttribute('parent-b', { alias: 'parentB', parentAlias: 'parentA' })
     static sibling: Chainable;
@@ -78,9 +75,9 @@ context('ByAttribute selector', () => {
     @ByAttribute('child-a', { parentAlias: 'parentA' })
     static childA: Chainable;
 
-    @ByAttribute('parent-a', { alias: 'parentA' })
+    @ByAttribute('parent-a', { alias: 'parentB' })
     static parentB: Chainable;
-    @ByAttribute('child-a', { parentAlias: 'parentA' })
+    @ByAttribute('child-a', { parentAlias: 'parentB' })
     static childB: Chainable;
   }
   it('should find 2 elements with same attribute inside parents with same attribute', () => {
@@ -206,7 +203,6 @@ context('ByClass selector', () => {
   });
 });
 
-// TODO: think about 'as', 'inside' and 'attr' in addition to 'alias', 'parentAlias' and 'attribute'
 context('ByType selector', () => {
   class Case4_0 {
     @ById('TEST_CASE_rendered-html', { alias: 'sandbox' }) static sandbox: Chainable;

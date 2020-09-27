@@ -1,8 +1,7 @@
 import { pick } from 'lodash';
 
-import type { Host, SelectorType } from './Generator';
-
-import { buildSelector } from './Generator';
+import type { Host, SelectorType } from './SelectorBuilder';
+import { buildSelector } from './SelectorBuilder';
 
 const By = (type: SelectorType) => (
   value: string,

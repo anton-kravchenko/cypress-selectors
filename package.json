@@ -23,15 +23,14 @@
     "test": "npm-run-all unit e2e:run:ci",
     "ci": "npm-run-all type-check lint test build"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged && pretty-quick --staged"
-    }
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anton-kravchenko/cypress-selectors.git"
   },
-  "lint-staged": {
-    "*.{ts,js}": [
-      "eslint --fix"
-    ]
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/anton-kravchenko/cypress-selectors/issues"
   },
   "repository": {
     "type": "git",

@@ -20,7 +20,7 @@
     "e2e:run": "start-server-and-test start-test-page 5333 'cypress run --browser chrome'",
     "e2e:run:ci": "export BROWSER=none; start-server-and-test start-test-page 5333 'cypress run --browser chrome --headless'",
     "clean": "rimraf coverage dist",
-    "test": "npm-run-all unit e2e:run:ci",
+    "test": "npm-run-all e2e:run:ci",
     "ci": "npm-run-all type-check lint test build"
   },
   "jest": {

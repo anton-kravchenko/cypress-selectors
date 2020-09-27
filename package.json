@@ -27,11 +27,6 @@
     "type": "git",
     "url": "git+https://github.com/anton-kravchenko/cypress-selectors.git"
   },
-  "author": "",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/anton-kravchenko/cypress-selectors/issues"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/anton-kravchenko/cypress-selectors.git"

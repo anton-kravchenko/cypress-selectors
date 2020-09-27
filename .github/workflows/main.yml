@@ -10,7 +10,7 @@ on:
       - master
 
 jobs:
-  verify:
+  verify-and-build:
     runs-on: ubuntu-latest
 
     steps:
@@ -22,16 +22,3 @@ jobs:
         run: |
           npm ci
           npm run ci
-
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-        with:
-          node-version: '12'
-      - name: Build
-        run: |
-          CYPRESS_INSTALL_BINARY=0 npm i
-          npm run build

@@ -83,7 +83,7 @@ import { ResetSelectorsConfiguration, ConfigureSelectors } from 'cypress-selecto
 
 /* Setting configuration */
 ConfigureSelectors({
-  defaultAttribute: 'cy-id', // Default: 'cypress-id' - sets default attribute to be used by @ByAttribute selector:
+  defaultAttribute: 'cy-id', // Default: 'cypress-id' - sets default attribute to be used by @ByAttribute selector
   isLoggingEnabled: true, // Default: false - logs generated selectors before accessing elements
   searchOnlyFirstLevelDescendants: true, /* Default: false
                                               => if true: searches ONLY for first-level descendants (via '>') - https://api.jquery.com/child-selector/

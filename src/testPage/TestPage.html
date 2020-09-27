@@ -201,6 +201,74 @@
           <span>
         `,
       },
+      {
+        id: '5.0',
+        type: 'BySelector',
+        case: 'chain of 3 elements',
+        html: `
+          <div id="parent">
+            <div class="children">
+              <span>
+                <div cypress-id="the-element">first element</div>
+              </span>
+
+              <div>
+                <div cypress-id="the-element">second element</div>
+              </div>
+            </div>
+          </div>
+        `,
+      },
+      {
+        id: '5.1',
+        type: 'BySelector',
+        case: '2 chains of 4 elements',
+        html: `
+          <div id="tree-a">
+            <div id="parent">
+              <div class="children">
+                <div cypress-id="the-element">first element</div>
+              </div>
+            </div>
+          </div>
+
+          <div id="tree-b">
+            <div id="parent">
+              <div class="children">
+                <div cypress-id="the-element">second element</div>
+              </div>
+            </div>
+          </div>
+        `,
+      },
+      {
+        id: '5.2',
+        type: 'BySelector',
+        case: '2 similar deep chains of elements with parens with different ids',
+        html: `
+          <div id="tree-a">
+            <div class="parent">
+              <div class="children">
+                <div cypress-id="the-element">
+                  <p>[A-tree] p tag</p>
+                  <span>span tag</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="tree-b">
+            <div class="parent">
+              <div class="children">
+                <div cypress-id="the-element">
+                  <p>p tag</p>
+                  <span>[B-tree] span tag</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        `,
+      },
     ];
   </script>
   <style>

@@ -13,7 +13,8 @@
     "baseUrl": "src",
     "esModuleInterop": true,
     "declaration": true,
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "skipLibCheck": true
   },
   "include": ["src", "cypress"]
 }

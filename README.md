@@ -2,7 +2,7 @@
 
 ![](https://github.com/anton-kravchenko/cypress-selectors/workflows/CI/badge.svg)
 
-`cypress-selectors` is a library that provides bunch of convenient selectors for Cypress.
+`cypress-selectors` is a library that provides bunch of convenient declarative selectors for Cypress.
 
 It helps to organize and re-use selectors and turns this:
 

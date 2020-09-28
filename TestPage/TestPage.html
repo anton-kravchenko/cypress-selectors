@@ -1,0 +1,380 @@
+<html>
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <link
+    rel="stylesheet"
+    href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.2/styles/monokai.min.css"
+  />
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.2/highlight.min.js"></script>
+  <script
+    charset="UTF-8"
+    src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.2/languages/xml.min.js"
+  ></script>
+
+  <script>
+    const TEST_CASES = [
+      {
+        id: '1.0',
+        type: 'ByAttribute',
+        case: 'element with unique id',
+        html: `<div cypress-id="unique-id">This is the one</div>`,
+      },
+      {
+        id: '1.1',
+        type: 'ByAttribute',
+        case: '2 elements with the same id',
+        html: `
+          <div cypress-id="non-unique-id">This is the first</div>
+          <div cypress-id="non-unique-id">This is the second</div>
+        `,
+      },
+      {
+        id: '1.2',
+        type: 'ByAttribute',
+        case: 'element with unique attribute inside element with unique id',
+        html: `
+          <div cypress-id="parent-a">
+            <div cypress-id="child-a">child-a</div>
+          </div>
+        `,
+      },
+      {
+        id: '1.3',
+        type: 'ByAttribute',
+        case: 'element with unique id with 2 parents',
+        html: `
+          <div cypress-id="parent-a">
+            <div cypress-id="parent-b">
+              <div cypress-id="child-a-b">child-a-b</div>
+            </div>
+          </div>
+        `,
+      },
+      {
+        id: '1.4',
+        type: 'ByAttribute',
+        case: '2 elements with the same attribute inside parents with different attributes',
+        html: `
+          <div cypress-id="parent-a">
+            <div cypress-id="child-a">'child-a' of 'parent-a'</div>
+          </div>
+
+          <div cypress-id="parent-b">
+            <div cypress-id="child-a">'child-a' of 'parent-b'</div>
+          </div>
+        `,
+      },
+      {
+        id: '1.5',
+        type: 'ByAttribute',
+        case: '2 elements with the same attribute inside parents with same attributes',
+        html: `
+          <div cypress-id="parent-a">
+            <div cypress-id="child-a">first 'child-a' of 'parent-a'</div>
+          </div>
+
+          <div cypress-id="parent-a">
+            <div cypress-id="child-a">second 'child-a' of 'parent-a'</div>
+          </div>
+        `,
+      },
+      {
+        id: '1.6',
+        type: 'ByAttribute',
+        case: 'find 1 element by supplied attribute name and value',
+        html: `
+          <div custom-id="parent">
+            <div custom-id="child">children of [custom-id]="parent"</div>
+          </div>
+        `,
+      },
+      {
+        id: '1.7',
+        type: 'ByAttribute',
+        case: 'find 1 element by `id` attribute',
+        html: `
+          <div id="unique-id">by 'id' attribute</div>
+          <div id-1="another-unique-id"></div>
+        `,
+      },
+      {
+        id: '1.8',
+        type: 'ByAttribute',
+        case: 'find 1 element by default attribute',
+        html: `
+          <div first-custom-attribute="id">[first-custom-attribute=id]</div>
+          <div second-custom-attribute="another-id">[second-custom-attribute=another-id]</div>
+        `,
+      },
+      {
+        id: '2.0',
+        type: 'ById',
+        case: 'find elements by id',
+        html: `
+          <div id='id-1'>id is "id-1"</div>
+          <div id='id-2'>id is "id-2"</div>
+        `,
+      },
+      {
+        id: '2.1',
+        type: 'ById',
+        case: '2 elements with the same id',
+        html: `
+          <div id='non-unique-id'>first element with an id "non-unique-id"</div>
+          <div id='non-unique-id'>second element with an id "non-unique-id"</div>
+        `,
+      },
+      {
+        id: '2.2',
+        type: 'ById',
+        case: '2 elements with the same id inside parents with different id',
+        html: `
+          <div id='parent-b'>
+            <div id='children'>children of 'parent-b'</div>
+          </div>
+          <div id='parent-a'>
+            <div id='children'>children of 'parent-a'</div>
+          </div>
+        `,
+      },
+      {
+        id: '3.0',
+        type: 'ByClass',
+        case: '2 elements with different class names',
+        html: `
+          <div class="class-a">class-a</div>
+          <div class="class-b">class-b</div>
+        `,
+      },
+      {
+        id: '3.1',
+        type: 'ByClass',
+        case: '2 elements with the same class name',
+        html: `
+          <div class="class-a">first "class-a"</div>
+          <div class="class-a">second "class-a"</div>
+        `,
+      },
+      {
+        id: '3.2',
+        type: 'ByClass',
+        case: '2 elements with the same class names inside parents with different class names',
+        html: `
+          <div class="parent-a">
+            <div class="children">children of "parent-a"</div>
+          </div>
+          <div class="parent-b">
+            <div class="children">children of "parent-b"</div>
+          </div>
+        `,
+      },
+      {
+        id: '4.0',
+        type: 'ByType',
+        case: '3 elements with different types',
+        html: `
+          <div>div</div>
+          <p>p</p>
+          <input type="text" value="input" />
+        `,
+      },
+      {
+        id: '4.1',
+        type: 'ByType',
+        case: '3 elements with the same type',
+        html: `
+            <h1>first H1</h1>
+            <h1>second H1</h1>
+            <h1>third H1</h1>
+        `,
+      },
+      {
+        id: '4.2',
+        type: 'ByType',
+        case: '2 elements with the same type inside parents with different types',
+        html: `
+          <div>
+            <h1>first H1</h1>
+          </div>
+
+          <span>
+            <h1>second H1</h1>
+          <span>
+        `,
+      },
+      {
+        id: '5.0',
+        type: 'BySelector',
+        case: 'chain of 3 elements',
+        html: `
+          <div id="parent">
+            <div class="children">
+              <span>
+                <div cypress-id="the-element">first element</div>
+              </span>
+
+              <div>
+                <div cypress-id="the-element">second element</div>
+              </div>
+            </div>
+          </div>
+        `,
+      },
+      {
+        id: '5.1',
+        type: 'BySelector',
+        case: '2 chains of 4 elements',
+        html: `
+          <div id="tree-a">
+            <div id="parent">
+              <div class="children">
+                <div cypress-id="the-element">first element</div>
+              </div>
+            </div>
+          </div>
+
+          <div id="tree-b">
+            <div id="parent">
+              <div class="children">
+                <div cypress-id="the-element">second element</div>
+              </div>
+            </div>
+          </div>
+        `,
+      },
+      {
+        id: '5.2',
+        type: 'BySelector',
+        case: '2 similar deep chains of elements with parens with different ids',
+        html: `
+          <div id="tree-a">
+            <div class="parent">
+              <div class="children">
+                <div cypress-id="the-element">
+                  <p>[A-tree] p tag</p>
+                  <span>span tag</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="tree-b">
+            <div class="parent">
+              <div class="children">
+                <div cypress-id="the-element">
+                  <p>p tag</p>
+                  <span>[B-tree] span tag</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        `,
+      },
+      {
+        id: '6.0',
+        type: 'Configuration',
+        case: '2 elements with different attributes',
+        html: `
+          <div cypress-id="first-id">[cypress-id=first-id]</div>
+          <div another-cypress-id="second-id">[another-cypress-id=second-id]</div>
+        `,
+      },
+      {
+        id: '6.1',
+        type: 'Configuration',
+        case: '1 elements with custom attributes',
+        html: `
+          <div non-standard-attribute="attr">[non-standard-attribute=attr]</div>
+        `,
+      },
+      {
+        id: '6.2',
+        type: 'Configuration',
+        case: '1 elements with custom attributes',
+        html: `
+          <div custom-attribute="attr">[custom-attribute=attr]</div>
+        `,
+      },
+    ];
+  </script>
+  <style>
+    div {
+      padding: 5px;
+    }
+
+    #TEST_CASE_rendered-html {
+      border: 1px solid red;
+    }
+  </style>
+
+  <script>
+    const trim = (html) => {
+      const lines = html.split('\n').filter((line) => line.length);
+      if (lines.length === 1) return html;
+      const trimN = lines[0].length - lines[0].trim().length;
+      return lines.map((line) => line.substring(trimN, line.length)).join('\n');
+    };
+
+    const renderTestCase = ({ id, type, case: caseInfo, html }) => {
+      $('#TEST_CASE_id').text(`Test ID: ${id}`);
+      $('#TEST_CASE_type').text(`Type: ${type}`);
+      $('#TEST_CASE_case').text(`Case: ${caseInfo}`);
+      $('#TEST_CASE_html').text(trim(html));
+      $('#TEST_CASE_rendered-html').html(html);
+    };
+    const throwErrorAndClear = (testId) => {
+      $('#rendered-html').html('<h1>ERROR</h1>');
+      alert(`Failed to find a test case with the id: ${testId}`);
+    };
+  </script>
+
+  <script>
+    const onHashChange = () => {
+      const testId = location.hash.replace('#', '');
+      const testCase = TEST_CASES.find(({ id }) => id === testId);
+      window.currentTestCaseIndex = TEST_CASES.indexOf(testCase);
+
+      if (testCase) renderTestCase(testCase);
+      else throwErrorAndClear(testId);
+    };
+  </script>
+
+  <script>
+    const loadNextTestCase = () => {
+      if (typeof window.currentTestCaseIndex === 'number') {
+        const nextTestCase = TEST_CASES[window.currentTestCaseIndex + 1];
+        if (nextTestCase) location.hash = nextTestCase.id;
+      }
+    };
+
+    const loadPreviousTestCase = () => {
+      if (typeof window.currentTestCaseIndex === 'number') {
+        const previousTestCase = TEST_CASES[window.currentTestCaseIndex - 1];
+        if (previousTestCase) location.hash = previousTestCase.id;
+      }
+    };
+  </script>
+
+  <script>
+    $(document).ready(onHashChange);
+    hljs.initHighlightingOnLoad();
+  </script>
+
+  <body onhashchange="onHashChange()">
+    <div id="TEST_CASE_meta">
+      <div id="TEST_CASE_nav">
+        <button onclick="loadPreviousTestCase()">Prev</button>
+        <button onclick="loadNextTestCase()">Next</button>
+      </div>
+      <div id="TEST_CASE_id"></div>
+      <div id="TEST_CASE_type"></div>
+      <div id="TEST_CASE_case"></div>
+      <div>
+        HTML:
+        <pre><code id="TEST_CASE_html" class="language-html"></code></pre>
+      </div>
+    </div>
+
+    <div>Rendered:</div>
+    <div id="TEST_CASE_rendered-html"></div>
+  </body>
+</html>

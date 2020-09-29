@@ -58,8 +58,11 @@ npm i -D cypress-selectors
 
    ```TypeScript
     class Selectors {
-      @ById('main', { alias: 'root' }) static parent: Chainable;
-      @ByClass('button', { parentAlias: 'root' }) static children: Chainable; // equivalent of - cy.get('#root .button')
+      @ById('main', { alias: 'root' })
+      static parent: Chainable;
+
+      @ByClass('button', { parentAlias: 'root' })
+      static children: Chainable; // equivalent of - cy.get('#root .button')
     }
    ```
 
@@ -82,7 +85,8 @@ npm i -D cypress-selectors
 
    ```TypeScript
     class Selector {
-      @ByAttribute('submit', { attribute: 'cy-data' }) customAttribute!: Cypress.Chainable;
+      @ByAttribute('submit', { attribute: 'cy-data' })
+      customAttribute!: Cypress.Chainable;
     }
    ```
 
@@ -107,3 +111,5 @@ ResetSelectorsConfiguration();
 <!-- TODO: add "Motivation" section -->
 <!-- TODO: add note about TS and decorators -->
 <!-- TODO: add note babel config -->
+<!-- TODO: read carefully https://www.cypress.io/blog/2019/01/03/stop-using-page-objects-and-start-using-app-actions/ -->
+<!-- TODO: improve configuration docs -->

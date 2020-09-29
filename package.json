@@ -1,6 +1,6 @@
 {
   "name": "cypress-selectors",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Set of convenient decorators for querying DOM elements via Cypress",
   "homepage": "https://github.com/anton-kravchenko/cypress-selecotrs#readme",
   "main": "dist/main.js",
@@ -64,7 +64,7 @@
   },
   "keywords": [
     "cypress",
-    "cypress-electors"
+    "cypress-selectors"
   ],
   "dependencies": {
     "@types/cypress": "^1.1.3",

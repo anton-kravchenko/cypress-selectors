@@ -294,6 +294,20 @@
           <div custom-attribute="attr">[custom-attribute=attr]</div>
         `,
       },
+      {
+        id: '6.3',
+        type: 'Configuration',
+        case: '2 exactly the same trees with different text',
+        html: `
+          <div cypress-id="parent">
+            <div cypress-id="children">children a</div>
+          </div>
+
+          <div cypress-id="parent">
+            <div cypress-id="children">children b</div>
+          </div>
+        `,
+      },
     ];
   </script>
   <style>

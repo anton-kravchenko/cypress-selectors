@@ -331,4 +331,18 @@ context('Configuration', () => {
     ConfigureSelectors({ defaultAttribute: 'non-standard-attribute' });
     Case6_2.element.should('have.text', '[custom-attribute=attr]');
   });
+
+  class Case6_3 {
+    @ByAttribute('parent', { alias: 'parent-0', eq: 0 }) static firstRow: Chainable;
+    @ByAttribute('children', { parentAlias: 'parent-0' }) static firstRowChildren: Chainable;
+
+    @ByAttribute('parent', { alias: 'parent-1', eq: 1 }) static secondRow: Chainable;
+    @ByAttribute('children', { parentAlias: 'parent-1' }) static secondRowChildren: Chainable;
+  }
+  it('should use `eq` to locate element by index', () => {
+    cy.visit('/TestPage.html#6.3');
+
+    Case6_3.firstRowChildren.should('have.text', 'children a');
+    Case6_3.secondRowChildren.should('have.text', 'children b');
+  });
 });

@@ -90,6 +90,15 @@ npm i -D cypress-selectors
     }
    ```
 
+5. Selecting elements by index
+
+   ```TypeScript
+    class Selector {
+      @ByAttribute('row', { eq: 0 }) firstRow!: Cypress.Chainable;
+      @ByAttribute('row', { eq: 1 }) secondRow!: Cypress.Chainable;
+    }
+   ```
+
 ## Configuration
 
 ```TypeScript

@@ -1,7 +1,7 @@
 {
   "name": "cypress-selectors",
-  "version": "0.1.2",
-  "description": "Set of convenient decorators for querying DOM elements via Cypress",
+  "version": "0.2.0",
+  "description": "Set of convenient decorators for declarative querying DOM elements via Cypress",
   "homepage": "https://github.com/anton-kravchenko/cypress-selecotrs#readme",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
@@ -27,10 +27,6 @@
     "modulePathIgnorePatterns": [
       "<rootDir>/dist/"
     ]
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/anton-kravchenko/cypress-selectors.git"
   },
   "repository": {
     "type": "git",

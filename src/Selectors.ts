@@ -16,7 +16,6 @@ const By = (type: SelectorType) => (
     type,
   };
 
-  console.log('123- selector config', selectorConfig, config);
   return (host: Host, propertyName: string) =>
     buildSelector(selectorConfig, host, propertyName, getConfiguration, cy.get);
 };

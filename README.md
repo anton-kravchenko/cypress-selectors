@@ -87,6 +87,7 @@ npm i -D cypress-selectors
     class Selector {
       @ByAttribute('submit', { attribute: 'cy-data' })
       customAttribute!: Cypress.Chainable;
+
     }
    ```
 

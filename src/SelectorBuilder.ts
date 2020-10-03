@@ -7,6 +7,7 @@ type CommonSelectorConfig = {
   alias?: string;
   parentAlias?: string;
   attribute?: string;
+  eq?: number;
 };
 type Selector = CommonSelectorConfig &
   (
@@ -91,10 +92,10 @@ const generateElementGetter = (
   getBySelector: GetBySelector,
 ) => () => {
   const configuration = getConfig();
-  const chainOfSelectors = collectSelectorsChain(storage[selectorsByAliasKey], selector);
-  const mappedSelector = mapSelectorConfigToSelectorString(chainOfSelectors, configuration);
-
   if (configuration.isLoggingEnabled) logSelector(selector);
+
+  const chainOfSelectors = collectSelectorsChain(storage[selectorsByAliasKey], selector);
+  const mappedSelector = mapSelectorConfigsToSelectorString(chainOfSelectors, configuration);
 
   return getBySelector(mappedSelector);
 };
@@ -120,24 +121,35 @@ const getParentSelectorOrThrow = (storage: SelectorsStorage, alias: string) => {
 const ANY_LEVEL_DESCENDANT = ' ';
 const FIRST_LEVEL_DESCENDANT = '>';
 
-const mapSelectorConfigToSelectorString = (
+const mapSelectorConfigsToSelectorString = (
   selectors: Array<Selector>,
   configuration: Configuration,
 ): string => {
-  const mappedSelectors: Array<string> = selectors.map(({ type, value, attribute }) => {
-    if (type === 'attribute') return `[${attribute ?? configuration.defaultAttribute}="${value}"]`;
-    else if (type === 'class') return `.${value}`;
-    else if (type === 'id') return `#${value}`;
-    else if (type === 'type') return `${value}`;
-    else if (type === 'selector') return value;
-    throw buildException(`Unsupported selector type: ${type}`, 'INTERNAL ERROR');
-  });
+  const mappedSelectors: Array<string> = selectors.map((selector) =>
+    mapSelectorToString(selector, configuration),
+  );
 
   const descendance = configuration.searchOnlyFirstLevelDescendants
     ? FIRST_LEVEL_DESCENDANT
     : ANY_LEVEL_DESCENDANT;
 
   return mappedSelectors.join(descendance);
+};
+
+const mapSelectorToString = (selector: Selector, configuration: Configuration): string => {
+  const stringifiedSelector = mapSelectorByType(selector, configuration);
+
+  const { eq } = selector;
+  return typeof eq === 'number' ? `${stringifiedSelector}:eq(${eq})` : stringifiedSelector;
+};
+
+const mapSelectorByType = ({ type, value, attribute }: Selector, configuration: Configuration) => {
+  if (type === 'attribute') return `[${attribute ?? configuration.defaultAttribute}="${value}"]`;
+  else if (type === 'class') return `.${value}`;
+  else if (type === 'id') return `#${value}`;
+  else if (type === 'type') return `${value}`;
+  else if (type === 'selector') return value;
+  else throw buildException(`Unsupported selector type: ${type}`, 'INTERNAL ERROR');
 };
 
 export { buildSelector };

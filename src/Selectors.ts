@@ -8,10 +8,15 @@ import { getConfiguration } from './ConfigureSelectors';
 
 const By = (type: SelectorType) => (
   value: string,
-  config: { alias?: string; parentAlias?: string; attribute?: string } = {},
+  config: { alias?: string; parentAlias?: string; attribute?: string; eq?: number } = {},
 ) => {
-  const selectorConfig = { ...pick(config, ['alias', 'parentAlias', 'attribute']), value, type };
+  const selectorConfig = {
+    ...pick(config, ['alias', 'parentAlias', 'attribute', 'eq']),
+    value,
+    type,
+  };
 
+  console.log('123- selector config', selectorConfig, config);
   return (host: Host, propertyName: string) =>
     buildSelector(selectorConfig, host, propertyName, getConfiguration, cy.get);
 };

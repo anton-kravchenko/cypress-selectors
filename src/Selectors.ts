@@ -2,14 +2,18 @@
 
 import { pick } from 'lodash';
 
-import type { Host, SelectorType } from './SelectorBuilder';
 import { buildSelector } from './SelectorBuilder';
 import { getConfiguration } from './ConfigureSelectors';
+import { throwIfNotRunningInCypressEnv } from './utils';
+
+import type { Host, SelectorType } from './SelectorBuilder';
 
 const By = (type: SelectorType) => (
   value: string,
   config: { alias?: string; parentAlias?: string; attribute?: string; eq?: number } = {},
 ) => {
+  throwIfNotRunningInCypressEnv();
+
   const selectorConfig = {
     ...pick(config, ['alias', 'parentAlias', 'attribute', 'eq']),
     value,

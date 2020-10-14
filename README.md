@@ -50,7 +50,6 @@ npm i -D cypress-selectors
 
       @BySelector('ul > li .focus')
       static listItem: Chainable; // equivalent of - cy.get('ul > li .focus')
-
     }
    ```
 

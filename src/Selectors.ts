@@ -8,7 +8,7 @@ import { throwIfNotRunningInCypressEnv } from './utils';
 
 import type { Host, SelectorType } from './SelectorBuilder';
 
-const By = (type: SelectorType) => (
+const BuildSelectorBy = (type: SelectorType) => (
   value: string,
   config: { alias?: string; parentAlias?: string; attribute?: string; eq?: number } = {},
 ) => {
@@ -24,10 +24,18 @@ const By = (type: SelectorType) => (
     buildSelector(selectorConfig, host, propertyName, getConfiguration, cy.get);
 };
 
-const ByAttribute = By('attribute');
-const ByType = By('type');
-const ByClass = By('class');
-const ById = By('id');
-const BySelector = By('selector');
+const ByAttribute = BuildSelectorBy('attribute');
+const ByType = BuildSelectorBy('type');
+const ByClass = BuildSelectorBy('class');
+const ById = BuildSelectorBy('id');
+const BySelector = BuildSelectorBy('selector');
 
-export { ByAttribute, ByType, ByClass, ById, BySelector };
+const By = {
+  Attribute: ByAttribute,
+  Type: ByType,
+  Class: ByClass,
+  Id: ById,
+  Selector: BySelector,
+};
+
+export { By, ByAttribute, ByType, ByClass, ById, BySelector };

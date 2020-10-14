@@ -100,7 +100,7 @@ const generateElementGetter = (
   return getBySelector(mappedSelector);
 };
 
-export const collectSelectorsChain = (
+const collectSelectorsChain = (
   storage: SelectorsStorage,
   entrySelector: Selector,
   selectorsChain: Array<Selector> = [],
@@ -152,5 +152,5 @@ const mapSelectorByType = ({ type, value, attribute }: Selector, configuration: 
   else throw buildException(`Unsupported selector type: ${type}`, 'INTERNAL ERROR');
 };
 
-export { buildSelector };
+export { buildSelector, collectSelectorsChain };
 export type { Host, CommonSelectorConfig, Selector, SelectorType };

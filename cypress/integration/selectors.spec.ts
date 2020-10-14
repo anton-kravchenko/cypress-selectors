@@ -1,4 +1,4 @@
-import { ByAttribute, ByClass, ById, BySelector, ByType } from '../../src/Selectors';
+import { By, ByAttribute, ByClass, ById, BySelector, ByType } from '../../src/Selectors';
 import { ResetSelectorsConfiguration, ConfigureSelectors } from '../../src/ConfigureSelectors';
 
 type Chainable = Cypress.Chainable;
@@ -344,5 +344,22 @@ context('Configuration', () => {
 
     Case6_3.firstRowChildren.should('have.text', 'children a');
     Case6_3.secondRowChildren.should('have.text', 'children b');
+  });
+
+  class Case6_4 {
+    @By.Attribute('cypress-id') static byAttr: Chainable;
+    @By.Type('code-element') static byType: Chainable;
+    @By.Class('class-a') static byClass: Chainable;
+    @By.Id('unique-id') static byId: Chainable;
+    @By.Selector('div > span > div') static bySelector: Chainable;
+  }
+  it('"By" namespace should just point to other selectors', () => {
+    cy.visit('/TestPage.html#6.4');
+
+    Case6_4.byAttr.should('have.text', 'cypress-id');
+    Case6_4.byType.should('have.text', 'Code element');
+    Case6_4.byClass.should('have.text', 'Class A');
+    Case6_4.byId.should('have.text', 'Unique id');
+    Case6_4.bySelector.should('have.text', 'Div inside div inside span');
   });
 });

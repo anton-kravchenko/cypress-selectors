@@ -308,6 +308,23 @@
           </div>
         `,
       },
+      {
+        id: '6.4',
+        type: 'By namespace',
+        case: 'elements with different id, class, attribute, type',
+        html: `
+          <div cypress-id="cypress-id">cypress-id</div>
+          <code-element>Code element</code-element>
+          <div class="class-a">Class A</div>
+          <div id="unique-id">Unique id</div>
+          <div>
+            <span>
+              <div>Div inside div inside span</div>
+            </span>
+          </div>
+          <div></div>
+        `,
+      },
     ];
   </script>
   <style>

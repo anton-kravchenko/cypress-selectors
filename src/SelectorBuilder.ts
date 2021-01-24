@@ -16,6 +16,7 @@ type Selector = CommonSelectorConfig &
     | { type: 'class' }
     | { type: 'type' }
     | { type: 'selector' }
+    | { type: 'xpath' }
   );
 type SelectorType = Selector['type'];
 type Host = { [key: string]: any }; // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -149,6 +150,7 @@ const mapSelectorByType = ({ type, value, attribute }: Selector, configuration: 
   else if (type === 'id') return `#${value}`;
   else if (type === 'type') return `${value}`;
   else if (type === 'selector') return value;
+  else if (type === 'xpath') return value;
   else throw buildException(`Unsupported selector type: ${type}`, 'INTERNAL ERROR');
 };
 

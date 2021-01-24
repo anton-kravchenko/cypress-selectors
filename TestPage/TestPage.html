@@ -325,6 +325,86 @@
           <div></div>
         `,
       },
+      {
+        id: '7.0',
+        type: 'ByXPath',
+        case: '2 parents with unique ids and children with the same ids',
+        html: `
+          <div cypress-id="parent-a">
+            <div cypress-id="children">children a</div>
+          </div>
+
+          <div cypress-id="parent-b">
+            <div cypress-id="children">children b</div>
+          </div>
+        `,
+      },
+      {
+        id: '7.1',
+        type: 'ByXPath',
+        case: '1 parent with unique ids and 5 children div elements',
+        html: `
+          <div cypress-id="parent-a">
+            <div>1</div>
+            <div>2</div>
+            <div>3</div>
+            <div>4</div>
+            <div>5</div>
+          </div>
+        `,
+      },
+      {
+        id: '7.2',
+        type: 'ByXPath',
+        case: '1 parent with 1 children div element with an attribute',
+        html: `
+          <div cypress-id="parent-a">
+            <div custom-attribute="value-of-custom-attr">1</div>
+          </div>
+        `,
+      },
+      {
+        id: '7.3',
+        type: 'ByXPath',
+        case: '1 parent with 1 children div element with a class',
+        html: `
+          <div cypress-id="parent-a">
+            <div class="button-label">1</div>
+          </div>
+        `,
+      },
+      {
+        id: '7.4',
+        type: 'ByXPath',
+        case: '1 parent with 1 children div element with a text',
+        html: `
+          <div cypress-id="parent-a">
+            <div>text inside div element</div>
+          </div>
+        `,
+      },
+      {
+        id: '7.5',
+        type: 'ByXPath',
+        case: '1 parent with 4 children div elements',
+        html: `
+          <div cypress-id="parent-a">
+            <div>1</div>
+            <div>2</div>
+            <div>3</div>
+            <div>4</div>
+            <div>5</div>
+          </div>
+        `,
+      },
+      {
+        id: '7.6',
+        type: 'ByXPath',
+        case: '1 h5 element',
+        html: `
+          <h5>H5</5>
+        `,
+      },
     ];
   </script>
   <style>

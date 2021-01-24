@@ -2,7 +2,7 @@
   "compilerOptions": {
     "outDir": "./dist/",
     "target": "es5",
-    "lib": ["esnext"],
+    "lib": ["esnext", "DOM"],
     "allowJs": false,
     "strict": true,
     "forceConsistentCasingInFileNames": true,

@@ -405,6 +405,14 @@
           <h5>H5</5>
         `,
       },
+      {
+        id: '7.7',
+        type: 'ByXPath',
+        case: '1 input',
+        html: `
+          <input />
+        `,
+      },
     ];
   </script>
   <style>
@@ -425,12 +433,13 @@
       return lines.map((line) => line.substring(trimN, line.length)).join('\n');
     };
 
-    const renderTestCase = ({ id, type, case: caseInfo, html }) => {
+    const renderTestCase = ({ id, type, case: caseInfo, html }, timeout) => {
       $('#TEST_CASE_id').text(`Test ID: ${id}`);
       $('#TEST_CASE_type').text(`Type: ${type}`);
       $('#TEST_CASE_case').text(`Case: ${caseInfo}`);
       $('#TEST_CASE_html').text(trim(html));
-      $('#TEST_CASE_rendered-html').html(html);
+      if (timeout) setTimeout(() => $('#TEST_CASE_rendered-html').html(html), timeout);
+      else $('#TEST_CASE_rendered-html').html(html);
     };
     const throwErrorAndClear = (testId) => {
       $('#rendered-html').html('<h1>ERROR</h1>');
@@ -440,11 +449,13 @@
 
   <script>
     const onHashChange = () => {
-      const testId = location.hash.replace('#', '');
+      const hash = location.hash.replace('#', '');
+      const testId = hash.includes('?') ? hash.substring(0, hash.indexOf('?')) : hash;
       const testCase = TEST_CASES.find(({ id }) => id === testId);
+      const timeout = new URLSearchParams(hash.substring(4, hash.length)).get('timeout') || 100;
       window.currentTestCaseIndex = TEST_CASES.indexOf(testCase);
 
-      if (testCase) renderTestCase(testCase);
+      if (testCase) renderTestCase(testCase, timeout);
       else throwErrorAndClear(testId);
     };
   </script>

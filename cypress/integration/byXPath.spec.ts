@@ -68,4 +68,13 @@ context('ByXPath selector', () => {
     Case7_6.h5ElementExists.should('be.true');
     Case7_6.h6ElementDoesNotExist.should('be.false');
   });
+
+  class Case7_7 {
+    @ByXPath(`//input`) static input: Chainable;
+  }
+  it('should find input and enter text into it', () => {
+    cy.visit('/TestPage.html#7.7?timeout=1000');
+    Case7_7.input.click().type('input value');
+    Case7_7.input.should('have.value', 'input value');
+  });
 });

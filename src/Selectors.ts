@@ -6,6 +6,8 @@ import { pick } from 'lodash';
 import { buildSelector } from './SelectorBuilder';
 import { getConfiguration } from './ConfigureSelectors';
 import { throwIfNotRunningInCypressEnv } from './utils';
+import { registerInternalXPathCommand } from './XPath';
+registerInternalXPathCommand();
 
 import type { Host, SelectorType } from './SelectorBuilder';
 
@@ -28,7 +30,7 @@ const BuildSelectorBy = (type: SelectorType) => (
       propertyName,
       getConfiguration,
       // @ts-ignore
-      selectorConfig.type === 'xpath' ? cy.xpath : cy.get,
+      selectorConfig.type === 'xpath' ? cy.__cypress_selectors_xpath : cy.get,
     );
 };
 
@@ -52,27 +54,5 @@ const By = {
 // TODO: check how to get rid of wrap
 // TODO: add support for `retry` via `verifyUpcomingAssertions`
 //developer.mozilla.org/en-US/docs/Web/API/XPathResult
-
-const xpath = (subject: any, selector: string) => {
-  cy.log(`XPath: ${selector}`);
-  // @ts-ignore
-  const doc: Document = cy.state('window').document;
-  // @ts-ignore
-  const iter: XPathResult = doc.evaluate(selector, doc);
-  debugger;
-  if (iter.resultType === XPathResult.NUMBER_TYPE) return cy.wrap(iter.numberValue);
-  else if (iter.resultType === XPathResult.STRING_TYPE) return cy.wrap(iter.stringValue);
-  else if (iter.resultType === XPathResult.BOOLEAN_TYPE) return cy.wrap(iter.booleanValue);
-
-  const nodes = [];
-  let node = undefined;
-
-  while ((node = iter.iterateNext())) nodes.push(node);
-
-  // TODO: return null if array is empty?
-  return cy.wrap(nodes.length === 1 ? nodes[0] : nodes);
-};
-
-Cypress.Commands.add('xpath', { prevSubject: ['optional', 'element', 'document'] }, xpath);
 
 export { By, ByAttribute, ByType, ByClass, ById, BySelector, ByXPath };

@@ -139,9 +139,55 @@ const mapSelectorConfigsToSelectorString = (
   return mappedSelectors.join(descendance);
 };
 
+const mapSelectorConfigsToSelectorsChain = (
+  selectors: Array<Selector>,
+  configuration: Configuration,
+): Array<Selector[]> => {
+  const grouppedSelectors = groupSelectorsByTypeSequentially(selectors);
+  // TODO: map selector groups to chain of command calls
+  const mappedSelectors: Array<string> = selectors.map((selector) =>
+    mapSelectorToString(selector, configuration),
+  );
+
+  const descendance = configuration.searchOnlyFirstLevelDescendants
+    ? FIRST_LEVEL_DESCENDANT
+    : ANY_LEVEL_DESCENDANT;
+
+  // @ts-ignore
+  return mappedSelectors.join(descendance);
+};
+
+type SelectorsByType = {
+  type: 'JQuery' | 'XPath';
+  selectors: Array<Selector>;
+};
+
+const groupSelectorsByTypeSequentially = (selectors: Array<Selector>): Array<SelectorsByType> => {
+  const result = [];
+  let chunk = [];
+
+  for (const selector of selectors) {
+    if (selector.type === 'xpath') {
+      if (chunk.length === 0) result.push([selector]);
+      else {
+        result.push(chunk);
+        result.push([selector]);
+        chunk = [];
+      }
+    } else chunk.push(selector);
+  }
+  if (chunk.length) result.push(chunk);
+
+  return result.map((selectors) => ({
+    type: selectors[0].type === 'xpath' ? 'XPath' : 'JQuery',
+    selectors,
+  }));
+};
+
 const mapSelectorToString = (selector: Selector, configuration: Configuration): string => {
   const stringifiedSelector = mapSelectorByType(selector, configuration);
 
+  // TODO: `eq` can't be for XPath
   const { eq } = selector;
   return typeof eq === 'number' ? `${stringifiedSelector}:eq(${eq})` : stringifiedSelector;
 };
@@ -156,5 +202,5 @@ const mapSelectorByType = ({ type, value, attribute }: Selector, configuration: 
   else throw buildException(`Unsupported selector type: ${type}`, 'INTERNAL ERROR');
 };
 
-export { buildSelector, collectSelectorsChain };
+export { buildSelector, collectSelectorsChain, groupSelectorsByTypeSequentially };
 export type { Host, CommonSelectorConfig, Selector, SelectorType };

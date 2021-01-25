@@ -1,6 +1,9 @@
 import { ByXPath } from '../../src/Selectors';
+
 import { generateLogEntryForXPathResult } from '../../src/XPath';
+import { groupSelectorsByTypeSequentially } from '../../src/SelectorBuilder';
 import { ResetSelectorsConfiguration } from '../../src/ConfigureSelectors';
+import type { Selector } from '../../src/SelectorBuilder';
 
 type Chainable = Cypress.Chainable;
 
@@ -127,6 +130,126 @@ context('XPath utils', () => {
           'Node Type': nodeType,
         });
       });
+    });
+  });
+
+  context('groupSelectorsByTypeSequentially function', () => {
+    it('should return a single array inside array for non XPath selectors', () => {
+      const nonXPathSelectors: Array<Selector> = [
+        { type: 'attribute', value: 'a' },
+        { type: 'class', value: 'btn' },
+        { type: 'id', value: 'app' },
+      ];
+
+      expect(groupSelectorsByTypeSequentially(nonXPathSelectors)).to.deep.equal([
+        { type: 'JQuery', selectors: nonXPathSelectors },
+      ]);
+    });
+
+    it('should return 3 groups if XPath selector is in the middle of an array of selectors', () => {
+      const selectorsWithXPathInTheMiddle: Array<Selector> = [
+        { type: 'attribute', value: 'a' },
+        { type: 'class', value: 'btn' },
+        { type: 'xpath', value: '//h1' },
+        { type: 'id', value: 'app' },
+        { type: 'type', value: 'button' },
+      ];
+
+      expect(groupSelectorsByTypeSequentially(selectorsWithXPathInTheMiddle)).to.deep.equal([
+        {
+          type: 'JQuery',
+          selectors: [
+            { type: 'attribute', value: 'a' },
+            { type: 'class', value: 'btn' },
+          ],
+        },
+        { type: 'XPath', selectors: [{ type: 'xpath', value: '//h1' }] },
+        {
+          type: 'JQuery',
+          selectors: [
+            { type: 'id', value: 'app' },
+            { type: 'type', value: 'button' },
+          ],
+        },
+      ]);
+    });
+
+    it('should return 2 chunks if XPath selector is the first one', () => {
+      const selectorsWithXPathSelectorInTheBeginning: Array<Selector> = [
+        { type: 'xpath', value: '//h1' },
+        { type: 'attribute', value: 'a' },
+        { type: 'class', value: 'btn' },
+      ];
+
+      expect(
+        groupSelectorsByTypeSequentially(selectorsWithXPathSelectorInTheBeginning),
+      ).to.deep.equal([
+        { type: 'XPath', selectors: [{ type: 'xpath', value: '//h1' }] },
+        {
+          type: 'JQuery',
+          selectors: [
+            { type: 'attribute', value: 'a' },
+            { type: 'class', value: 'btn' },
+          ],
+        },
+      ]);
+    });
+
+    it('should return 2 chunks if XPath selector is in the end of list', () => {
+      const selectorsWithXPathSelectorInTheEnd: Array<Selector> = [
+        { type: 'attribute', value: 'a' },
+        { type: 'class', value: 'btn' },
+        { type: 'xpath', value: '//h1' },
+      ];
+      expect(groupSelectorsByTypeSequentially(selectorsWithXPathSelectorInTheEnd)).to.deep.equal([
+        {
+          type: 'JQuery',
+          selectors: [
+            { type: 'attribute', value: 'a' },
+            { type: 'class', value: 'btn' },
+          ],
+        },
+        { type: 'XPath', selectors: [{ type: 'xpath', value: '//h1' }] },
+      ]);
+    });
+
+    it('should return 5 chunks with 2 XPath chunks', () => {
+      const selectors: Array<Selector> = [
+        { type: 'selector', value: 'a' },
+        { type: 'id', value: 'abc' },
+        { type: 'xpath', value: '//h1' },
+        { type: 'attribute', value: 'a' },
+        { type: 'class', value: 'btn' },
+        { type: 'xpath', value: '//div' },
+        { type: 'attribute', value: 'a' },
+        { type: 'id', value: 'def' },
+      ];
+
+      expect(groupSelectorsByTypeSequentially(selectors)).to.deep.equal([
+        {
+          type: 'JQuery',
+          selectors: [
+            { type: 'selector', value: 'a' },
+            { type: 'id', value: 'abc' },
+          ],
+        },
+        { type: 'XPath', selectors: [{ type: 'xpath', value: '//h1' }] },
+        {
+          type: 'JQuery',
+          selectors: [
+            { type: 'attribute', value: 'a' },
+            { type: 'class', value: 'btn' },
+          ],
+        },
+        { type: 'XPath', selectors: [{ type: 'xpath', value: '//div' }] },
+        {
+          type: 'JQuery',
+          selectors: [
+            { type: 'attribute', value: 'a' },
+            { type: 'id', value: 'def' },
+          ],
+        },
+      ]);
     });
   });
 });

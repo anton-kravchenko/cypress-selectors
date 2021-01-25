@@ -1,4 +1,5 @@
 import { ByXPath } from '../../src/Selectors';
+import { generateLogEntryForXPathResult } from '../../src/XPath';
 import { ResetSelectorsConfiguration } from '../../src/ConfigureSelectors';
 
 type Chainable = Cypress.Chainable;
@@ -91,5 +92,41 @@ context('ByXPath selector', () => {
     });
 
     Case7_8.doesNotExist;
+  });
+});
+
+context('XPath utils', () => {
+  context('logger', () => {
+    const selector = `//h1`;
+    ['string result', 123, false].forEach((value) => {
+      it(`should return proper log entry for "${typeof value}" value as XPathResult`, () => {
+        const logEntry = generateLogEntryForXPathResult(value, `//h1`);
+        const consoleProps = logEntry.consoleProps();
+
+        expect(logEntry.name).to.eq('XPath');
+        expect(consoleProps).to.be.deep.equal({
+          'XPath Selector': selector,
+          'XPath Result': value,
+          'Node Type': typeof value,
+        });
+      });
+    });
+
+    [
+      [{ nodeType: 1 }, 'valid', '1 - ELEMENT_NODE'],
+      [{ nodeType: 13 }, 'invalid', '13 - UNKNOWN_NODE_TYPE'],
+    ].forEach(([element, isValidLabel, nodeType]) => {
+      it(`should return proper log entry for \`Element\` as ${isValidLabel} XPathResult`, () => {
+        const logEntry = generateLogEntryForXPathResult(element as Element, `//h1`);
+        const consoleProps = logEntry.consoleProps();
+
+        expect(logEntry.name).to.eq('XPath');
+        expect(consoleProps).to.be.deep.equal({
+          'XPath Selector': selector,
+          'XPath Result': element,
+          'Node Type': nodeType,
+        });
+      });
+    });
   });
 });

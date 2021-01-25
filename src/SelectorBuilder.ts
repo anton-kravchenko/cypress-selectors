@@ -100,7 +100,7 @@ const generateElementGetter = (
 
   // TODO: read timeout from Cypress config or from selector config?
   // @ts-ignore
-  return getBySelector(mappedSelector, { timeout: 3000 });
+  return getBySelector(mappedSelector, { timeout: Cypress.config().defaultCommandTimeout });
 };
 
 const collectSelectorsChain = (

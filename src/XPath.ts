@@ -3,12 +3,17 @@
 import { fromPairs } from 'lodash';
 
 // TODO: get timeout config from Cypress
-const DEFAULT_OPTIONS = { timeout: 5000 };
+
 type XPathQueryResult = boolean | string | number | Element;
 
-const xpath = (subject: any, selector: string, options = { timeout: 5000 }) => {
+const xpath = (
+  subject: any,
+  selector: string,
+  options: Map<string, string | number> /* = { timeout: Cypress.config().defaultCommandTimeout }*/, // TODO: do we need default val?
+) => {
   const resolveResult = () =>
     Cypress.Promise.try(() => evaluateXPath(selector, subject)).then((rawValue) => {
+      debugger;
       // TODO: wrap it here?
 
       const isElement = Array.isArray(rawValue);
@@ -26,6 +31,10 @@ const xpath = (subject: any, selector: string, options = { timeout: 5000 }) => {
     });
 
   return resolveResult().then((result: XPathQueryResult) => {
+    // TODO: wire
+    const { defaultCommandTimeout } = Cypress.config();
+    console.log(defaultCommandTimeout);
+
     Cypress.log(generateLogEntryForXPathResult(result, selector));
     return result;
   });
@@ -46,7 +55,7 @@ const generateLogEntryForXPathResult = (result: XPathQueryResult, selector: stri
         ...BASE,
         'Node Type': NOTE_TYPE_TO_LABEL_MAPPING[nodeType]
           ? `${nodeType} - ${NOTE_TYPE_TO_LABEL_MAPPING[nodeType]}`
-          : `${nodeType} - UNKNOWN NODE TYPE`,
+          : `${nodeType} - UNKNOWN_NODE_TYPE`,
       }),
     };
   }
@@ -101,4 +110,4 @@ const registerInternalXPathCommand = (): void =>
     xpath,
   );
 
-export { registerInternalXPathCommand };
+export { registerInternalXPathCommand, generateLogEntryForXPathResult };

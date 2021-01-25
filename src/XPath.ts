@@ -4,11 +4,13 @@ import { fromPairs } from 'lodash';
 
 // TODO: get timeout config from Cypress
 const DEFAULT_OPTIONS = { timeout: 5000 };
+type XPathQueryResult = boolean | string | number | Element;
 
 const xpath = (subject: any, selector: string, options = { timeout: 5000 }) => {
   const resolveResult = () =>
     Cypress.Promise.try(() => evaluateXPath(selector, subject)).then((rawValue) => {
       // TODO: wrap it here?
+
       const isElement = Array.isArray(rawValue);
 
       const value = Array.isArray(rawValue)
@@ -17,42 +19,37 @@ const xpath = (subject: any, selector: string, options = { timeout: 5000 }) => {
 
       if (isElement) {
         // @ts-ignore
-        value.selector = selector; // TODO: check;
+        value.selector = selector; /* This is to log query in error message in case of failure */
       }
       // @ts-ignore
       return cy.verifyUpcomingAssertions(value, options, { onRetry: resolveResult });
     });
 
-  // TODO: add type for result
-  return resolveResult().then((result: Element) => {
-    // TODO: add logging
-    debugger;
-    const typeOfXPathResult = typeof result;
-    const log = {
-      name: 'XPath',
-      message: (result as any).selector,
-      // consoleProps: () => {
-      //   const isResultOfPrimitiveType = ['string', 'number', 'boolean'].includes(typeof result);
-      //   return isResultOfPrimitiveType
-      //     ? { selector, result: result, type: typeof result }
-      //     : { selector, result: result };
-      // },
-
-      // TODO: add NODE_TYPE https://developer.mozilla.org/ru/docs/Web/API/Node/nodeType
-      consoleProps: () => ({
-        'XPath Selector': selector,
-        'XPath Result': result,
-        'Node Type': ['string', 'number', 'boolean'].includes(typeOfXPathResult)
-          ? typeOfXPathResult
-          : NOTE_TYPE_TO_LABEL_MAPPING[result.nodeType]
-          ? `${result.nodeType} - ${NOTE_TYPE_TO_LABEL_MAPPING[result.nodeType]}`
-          : `${result.nodeType} - UNKNOWN NODE TYPE`,
-      }),
-    };
-
-    Cypress.log(log);
+  return resolveResult().then((result: XPathQueryResult) => {
+    Cypress.log(generateLogEntryForXPathResult(result, selector));
     return result;
   });
+};
+
+const generateLogEntryForXPathResult = (result: XPathQueryResult, selector: string) => {
+  const BASE = { 'XPath Selector': selector, 'XPath Result': result };
+  if (typeof result !== 'object')
+    return {
+      name: 'XPath',
+      consoleProps: () => ({ ...BASE, 'Node Type': typeof result }),
+    };
+  else {
+    const { nodeType } = result;
+    return {
+      name: 'XPath',
+      consoleProps: () => ({
+        ...BASE,
+        'Node Type': NOTE_TYPE_TO_LABEL_MAPPING[nodeType]
+          ? `${nodeType} - ${NOTE_TYPE_TO_LABEL_MAPPING[nodeType]}`
+          : `${nodeType} - UNKNOWN NODE TYPE`,
+      }),
+    };
+  }
 };
 
 const evaluateXPath = (xpath: string, subject = getDocument()) => {
@@ -68,6 +65,7 @@ const evaluateXPath = (xpath: string, subject = getDocument()) => {
   // TODO: check case with selector that returns an empty array
 };
 
+// TODO: mix with XPathResults
 const collectNodes = (nodeIterator: XPathResult): Array<Node> | Node => {
   const nodes = [];
   let node = undefined;
@@ -78,6 +76,7 @@ const collectNodes = (nodeIterator: XPathResult): Array<Node> | Node => {
 // @ts-ignore
 const getDocument = (): Document => cy.state('window').document;
 
+// TODO: add NODE_TYPE https://developer.mozilla.org/ru/docs/Web/API/Node/nodeType
 const NOTE_TYPE_TO_LABEL_MAPPING = fromPairs([
   [1, 'ELEMENT_NODE'],
   [2, 'ATTRIBUTE_NODE'],

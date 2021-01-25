@@ -1,4 +1,4 @@
-import { By, ByAttribute, ByClass, ById, BySelector, ByType, ByXPath } from '../../src/Selectors';
+import { By, ByAttribute, ByClass, ById, BySelector, ByType } from '../../src/Selectors';
 import { ResetSelectorsConfiguration, ConfigureSelectors } from '../../src/ConfigureSelectors';
 
 type Chainable = Cypress.Chainable;

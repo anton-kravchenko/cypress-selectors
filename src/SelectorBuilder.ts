@@ -98,7 +98,9 @@ const generateElementGetter = (
   const chainOfSelectors = collectSelectorsChain(storage[selectorsByAliasKey], selector);
   const mappedSelector = mapSelectorConfigsToSelectorString(chainOfSelectors, configuration);
 
-  return getBySelector(mappedSelector);
+  // TODO: read timeout from Cypress config or from selector config?
+  // @ts-ignore
+  return getBySelector(mappedSelector, { timeout: 3000 });
 };
 
 const collectSelectorsChain = (

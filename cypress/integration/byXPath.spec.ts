@@ -77,4 +77,19 @@ context('ByXPath selector', () => {
     Case7_7.input.click().type('input value');
     Case7_7.input.should('have.value', 'input value');
   });
+
+  class Case7_8 {
+    @ByXPath(`//h6`) static doesNotExist: Chainable;
+  }
+  it('should fail if fails to find element', (done) => {
+    cy.visit('/TestPage.html#7.7');
+    const expectedErrorMessage = `Timed out retrying: Expected to find element: \`//h6\`, but never found it.`;
+
+    cy.on('fail', (e) => {
+      if (e.message === expectedErrorMessage) done();
+      else done(e);
+    });
+
+    Case7_8.doesNotExist;
+  });
 });

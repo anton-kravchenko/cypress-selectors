@@ -40,7 +40,15 @@ const xpath = (
   });
 };
 
-const generateLogEntryForXPathResult = (result: XPathQueryResult, selector: string) => {
+type LogEntry = {
+  name: string;
+  consoleProps: () => {
+    'Node Type': string;
+    'XPath Selector': string;
+    'XPath Result': XPathQueryResult;
+  };
+};
+const generateLogEntryForXPathResult = (result: XPathQueryResult, selector: string): LogEntry => {
   const BASE = { 'XPath Selector': selector, 'XPath Result': result };
   if (typeof result !== 'object')
     return {

@@ -456,6 +456,19 @@
           <div cypress-id="div"/>
         `,
       },
+      {
+        id: '8.2',
+        type: 'ByXPath',
+        case: '3 divs and 1 div with children',
+        html: `
+          <div cypress-id="div"/>
+          <div cypress-id="div"/>
+          <div cypress-id="div"/>
+          <div cypress-id="div">
+            <p>children</p>
+          </div>
+        `,
+      },
     ];
   </script>
   <style>

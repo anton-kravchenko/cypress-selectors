@@ -11,9 +11,15 @@ const xpath = (
   selector: string,
   options: Map<string, string | number> /* = { timeout: Cypress.config().defaultCommandTimeout }*/, // TODO: do we need default val?
 ) => {
+  // TODO: use Cypress.dom.isElement checks in other places
+  if (Cypress.dom.isElement(subject) && subject.length > 1) {
+    throw Error(
+      `Failed to find an element by XPath("${selector}") - the parent is not an element but a collection of ${subject.length} elements.`,
+    );
+  }
+
   const resolveResult = () =>
     Cypress.Promise.try(() => evaluateXPath(selector, subject)).then((rawValue) => {
-      debugger;
       // TODO: wrap it here?
 
       const isElement = Array.isArray(rawValue);

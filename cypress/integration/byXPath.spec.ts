@@ -133,6 +133,22 @@ context('ByXPath selector', () => {
     Case8_1.globalText.should('have.text', 'Global p el');
     Case8_1.doesNotExist.should('not.exist');
   });
+
+  class Case8_2 {
+    @ByXPath(`//div[@cypress-id='div']`, { alias: 'div' }) static divs: Chainable;
+    @ByXPath(`./p`, { parentAlias: 'div' }) static children: Chainable;
+  }
+  it('should throw if using N > ', (done) => {
+    cy.visit('/TestPage.html#8.2');
+    const expectedErrorMessage = `Failed to find an element by XPath("./p") - the parent is not an element but a collection of 4 elements.`;
+
+    cy.on('fail', (e) => {
+      if (e.message === expectedErrorMessage) done();
+      else done(e);
+    });
+
+    Case8_2.children;
+  });
 });
 
 context('XPath utils', () => {

@@ -138,7 +138,7 @@ context('ByXPath selector', () => {
     @ByXPath(`//div[@cypress-id='div']`, { alias: 'div' }) static divs: Chainable;
     @ByXPath(`./p`, { parentAlias: 'div' }) static children: Chainable;
   }
-  it('should throw if using N > ', (done) => {
+  it('should throw error if parent is not a single element', (done) => {
     cy.visit('/TestPage.html#8.2');
     const expectedErrorMessage = `Failed to find an element by XPath("./p") - the parent is not an element but a collection of 4 elements.`;
 

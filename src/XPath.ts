@@ -70,7 +70,21 @@ const generateLogEntryForXPathResult = (result: XPathQueryResult, selector: stri
 };
 
 const evaluateXPath = (xpath: string, subject = getDocument()) => {
-  const result: XPathResult = subject.evaluate(xpath, subject);
+  // TODO: try to stick to that one
+  // const result: XPathResult = subject.evaluate(xpath, subject);
+  let contextNode;
+  // @ts-ignore
+  const withinSubject = cy.state('withinSubject');
+
+  if (Cypress.dom.isElement(subject))
+    // @ts-ignore
+    contextNode = subject[0];
+  else if (Cypress.dom.isDocument(subject)) contextNode = subject;
+  else if (withinSubject) contextNode = withinSubject[0];
+  // @ts-ignore
+  else contextNode = cy.state('window').document;
+
+  const result = (contextNode.ownerDocument || contextNode).evaluate(xpath, contextNode);
 
   if (result.resultType === XPathResult.NUMBER_TYPE) return result.numberValue;
   else if (result.resultType === XPathResult.STRING_TYPE) return result.stringValue;

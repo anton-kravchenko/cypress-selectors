@@ -413,6 +413,49 @@
           <input />
         `,
       },
+      {
+        id: '7.8',
+        type: 'ByXPath',
+        case: 'empty',
+        html: ``,
+      },
+      {
+        id: '7.9',
+        type: 'ByXPath',
+        case: '2 div elements with 1 p inside',
+        html: `
+          <div cypress-id="parent-a">
+            <p>Inside parent A</p>
+          </div>
+
+          <div cypress-id="parent-b">
+            <p>Inside parent B</p>
+          </div>
+        `,
+      },
+      {
+        id: '8.0',
+        type: 'ByXPath',
+        case: '2 div elements with 1 p inside',
+        html: `
+          <div cypress-id="parent-a">
+            <p>Inside parent A</p>
+          </div>
+
+          <div cypress-id="parent-b">
+            <p>Inside parent B</p>
+          </div>
+        `,
+      },
+      {
+        id: '8.1',
+        type: 'ByXPath',
+        case: '1 div and p elements',
+        html: `
+          <p cypress-id='global-p'>Global p el</p>
+          <div cypress-id="div"/>
+        `,
+      },
     ];
   </script>
   <style>

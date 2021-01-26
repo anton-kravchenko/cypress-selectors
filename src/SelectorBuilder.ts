@@ -97,10 +97,11 @@ const generateElementGetter = (
 
   const chainOfSelectors = collectSelectorsChain(storage[selectorsByAliasKey], selector);
   const mappedSelector = mapSelectorConfigsToSelectorString(chainOfSelectors, configuration);
-
+  const chainer = mapSelectorConfigsToSelectorsChain(chainOfSelectors, configuration);
+  return chainer;
   // TODO: read timeout from Cypress config or from selector config?
   // @ts-ignore
-  return getBySelector(mappedSelector, { timeout: Cypress.config().defaultCommandTimeout });
+  // return getBySelector(mappedSelector, { timeout: Cypress.config().defaultCommandTimeout });
 };
 
 const collectSelectorsChain = (
@@ -139,28 +140,40 @@ const mapSelectorConfigsToSelectorString = (
   return mappedSelectors.join(descendance);
 };
 
+// TODO: should we wrap with `cy.wrap` of with JQuery `cy.$`?
 const mapSelectorConfigsToSelectorsChain = (
   selectors: Array<Selector>,
   configuration: Configuration,
-): Array<Selector[]> => {
-  const grouppedSelectors = groupSelectorsByTypeSequentially(selectors);
-  // TODO: map selector groups to chain of command calls
-  const mappedSelectors: Array<string> = selectors.map((selector) =>
-    mapSelectorToString(selector, configuration),
+): Cypress.Chainable => {
+  const groupedSelectors = groupSelectorsByTypeSequentially(selectors);
+  const mappedSelectors = groupedSelectors.map((group) =>
+    group.type === 'XPath'
+      ? { type: 'XPath' as const, selector: group.selector.value }
+      : {
+          type: 'JQuery' as const,
+          selector: mapSelectorConfigsToSelectorString(group.selectors, configuration),
+        },
   );
 
-  const descendance = configuration.searchOnlyFirstLevelDescendants
-    ? FIRST_LEVEL_DESCENDANT
-    : ANY_LEVEL_DESCENDANT;
+  // TODO: should throw is subject has several elements
+  // TODO: map selector groups to chain of command calls
+  // FIXME: this needs both getters: cy.get and cy.__xpath
+  // TODO: config leeks to this func - it should not
+  return mappedSelectors.reduce((chain, selector) => {
+    if (selector.type === 'XPath')
+      chain = (chain as any).__cypress_selectors_xpath(selector.selector, {
+        timeout: Cypress.config().defaultCommandTimeout,
+      });
+    else chain = chain.get(selector.selector);
 
-  // @ts-ignore
-  return mappedSelectors.join(descendance);
+    return chain;
+  }, cy as Cypress.Chainable);
 };
 
-type SelectorsByType = {
-  type: 'JQuery' | 'XPath';
-  selectors: Array<Selector>;
-};
+type SelectorsByType =
+  | { type: 'JQuery'; selectors: Array<Selector> }
+  | { type: 'XPath'; selector: Selector };
+// TODO: write test for empty array case []
 
 const groupSelectorsByTypeSequentially = (selectors: Array<Selector>): Array<SelectorsByType> => {
   const result = [];
@@ -170,18 +183,18 @@ const groupSelectorsByTypeSequentially = (selectors: Array<Selector>): Array<Sel
     if (selector.type === 'xpath') {
       if (chunk.length === 0) result.push([selector]);
       else {
-        result.push(chunk);
-        result.push([selector]);
+        result.push(chunk, [selector]);
         chunk = [];
       }
     } else chunk.push(selector);
   }
   if (chunk.length) result.push(chunk);
 
-  return result.map((selectors) => ({
-    type: selectors[0].type === 'xpath' ? 'XPath' : 'JQuery',
-    selectors,
-  }));
+  return result.map((selectors) =>
+    selectors[0].type === 'xpath'
+      ? { type: 'XPath', selector: selectors[0] }
+      : { type: 'JQuery', selectors },
+  );
 };
 
 const mapSelectorToString = (selector: Selector, configuration: Configuration): string => {

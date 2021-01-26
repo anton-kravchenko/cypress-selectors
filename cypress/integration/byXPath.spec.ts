@@ -1,4 +1,4 @@
-import { ByXPath } from '../../src/Selectors';
+import { ByAttribute, ByXPath } from '../../src/Selectors';
 
 import { generateLogEntryForXPathResult } from '../../src/XPath';
 import { groupSelectorsByTypeSequentially } from '../../src/SelectorBuilder';
@@ -96,6 +96,43 @@ context('ByXPath selector', () => {
 
     Case7_8.doesNotExist;
   });
+
+  class Case7_9 {
+    @ByXPath(`//div[@cypress-id='parent-a']`, { alias: 'parent-a' }) static parentA: Chainable;
+    @ByXPath(`./p`, { parentAlias: 'parent-a' }) static textA: Chainable;
+
+    @ByXPath(`//div[@cypress-id='parent-b']`, { alias: 'parent-b' }) static parentB: Chainable;
+    @ByXPath(`./p`, { parentAlias: 'parent-b' }) static textB: Chainable;
+  }
+  it('should locate elements by relative XPath inside elements found by absolute XPath', () => {
+    cy.visit('/TestPage.html#7.9');
+    Case7_9.textA.should('have.text', 'Inside parent A');
+    Case7_9.textB.should('have.text', 'Inside parent B');
+  });
+
+  class Case8_0 {
+    @ByAttribute('parent-a', { alias: 'parent-a' }) static parentA: Chainable;
+    @ByXPath(`.//p`, { parentAlias: 'parent-a' }) static textA: Chainable;
+
+    @ByAttribute('parent-b', { alias: 'parent-b' }) static parentB: Chainable;
+    @ByXPath(`.//p`, { parentAlias: 'parent-b' }) static textB: Chainable;
+  }
+  it('should locate elements by XPath inside elements found by JQuery selector', () => {
+    cy.visit('/TestPage.html#8.0');
+    Case8_0.textA.should('have.text', 'Inside parent A');
+    Case8_0.textB.should('have.text', 'Inside parent B');
+  });
+
+  class Case8_1 {
+    @ByXPath(`//div[@cypress-id='div']`, { alias: 'div' }) static div: Chainable;
+    @ByXPath(`//p[@cypress-id='global-p']`, { parentAlias: 'div' }) static globalText: Chainable;
+    @ByXPath(`./p`) static doesNotExist: Chainable;
+  }
+  it('should ignore parent when using global XPath selector', () => {
+    cy.visit('/TestPage.html#8.1');
+    Case8_1.globalText.should('have.text', 'Global p el');
+    Case8_1.doesNotExist.should('not.exist');
+  });
 });
 
 context('XPath utils', () => {
@@ -163,7 +200,7 @@ context('XPath utils', () => {
             { type: 'class', value: 'btn' },
           ],
         },
-        { type: 'XPath', selectors: [{ type: 'xpath', value: '//h1' }] },
+        { type: 'XPath', selector: { type: 'xpath', value: '//h1' } },
         {
           type: 'JQuery',
           selectors: [
@@ -184,7 +221,7 @@ context('XPath utils', () => {
       expect(
         groupSelectorsByTypeSequentially(selectorsWithXPathSelectorInTheBeginning),
       ).to.deep.equal([
-        { type: 'XPath', selectors: [{ type: 'xpath', value: '//h1' }] },
+        { type: 'XPath', selector: { type: 'xpath', value: '//h1' } },
         {
           type: 'JQuery',
           selectors: [
@@ -209,7 +246,7 @@ context('XPath utils', () => {
             { type: 'class', value: 'btn' },
           ],
         },
-        { type: 'XPath', selectors: [{ type: 'xpath', value: '//h1' }] },
+        { type: 'XPath', selector: { type: 'xpath', value: '//h1' } },
       ]);
     });
 
@@ -233,7 +270,7 @@ context('XPath utils', () => {
             { type: 'id', value: 'abc' },
           ],
         },
-        { type: 'XPath', selectors: [{ type: 'xpath', value: '//h1' }] },
+        { type: 'XPath', selector: { type: 'xpath', value: '//h1' } },
         {
           type: 'JQuery',
           selectors: [
@@ -241,7 +278,7 @@ context('XPath utils', () => {
             { type: 'class', value: 'btn' },
           ],
         },
-        { type: 'XPath', selectors: [{ type: 'xpath', value: '//div' }] },
+        { type: 'XPath', selector: { type: 'xpath', value: '//div' } },
         {
           type: 'JQuery',
           selectors: [

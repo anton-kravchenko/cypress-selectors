@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+import { max } from 'lodash';
 import type { Configuration } from './ConfigureSelectors';
 import { buildException, isConfigurableProperty, logSelector } from './utils';
 const selectorsByAliasKey: unique symbol = Symbol('SELECTORS_BY_ALIAS_STORAGE');
@@ -8,6 +11,7 @@ type CommonSelectorConfig = {
   parentAlias?: string;
   attribute?: string;
   eq?: number;
+  timeout?: number;
 };
 type Selector = CommonSelectorConfig &
   (
@@ -19,21 +23,18 @@ type Selector = CommonSelectorConfig &
     | { type: 'xpath' }
   );
 type SelectorType = Selector['type'];
-type Host = { [key: string]: any }; // eslint-disable-line @typescript-eslint/no-explicit-any
+type Host = { [key: string]: any };
 type SelectorsStorage = Map<string, Selector>;
 type HostWithSelectors = Host & { [selectorsByAliasKey]: SelectorsStorage };
-type GetBySelector = (selector: string) => Cypress.Chainable;
 
 const buildSelector = (
   selector: Selector,
   host: Host,
   propertyName: string,
   getConfig: () => Configuration,
-  getBySelector: GetBySelector,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): any => {
   const storage = registerStorageAndSelector(selector, host);
-  const getter = generateElementGetter(storage, selector, getConfig, getBySelector);
+  const getter = generateElementGetter(storage, selector, getConfig);
 
   if (isConfigurableProperty(host, propertyName)) {
     delete host[propertyName];
@@ -90,18 +91,12 @@ const generateElementGetter = (
   storage: HostWithSelectors,
   selector: Selector,
   getConfig: () => Configuration,
-  getBySelector: GetBySelector,
 ) => () => {
   const configuration = getConfig();
   if (configuration.isLoggingEnabled) logSelector(selector);
 
   const chainOfSelectors = collectSelectorsChain(storage[selectorsByAliasKey], selector);
-  const mappedSelector = mapSelectorConfigsToSelectorString(chainOfSelectors, configuration);
-  const chainer = mapSelectorConfigsToSelectorsChain(chainOfSelectors, configuration);
-  return chainer;
-  // TODO: read timeout from Cypress config or from selector config?
-  // @ts-ignore
-  // return getBySelector(mappedSelector, { timeout: Cypress.config().defaultCommandTimeout });
+  return mapSelectorConfigsToSelectorsChain(chainOfSelectors, configuration);
 };
 
 const collectSelectorsChain = (
@@ -140,40 +135,43 @@ const mapSelectorConfigsToSelectorString = (
   return mappedSelectors.join(descendance);
 };
 
-// TODO: should we wrap with `cy.wrap` of with JQuery `cy.$`?
 const mapSelectorConfigsToSelectorsChain = (
   selectors: Array<Selector>,
   configuration: Configuration,
 ): Cypress.Chainable => {
-  const groupedSelectors = groupSelectorsByTypeSequentially(selectors);
-  const mappedSelectors = groupedSelectors.map((group) =>
-    group.type === 'XPath'
-      ? { type: 'XPath' as const, selector: group.selector.value }
-      : {
-          type: 'JQuery' as const,
-          selector: mapSelectorConfigsToSelectorString(group.selectors, configuration),
-        },
+  const mappedSelectors = mapSelectorsByType(
+    groupSelectorsByTypeSequentially(selectors),
+    configuration,
   );
 
-  // TODO: should throw is subject has several elements
-  // TODO: map selector groups to chain of command calls
-  // FIXME: this needs both getters: cy.get and cy.__xpath
-  // TODO: config leeks to this func - it should not
-  return mappedSelectors.reduce((chain, selector) => {
-    if (selector.type === 'XPath')
-      chain = (chain as any).__cypress_selectors_xpath(selector.selector, {
-        timeout: Cypress.config().defaultCommandTimeout,
-      });
-    else chain = chain.get(selector.selector);
+  return mappedSelectors.reduce((chain, { type, selector, timeout }) => {
+    if (type === 'XPath') chain = (chain as any).__cypress_selectors_xpath(selector, { timeout });
+    else chain = chain.get(selector);
 
     return chain;
   }, cy as Cypress.Chainable);
 };
 
+const mapSelectorsByType = (
+  groupedByType: Array<SelectorsByType>,
+  configuration: Configuration,
+): Array<{ type: 'XPath' | 'JQuery'; selector: string; timeout?: number }> =>
+  groupedByType.map((group) =>
+    group.type === 'XPath'
+      ? { type: 'XPath' as const, selector: group.selector.value, timeout: group.selector.timeout }
+      : {
+          type: 'JQuery' as const,
+          selector: mapSelectorConfigsToSelectorString(group.selectors, configuration),
+          timeout: getMaxTimeout(group.selectors),
+        },
+  );
+
+const getMaxTimeout = (selectors: Array<Selector>): number =>
+  max(selectors.map(({ timeout }) => timeout ?? Cypress.config().defaultCommandTimeout)) as number;
+
 type SelectorsByType =
   | { type: 'JQuery'; selectors: Array<Selector> }
   | { type: 'XPath'; selector: Selector };
-// TODO: write test for empty array case []
 
 const groupSelectorsByTypeSequentially = (selectors: Array<Selector>): Array<SelectorsByType> => {
   const result = [];
@@ -200,7 +198,6 @@ const groupSelectorsByTypeSequentially = (selectors: Array<Selector>): Array<Sel
 const mapSelectorToString = (selector: Selector, configuration: Configuration): string => {
   const stringifiedSelector = mapSelectorByType(selector, configuration);
 
-  // TODO: `eq` can't be for XPath
   const { eq } = selector;
   return typeof eq === 'number' ? `${stringifiedSelector}:eq(${eq})` : stringifiedSelector;
 };
@@ -217,3 +214,7 @@ const mapSelectorByType = ({ type, value, attribute }: Selector, configuration: 
 
 export { buildSelector, collectSelectorsChain, groupSelectorsByTypeSequentially };
 export type { Host, CommonSelectorConfig, Selector, SelectorType };
+
+// TODO: extend the doc (mention MAX timeout for chain)
+// TODO: add test for custom `timeout`
+// TODO: `eq` can't be for XPath - add that

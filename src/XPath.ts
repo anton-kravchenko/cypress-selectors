@@ -2,16 +2,9 @@
 
 import { fromPairs } from 'lodash';
 
-// TODO: get timeout config from Cypress
-
 type XPathQueryResult = boolean | string | number | Element;
 
-const xpath = (
-  subject: any,
-  selector: string,
-  options: Map<string, string | number> /* = { timeout: Cypress.config().defaultCommandTimeout }*/, // TODO: do we need default val?
-) => {
-  // TODO: use Cypress.dom.isElement checks in other places
+const xpath = (subject: any, selector: string, options: Map<string, string | number>) => {
   if (Cypress.dom.isElement(subject) && subject.length > 1) {
     throw Error(
       `Failed to find an element by XPath("${selector}") - the parent is not an element but a collection of ${subject.length} elements.`,
@@ -20,27 +13,20 @@ const xpath = (
 
   const resolveResult = () =>
     Cypress.Promise.try(() => evaluateXPath(selector, subject)).then((rawValue) => {
-      // TODO: wrap it here?
-
       const isElement = Array.isArray(rawValue);
 
       const value = Array.isArray(rawValue)
         ? Cypress.$(rawValue.values.length === 1 ? rawValue[0] : rawValue)
         : rawValue;
 
-      if (isElement) {
-        // @ts-ignore
+      if (isElement)
         value.selector = selector; /* This is to log query in error message in case of failure */
-      }
+
       // @ts-ignore
       return cy.verifyUpcomingAssertions(value, options, { onRetry: resolveResult });
     });
 
   return resolveResult().then((result: XPathQueryResult) => {
-    // TODO: wire
-    const { defaultCommandTimeout } = Cypress.config();
-    console.log(defaultCommandTimeout);
-
     Cypress.log(generateLogEntryForXPathResult(result, selector));
     return result;
   });
@@ -76,19 +62,14 @@ const generateLogEntryForXPathResult = (result: XPathQueryResult, selector: stri
 };
 
 const evaluateXPath = (xpath: string, subject = getDocument()) => {
-  // TODO: try to stick to that one
-  // const result: XPathResult = subject.evaluate(xpath, subject);
   let contextNode;
   // @ts-ignore
-  const withinSubject = cy.state('withinSubject');
+  const [withinSubject, { document }] = [cy.state('withinSubject'), cy.state('window')];
 
-  if (Cypress.dom.isElement(subject))
-    // @ts-ignore
-    contextNode = subject[0];
+  if (Cypress.dom.isElement(subject)) contextNode = (subject as any)[0];
   else if (Cypress.dom.isDocument(subject)) contextNode = subject;
   else if (withinSubject) contextNode = withinSubject[0];
-  // @ts-ignore
-  else contextNode = cy.state('window').document;
+  else contextNode = document;
 
   const result = (contextNode.ownerDocument || contextNode).evaluate(xpath, contextNode);
 
@@ -97,12 +78,8 @@ const evaluateXPath = (xpath: string, subject = getDocument()) => {
   else if (result.resultType === XPathResult.BOOLEAN_TYPE) return result.booleanValue;
 
   return collectNodes(result);
-
-  // TODO: return null if array is empty?
-  // TODO: check case with selector that returns an empty array
 };
 
-// TODO: mix with XPathResults
 const collectNodes = (nodeIterator: XPathResult): Array<Node> | Node => {
   const nodes = [];
   let node = undefined;
@@ -113,7 +90,7 @@ const collectNodes = (nodeIterator: XPathResult): Array<Node> | Node => {
 // @ts-ignore
 const getDocument = (): Document => cy.state('window').document;
 
-// TODO: add NODE_TYPE https://developer.mozilla.org/ru/docs/Web/API/Node/nodeType
+/* Source of types: https://developer.mozilla.org/ru/docs/Web/API/Node/nodeType */
 const NOTE_TYPE_TO_LABEL_MAPPING = fromPairs([
   [1, 'ELEMENT_NODE'],
   [2, 'ATTRIBUTE_NODE'],
@@ -129,8 +106,6 @@ const NOTE_TYPE_TO_LABEL_MAPPING = fromPairs([
   [12, 'NOTATION_NODE'],
 ]);
 
-// FIXME: test doesn't fail if element is not found within `timeout`
-// TODO: add test for timeout error
 const registerInternalXPathCommand = (): void =>
   Cypress.Commands.add(
     '__cypress_selectors_xpath',

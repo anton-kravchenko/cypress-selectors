@@ -13,25 +13,24 @@ import type { Host, SelectorType } from './SelectorBuilder';
 
 const BuildSelectorBy = (type: SelectorType) => (
   value: string,
-  config: { alias?: string; parentAlias?: string; attribute?: string; eq?: number } = {},
+  config: {
+    alias?: string;
+    parentAlias?: string;
+    attribute?: string;
+    eq?: number;
+    timeout?: number;
+  } = {},
 ) => {
   throwIfNotRunningInCypressEnv();
 
   const selectorConfig = {
-    ...pick(config, ['alias', 'parentAlias', 'attribute', 'eq']),
+    ...pick(config, ['alias', 'parentAlias', 'attribute', 'eq', 'timeout']),
     value,
     type,
   };
 
   return (host: Host, propertyName: string) =>
-    buildSelector(
-      selectorConfig,
-      host,
-      propertyName,
-      getConfiguration,
-      // @ts-ignore
-      selectorConfig.type === 'xpath' ? cy.__cypress_selectors_xpath : cy.get,
-    );
+    buildSelector(selectorConfig, host, propertyName, getConfiguration);
 };
 
 const ByAttribute = BuildSelectorBy('attribute');
@@ -49,10 +48,5 @@ const By = {
   Selector: BySelector,
   XPath: ByXPath,
 };
-
-// TODO: add test with delay
-// TODO: check how to get rid of wrap
-// TODO: add support for `retry` via `verifyUpcomingAssertions`
-//developer.mozilla.org/en-US/docs/Web/API/XPathResult
 
 export { By, ByAttribute, ByType, ByClass, ById, BySelector, ByXPath };

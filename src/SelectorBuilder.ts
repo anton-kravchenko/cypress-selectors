@@ -145,8 +145,9 @@ const mapSelectorConfigsToSelectorsChain = (
   );
 
   return mappedSelectors.reduce((chain, { type, selector, timeout }) => {
-    if (type === 'XPath') chain = (chain as any).__cypress_selectors_xpath(selector, { timeout });
-    else chain = chain.get(selector);
+    const options = { timeout };
+    if (type === 'XPath') chain = (chain as any).__cypress_selectors_xpath(selector, options);
+    else chain = chain.get(selector, options);
 
     return chain;
   }, cy as Cypress.Chainable);
@@ -214,7 +215,3 @@ const mapSelectorByType = ({ type, value, attribute }: Selector, configuration: 
 
 export { buildSelector, collectSelectorsChain, groupSelectorsByTypeSequentially };
 export type { Host, CommonSelectorConfig, Selector, SelectorType };
-
-// TODO: extend the doc (mention MAX timeout for chain)
-// TODO: add test for custom `timeout`
-// TODO: `eq` can't be for XPath - add that

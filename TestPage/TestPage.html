@@ -469,6 +469,39 @@
           </div>
         `,
       },
+      {
+        id: '8.3',
+        type: 'ByXPath',
+        case: '1 div',
+        html: `
+          <div cypress-id="div">renders in 2 seconds</div>
+        `,
+      },
+      {
+        id: '8.4',
+        type: 'ByXPath',
+        case: '1 div',
+        html: `
+          <div cypress-id="div">renders in 2 seconds</div>
+        `,
+      },
+      {
+        id: '8.5',
+        type: 'ByXPath',
+        case: '1 div',
+        html: `<div cypress-id="div"/>`,
+      },
+      {
+        id: '8.6',
+        type: 'ByXPath',
+        case: 'p inside span inside div',
+        html: `
+          <div cypress-id="div">
+            <span>
+              <p>p inside span inside div</p>
+            </span>
+          </div>`,
+      },
     ];
   </script>
   <style>

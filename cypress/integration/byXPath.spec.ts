@@ -1,4 +1,4 @@
-import { ByAttribute, ByXPath } from '../../src/Selectors';
+import { ByAttribute, ByType, ByXPath } from '../../src/Selectors';
 
 import { generateLogEntryForXPathResult } from '../../src/XPath';
 import { groupSelectorsByTypeSequentially } from '../../src/SelectorBuilder';
@@ -77,7 +77,7 @@ context('ByXPath selector', () => {
     @ByXPath(`//input`) static input: Chainable;
   }
   it('should find input and enter text into it', () => {
-    cy.visit('/TestPage.html#7.7?timeout=1000');
+    cy.visit('/TestPage.html#7.7?timeout=500');
     Case7_7.input.click().type('input value');
     Case7_7.input.should('have.value', 'input value');
   });
@@ -148,6 +148,49 @@ context('ByXPath selector', () => {
     });
 
     Case8_2.children;
+  });
+
+  class Case8_3 {
+    @ByXPath(`//div[@cypress-id='div']`, { timeout: 3000 }) static div: Chainable;
+  }
+  it('should use custom `timeout` per XPath selector', () => {
+    cy.visit('/TestPage.html#8.3?timeout=2000');
+    Case8_3.div.should('have.text', 'renders in 2 seconds');
+  });
+
+  class Case8_4 {
+    @ByAttribute('div', { timeout: 3000 }) static div: Chainable;
+  }
+  it('should use custom `timeout` per non XPath selector', () => {
+    cy.visit('/TestPage.html#8.4?timeout=2000');
+    Case8_4.div.should('have.text', 'renders in 2 seconds');
+  });
+
+  class Case8_5 {
+    @ByXPath(`//div[@cypress-id='div']`, { timeout: 1000 }) static div: Chainable;
+  }
+  it(`should fail if doesn't find element withing given timeout`, (done) => {
+    cy.visit('/TestPage.html#8.5?timeout=2000');
+    const expectedErrorMessage =
+      "Timed out retrying: Expected to find element: `//div[@cypress-id='div']`, but never found it.";
+
+    cy.on('fail', (e) => {
+      if (e.message === expectedErrorMessage) done();
+      else done(e);
+    });
+
+    Case8_5.div;
+  });
+
+  class Case8_6 {
+    @ByAttribute('div', { alias: 'div', timeout: 10 }) static div: Cypress.Chainable;
+    @ByType('span', { parentAlias: 'div', alias: 'span', timeout: 20 })
+    static span: Cypress.Chainable;
+    @ByType('p', { parentAlias: 'span', timeout: 2000 }) static p: Cypress.Chainable;
+  }
+  it('should use the biggest timeout in a chain of selectors', () => {
+    cy.visit('/TestPage.html#8.6?timeout=1500');
+    Case8_6.p.should('have.text', 'p inside span inside div');
   });
 });
 

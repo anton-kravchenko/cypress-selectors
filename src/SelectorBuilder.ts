@@ -26,6 +26,9 @@ type SelectorType = Selector['type'];
 type Host = { [key: string]: any };
 type SelectorsStorage = Map<string, Selector>;
 type HostWithSelectors = Host & { [selectorsByAliasKey]: SelectorsStorage };
+type SelectorsByType =
+  | { type: 'JQuery'; selectors: Array<Selector> }
+  | { type: 'XPath'; selector: Selector };
 
 const buildSelector = (
   selector: Selector,
@@ -169,10 +172,6 @@ const mapSelectorsByType = (
 
 const getMaxTimeout = (selectors: Array<Selector>): number =>
   max(selectors.map(({ timeout }) => timeout ?? Cypress.config().defaultCommandTimeout)) as number;
-
-type SelectorsByType =
-  | { type: 'JQuery'; selectors: Array<Selector> }
-  | { type: 'XPath'; selector: Selector };
 
 const groupSelectorsByTypeSequentially = (selectors: Array<Selector>): Array<SelectorsByType> => {
   const result = [];

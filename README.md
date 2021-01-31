@@ -10,6 +10,7 @@ It helps to organize and re-use selectors and turns this:
 const getSearchInput = () => cy.get('input');
 const getSubmitSearchButton = () => cy.get('[cypress-id]=submit-search');
 const getSearchResults = () => cy.get('.search-result');
+const getMain = () => cy.xpath(`//div[@cypress-id='main']`)
 ```
 
 into that:
@@ -19,6 +20,7 @@ class HomePage {
   @ByType('input') searchInput: Cypress.Chainable;
   @ByAttribute('submit-search') submitSearch: Cypress.Chainable;
   @ByClass('search-result') searchResults: Cypress.Chainable;
+  @ByXPath(`//div[@cypress-id='main']`) main: Cypress.Chainable;
 }
 ```
 

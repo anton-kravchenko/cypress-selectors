@@ -1,8 +1,8 @@
 import { ByAttribute, ByType, ByXPath } from '../../src/Selectors';
-
 import { generateLogEntryForXPathResult } from '../../src/XPath';
 import { groupSelectorsByTypeSequentially } from '../../src/SelectorBuilder';
 import { ResetSelectorsConfiguration } from '../../src/ConfigureSelectors';
+
 import type { Selector } from '../../src/SelectorBuilder';
 
 type Chainable = Cypress.Chainable;

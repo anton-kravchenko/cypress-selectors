@@ -1,4 +1,5 @@
 /// <reference types="cypress" />
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { fromPairs } from 'lodash';
 

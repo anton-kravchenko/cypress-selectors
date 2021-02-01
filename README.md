@@ -10,6 +10,7 @@ It helps to organize and re-use selectors and turns this:
 const getSearchInput = () => cy.get('input');
 const getSubmitSearchButton = () => cy.get('[cypress-id]=submit-search');
 const getSearchResults = () => cy.get('.search-result');
+const getMain = () => cy.xpath(`//div[@cypress-id='main']`)
 ```
 
 into that:
@@ -19,6 +20,7 @@ class HomePage {
   @ByType('input') searchInput: Cypress.Chainable;
   @ByAttribute('submit-search') submitSearch: Cypress.Chainable;
   @ByClass('search-result') searchResults: Cypress.Chainable;
+  @ByXPath(`//div[@cypress-id='main']`) main: Cypress.Chainable;
 }
 ```
 
@@ -98,6 +100,26 @@ npm i -D cypress-selectors
     }
    ```
 
+6. Selecting elements by XPath
+
+```TypeScript
+    class Selector {
+      @ByXPath(`//div[@cypress-id='parent']/div[@cypress-id='children']`) static element!: Chainable;
+      @ByXPath(`count(//div[@cypress-id='parent']/div)`) static numberOfDivElements!: Chainable;
+    }
+```
+
+7. Specifying custom timeout for selectors
+
+```TypeScript
+    class Selector {
+      /* Will try to find an element for up to 10 seconds */
+      @ById('main', { timeout: 10 * 1000 }) static parent: Chainable;
+      /* By default, timeout for any selector is inherited from "defaultCommandTimeout" value of Cypress configuration */
+      @ById('app') static parent: Chainable;
+    }
+```
+
 ## Configuration
 
 ```TypeScript
@@ -118,6 +140,6 @@ ResetSelectorsConfiguration();
 
 <!-- TODO: add "Motivation" section -->
 <!-- TODO: add note about TS and decorators -->
-<!-- TODO: add note babel config -->
-<!-- TODO: read carefully https://www.cypress.io/blog/2019/01/03/stop-using-page-objects-and-start-using-app-actions/ -->
+<!-- TODO: add note about babel config -->
 <!-- TODO: improve configuration docs -->
+<!-- TODO: `eq` can't be used for XPath-->

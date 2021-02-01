@@ -325,6 +325,183 @@
           <div></div>
         `,
       },
+      {
+        id: '7.0',
+        type: 'ByXPath',
+        case: '2 parents with unique ids and children with the same ids',
+        html: `
+          <div cypress-id="parent-a">
+            <div cypress-id="children">children a</div>
+          </div>
+
+          <div cypress-id="parent-b">
+            <div cypress-id="children">children b</div>
+          </div>
+        `,
+      },
+      {
+        id: '7.1',
+        type: 'ByXPath',
+        case: '1 parent with unique ids and 5 children div elements',
+        html: `
+          <div cypress-id="parent-a">
+            <div>1</div>
+            <div>2</div>
+            <div>3</div>
+            <div>4</div>
+            <div>5</div>
+          </div>
+        `,
+      },
+      {
+        id: '7.2',
+        type: 'ByXPath',
+        case: '1 parent with 1 children div element with an attribute',
+        html: `
+          <div cypress-id="parent-a">
+            <div custom-attribute="value-of-custom-attr">1</div>
+          </div>
+        `,
+      },
+      {
+        id: '7.3',
+        type: 'ByXPath',
+        case: '1 parent with 1 children div element with a class',
+        html: `
+          <div cypress-id="parent-a">
+            <div class="button-label">1</div>
+          </div>
+        `,
+      },
+      {
+        id: '7.4',
+        type: 'ByXPath',
+        case: '1 parent with 1 children div element with a text',
+        html: `
+          <div cypress-id="parent-a">
+            <div>text inside div element</div>
+          </div>
+        `,
+      },
+      {
+        id: '7.5',
+        type: 'ByXPath',
+        case: '1 parent with 4 children div elements',
+        html: `
+          <div cypress-id="parent-a">
+            <div>1</div>
+            <div>2</div>
+            <div>3</div>
+            <div>4</div>
+            <div>5</div>
+          </div>
+        `,
+      },
+      {
+        id: '7.6',
+        type: 'ByXPath',
+        case: '1 h5 element',
+        html: `
+          <h5>H5</5>
+        `,
+      },
+      {
+        id: '7.7',
+        type: 'ByXPath',
+        case: '1 input',
+        html: `
+          <input />
+        `,
+      },
+      {
+        id: '7.8',
+        type: 'ByXPath',
+        case: 'empty',
+        html: ``,
+      },
+      {
+        id: '7.9',
+        type: 'ByXPath',
+        case: '2 div elements with 1 p inside',
+        html: `
+          <div cypress-id="parent-a">
+            <p>Inside parent A</p>
+          </div>
+
+          <div cypress-id="parent-b">
+            <p>Inside parent B</p>
+          </div>
+        `,
+      },
+      {
+        id: '8.0',
+        type: 'ByXPath',
+        case: '2 div elements with 1 p inside',
+        html: `
+          <div cypress-id="parent-a">
+            <p>Inside parent A</p>
+          </div>
+
+          <div cypress-id="parent-b">
+            <p>Inside parent B</p>
+          </div>
+        `,
+      },
+      {
+        id: '8.1',
+        type: 'ByXPath',
+        case: '1 div and p elements',
+        html: `
+          <p cypress-id='global-p'>Global p el</p>
+          <div cypress-id="div"/>
+        `,
+      },
+      {
+        id: '8.2',
+        type: 'ByXPath',
+        case: '3 divs and 1 div with children',
+        html: `
+          <div cypress-id="div"/>
+          <div cypress-id="div"/>
+          <div cypress-id="div"/>
+          <div cypress-id="div">
+            <p>children</p>
+          </div>
+        `,
+      },
+      {
+        id: '8.3',
+        type: 'ByXPath',
+        case: '1 div',
+        html: `
+          <div cypress-id="div">renders in 2 seconds</div>
+        `,
+      },
+      {
+        id: '8.4',
+        type: 'ByXPath',
+        case: '1 div',
+        html: `
+          <div cypress-id="div">renders in 2 seconds</div>
+        `,
+      },
+      {
+        id: '8.5',
+        type: 'ByXPath',
+        case: '1 div',
+        html: `<div cypress-id="div"/>`,
+      },
+      {
+        id: '8.6',
+        type: 'ByXPath',
+        case: 'p inside span inside div',
+        html: `
+          <div cypress-id="div">
+            <span>
+              <p>p inside span inside div</p>
+            </span>
+          </div>`,
+      },
     ];
   </script>
   <style>
@@ -345,12 +522,13 @@
       return lines.map((line) => line.substring(trimN, line.length)).join('\n');
     };
 
-    const renderTestCase = ({ id, type, case: caseInfo, html }) => {
+    const renderTestCase = ({ id, type, case: caseInfo, html }, timeout) => {
       $('#TEST_CASE_id').text(`Test ID: ${id}`);
       $('#TEST_CASE_type').text(`Type: ${type}`);
       $('#TEST_CASE_case').text(`Case: ${caseInfo}`);
       $('#TEST_CASE_html').text(trim(html));
-      $('#TEST_CASE_rendered-html').html(html);
+      if (timeout) setTimeout(() => $('#TEST_CASE_rendered-html').html(html), timeout);
+      else $('#TEST_CASE_rendered-html').html(html);
     };
     const throwErrorAndClear = (testId) => {
       $('#rendered-html').html('<h1>ERROR</h1>');
@@ -360,11 +538,13 @@
 
   <script>
     const onHashChange = () => {
-      const testId = location.hash.replace('#', '');
+      const hash = location.hash.replace('#', '');
+      const testId = hash.includes('?') ? hash.substring(0, hash.indexOf('?')) : hash;
       const testCase = TEST_CASES.find(({ id }) => id === testId);
+      const timeout = new URLSearchParams(hash.substring(4, hash.length)).get('timeout') || 100;
       window.currentTestCaseIndex = TEST_CASES.indexOf(testCase);
 
-      if (testCase) renderTestCase(testCase);
+      if (testCase) renderTestCase(testCase, timeout);
       else throwErrorAndClear(testId);
     };
   </script>

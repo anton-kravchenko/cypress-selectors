@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+import { max } from 'lodash';
 import type { Configuration } from './ConfigureSelectors';
 import { buildException, isConfigurableProperty, logSelector } from './utils';
 const selectorsByAliasKey: unique symbol = Symbol('SELECTORS_BY_ALIAS_STORAGE');
@@ -8,6 +11,7 @@ type CommonSelectorConfig = {
   parentAlias?: string;
   attribute?: string;
   eq?: number;
+  timeout?: number;
 };
 type Selector = CommonSelectorConfig &
   (
@@ -16,23 +20,24 @@ type Selector = CommonSelectorConfig &
     | { type: 'class' }
     | { type: 'type' }
     | { type: 'selector' }
+    | { type: 'xpath' }
   );
 type SelectorType = Selector['type'];
-type Host = { [key: string]: any }; // eslint-disable-line @typescript-eslint/no-explicit-any
+type Host = { [key: string]: any };
 type SelectorsStorage = Map<string, Selector>;
 type HostWithSelectors = Host & { [selectorsByAliasKey]: SelectorsStorage };
-type GetBySelector = (selector: string) => Cypress.Chainable;
+type SelectorsByType =
+  | { type: 'JQuery'; selectors: Array<Selector> }
+  | { type: 'XPath'; selector: Selector };
 
 const buildSelector = (
   selector: Selector,
   host: Host,
   propertyName: string,
   getConfig: () => Configuration,
-  getBySelector: GetBySelector,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): any => {
   const storage = registerStorageAndSelector(selector, host);
-  const getter = generateElementGetter(storage, selector, getConfig, getBySelector);
+  const getter = generateElementGetter(storage, selector, getConfig);
 
   if (isConfigurableProperty(host, propertyName)) {
     delete host[propertyName];
@@ -89,15 +94,12 @@ const generateElementGetter = (
   storage: HostWithSelectors,
   selector: Selector,
   getConfig: () => Configuration,
-  getBySelector: GetBySelector,
 ) => () => {
   const configuration = getConfig();
   if (configuration.isLoggingEnabled) logSelector(selector);
 
   const chainOfSelectors = collectSelectorsChain(storage[selectorsByAliasKey], selector);
-  const mappedSelector = mapSelectorConfigsToSelectorString(chainOfSelectors, configuration);
-
-  return getBySelector(mappedSelector);
+  return mapSelectorConfigsToSelectorsChain(chainOfSelectors, configuration);
 };
 
 const collectSelectorsChain = (
@@ -136,6 +138,63 @@ const mapSelectorConfigsToSelectorString = (
   return mappedSelectors.join(descendance);
 };
 
+const mapSelectorConfigsToSelectorsChain = (
+  selectors: Array<Selector>,
+  configuration: Configuration,
+): Cypress.Chainable => {
+  const mappedSelectors = mapSelectorsByType(
+    groupSelectorsByTypeSequentially(selectors),
+    configuration,
+  );
+
+  return mappedSelectors.reduce((chain, { type, selector, timeout }) => {
+    const options = { timeout };
+    if (type === 'XPath') chain = (chain as any).__cypress_selectors_xpath(selector, options);
+    else chain = chain.get(selector, options);
+
+    return chain;
+  }, cy as Cypress.Chainable);
+};
+
+const mapSelectorsByType = (
+  groupedByType: Array<SelectorsByType>,
+  configuration: Configuration,
+): Array<{ type: 'XPath' | 'JQuery'; selector: string; timeout?: number }> =>
+  groupedByType.map((group) =>
+    group.type === 'XPath'
+      ? { type: 'XPath' as const, selector: group.selector.value, timeout: group.selector.timeout }
+      : {
+          type: 'JQuery' as const,
+          selector: mapSelectorConfigsToSelectorString(group.selectors, configuration),
+          timeout: getMaxTimeout(group.selectors),
+        },
+  );
+
+const getMaxTimeout = (selectors: Array<Selector>): number =>
+  max(selectors.map(({ timeout }) => timeout ?? Cypress.config().defaultCommandTimeout)) as number;
+
+const groupSelectorsByTypeSequentially = (selectors: Array<Selector>): Array<SelectorsByType> => {
+  const result = [];
+  let chunk = [];
+
+  for (const selector of selectors) {
+    if (selector.type === 'xpath') {
+      if (chunk.length === 0) result.push([selector]);
+      else {
+        result.push(chunk, [selector]);
+        chunk = [];
+      }
+    } else chunk.push(selector);
+  }
+  if (chunk.length) result.push(chunk);
+
+  return result.map((selectors) =>
+    selectors[0].type === 'xpath'
+      ? { type: 'XPath', selector: selectors[0] }
+      : { type: 'JQuery', selectors },
+  );
+};
+
 const mapSelectorToString = (selector: Selector, configuration: Configuration): string => {
   const stringifiedSelector = mapSelectorByType(selector, configuration);
 
@@ -149,8 +208,9 @@ const mapSelectorByType = ({ type, value, attribute }: Selector, configuration: 
   else if (type === 'id') return `#${value}`;
   else if (type === 'type') return `${value}`;
   else if (type === 'selector') return value;
+  else if (type === 'xpath') return value;
   else throw buildException(`Unsupported selector type: ${type}`, 'INTERNAL ERROR');
 };
 
-export { buildSelector, collectSelectorsChain };
+export { buildSelector, collectSelectorsChain, groupSelectorsByTypeSequentially };
 export type { Host, CommonSelectorConfig, Selector, SelectorType };

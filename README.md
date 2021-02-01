@@ -104,8 +104,8 @@ npm i -D cypress-selectors
 
 ```TypeScript
     class Selector {
-      @ByXPath(`//div[@cypress-id='parent-a']/div[@cypress-id='children']`) static element!: Chainable;
-      @ByXPath(`count(//div[@cypress-id='parent-a']/div)`) static numberOfDivElements!: Chainable;
+      @ByXPath(`//div[@cypress-id='parent']/div[@cypress-id='children']`) static element!: Chainable;
+      @ByXPath(`count(//div[@cypress-id='parent']/div)`) static numberOfDivElements!: Chainable;
     }
 ```
 

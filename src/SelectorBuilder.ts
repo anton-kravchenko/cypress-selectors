@@ -27,7 +27,7 @@ type Host = { [key: string]: any };
 type SelectorsStorage = Map<string, Selector>;
 type HostWithSelectors = Host & { [selectorsByAliasKey]: SelectorsStorage };
 type SelectorsByType =
-  | { type: 'JQuery'; selectors: Array<Selector> }
+  | { type: 'CSS'; selectors: Array<Selector> }
   | { type: 'XPath'; selector: Selector };
 
 const buildSelector = (
@@ -159,12 +159,12 @@ const mapSelectorConfigsToSelectorsChain = (
 const mapSelectorsByType = (
   groupedByType: Array<SelectorsByType>,
   configuration: Configuration,
-): Array<{ type: 'XPath' | 'JQuery'; selector: string; timeout?: number }> =>
+): Array<{ type: 'XPath' | 'CSS'; selector: string; timeout?: number }> =>
   groupedByType.map((group) =>
     group.type === 'XPath'
       ? { type: 'XPath' as const, selector: group.selector.value, timeout: group.selector.timeout }
       : {
-          type: 'JQuery' as const,
+          type: 'CSS' as const,
           selector: mapSelectorConfigsToSelectorString(group.selectors, configuration),
           timeout: getMaxTimeout(group.selectors),
         },
@@ -191,7 +191,7 @@ const groupSelectorsByTypeSequentially = (selectors: Array<Selector>): Array<Sel
   return result.map((selectors) =>
     selectors[0].type === 'xpath'
       ? { type: 'XPath', selector: selectors[0] }
-      : { type: 'JQuery', selectors },
+      : { type: 'CSS', selectors },
   );
 };
 

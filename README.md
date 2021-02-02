@@ -32,26 +32,29 @@ npm i -D cypress-selectors
 
 ## Usage
 
-1. Searching elements by `attribute`, `class`, `id`, `type` and `selector`:
+1. Searching elements by `attribute`, `class`, `id`, `type`,`selector` and `xpath`:
 
    ```TypeScript
-    import { ByAttribute, ByClass, ById, BySelector, ByType } from 'cypress-selectors';
+    import { ByAttribute, ByClass, ById, BySelector, ByType, ByXPath } from 'cypress-selectors';
 
     class HomePageSelectors {
       @ById('main')
-      static main: Chainable; // equivalent of - cy.get('#main')
+      static main: Cypress.Chainable; // equivalent of - cy.get('#main')
 
       @ByType('input')
-      static input: Chainable; // equivalent of - cy.get('input')
+      static input: Cypress.Chainable; // equivalent of - cy.get('input')
 
       @ByClass('button')
-      static button: Chainable; // equivalent of - cy.get('.button')
+      static button: Cypress.Chainable; // equivalent of - cy.get('.button')
 
       @ByAttribute('header')
-      static header: Chainable; // equivalent of - cy.get('[cypress-id=header')
+      static header: Cypress.Chainable; // equivalent of - cy.get('[cypress-id=header')
 
       @BySelector('ul > li .focus')
-      static listItem: Chainable; // equivalent of - cy.get('ul > li .focus')
+      static listItem: Cypress.Chainable; // equivalent of - cy.get('ul > li .focus')
+
+      @ByXPath(`//input`)
+      static input: Cypress.Chainable; // equivalent of - cy.xpath('//input')
     }
    ```
 
@@ -60,10 +63,10 @@ npm i -D cypress-selectors
    ```TypeScript
     class Selectors {
       @ById('main', { alias: 'root' })
-      static parent: Chainable;
+      static parent: Cypress.Chainable;
 
       @ByClass('button', { parentAlias: 'root' })
-      static children: Chainable; // equivalent of - cy.get('#root .button')
+      static children: Cypress.Chainable; // equivalent of - cy.get('#root .button')
     }
    ```
 
@@ -102,23 +105,23 @@ npm i -D cypress-selectors
 
 6. Selecting elements by XPath
 
-```TypeScript
+   ```TypeScript
     class Selector {
-      @ByXPath(`//div[@cypress-id='parent']/div[@cypress-id='children']`) static element!: Chainable;
-      @ByXPath(`count(//div[@cypress-id='parent']/div)`) static numberOfDivElements!: Chainable;
+      @ByXPath(`//div[@cypress-id='app']/div[@cypress-id='children']`) static app!: Cypress.Chainable;
+      @ByXPath(`count(//div)`) static numberOfDivElements!: Cypress.Chainable;
     }
-```
+   ```
 
 7. Specifying custom timeout for selectors
 
-```TypeScript
+   ```TypeScript
     class Selector {
       /* Will try to find an element for up to 10 seconds */
-      @ById('main', { timeout: 10 * 1000 }) static parent: Chainable;
+      @ById('main', { timeout: 10 * 1000 }) static parent: Cypress.Chainable;
       /* By default, timeout for any selector is inherited from "defaultCommandTimeout" value of Cypress configuration */
-      @ById('app') static parent: Chainable;
+      @ById('app') static parent: Cypress.Chainable;
     }
-```
+   ```
 
 ## Configuration
 
@@ -143,3 +146,5 @@ ResetSelectorsConfiguration();
 <!-- TODO: add note about babel config -->
 <!-- TODO: improve configuration docs -->
 <!-- TODO: `eq` can't be used for XPath-->
+<!-- TODO: add link to the article in the "Motivation" section -->
+<!-- TODO: replace JQuery selector to CSS selector -->

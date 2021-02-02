@@ -32,7 +32,7 @@ npm i -D cypress-selectors
 
 ## Usage
 
-1. Searching elements by `attribute`, `class`, `id`, `type`,`selector` and `xpath`:
+1. Searching elements by `attribute`, `class`, `id`, `type`, `selector` and `xpath`:
 
    ```TypeScript
     import { ByAttribute, ByClass, ById, BySelector, ByType, ByXPath } from 'cypress-selectors';
@@ -107,8 +107,8 @@ npm i -D cypress-selectors
 
    ```TypeScript
     class Selector {
-      @ByXPath(`//div[@cypress-id='app']/div[@cypress-id='children']`) static app!: Cypress.Chainable;
-      @ByXPath(`count(//div)`) static numberOfDivElements!: Cypress.Chainable;
+      @ByXPath(`//div[@cypress-id='app']/div[@cypress-id='children']`) static app: Cypress.Chainable;
+      @ByXPath(`count(//div)`) static numberOfDivElements: Cypress.Chainable;
     }
    ```
 

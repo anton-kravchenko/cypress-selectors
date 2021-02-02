@@ -13,3 +13,4 @@ package-lock.json
 .vscode
 internal.ts
 list.todo
+cypress/screenshots/*

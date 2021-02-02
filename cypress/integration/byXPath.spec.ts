@@ -117,7 +117,7 @@ context('ByXPath selector', () => {
     @ByAttribute('parent-b', { alias: 'parent-b' }) static parentB: Chainable;
     @ByXPath(`.//p`, { parentAlias: 'parent-b' }) static textB: Chainable;
   }
-  it('should locate elements by XPath inside elements found by JQuery selector', () => {
+  it('should locate elements by XPath inside elements found by CSS selector', () => {
     cy.visit('/TestPage.html#8.0');
     Case8_0.textA.should('have.text', 'Inside parent A');
     Case8_0.textB.should('have.text', 'Inside parent B');
@@ -238,7 +238,7 @@ context('XPath utils', () => {
       ];
 
       expect(groupSelectorsByTypeSequentially(nonXPathSelectors)).to.deep.equal([
-        { type: 'JQuery', selectors: nonXPathSelectors },
+        { type: 'CSS', selectors: nonXPathSelectors },
       ]);
     });
 
@@ -253,7 +253,7 @@ context('XPath utils', () => {
 
       expect(groupSelectorsByTypeSequentially(selectorsWithXPathInTheMiddle)).to.deep.equal([
         {
-          type: 'JQuery',
+          type: 'CSS',
           selectors: [
             { type: 'attribute', value: 'a' },
             { type: 'class', value: 'btn' },
@@ -261,7 +261,7 @@ context('XPath utils', () => {
         },
         { type: 'XPath', selector: { type: 'xpath', value: '//h1' } },
         {
-          type: 'JQuery',
+          type: 'CSS',
           selectors: [
             { type: 'id', value: 'app' },
             { type: 'type', value: 'button' },
@@ -282,7 +282,7 @@ context('XPath utils', () => {
       ).to.deep.equal([
         { type: 'XPath', selector: { type: 'xpath', value: '//h1' } },
         {
-          type: 'JQuery',
+          type: 'CSS',
           selectors: [
             { type: 'attribute', value: 'a' },
             { type: 'class', value: 'btn' },
@@ -299,7 +299,7 @@ context('XPath utils', () => {
       ];
       expect(groupSelectorsByTypeSequentially(selectorsWithXPathSelectorInTheEnd)).to.deep.equal([
         {
-          type: 'JQuery',
+          type: 'CSS',
           selectors: [
             { type: 'attribute', value: 'a' },
             { type: 'class', value: 'btn' },
@@ -323,7 +323,7 @@ context('XPath utils', () => {
 
       expect(groupSelectorsByTypeSequentially(selectors)).to.deep.equal([
         {
-          type: 'JQuery',
+          type: 'CSS',
           selectors: [
             { type: 'selector', value: 'a' },
             { type: 'id', value: 'abc' },
@@ -331,7 +331,7 @@ context('XPath utils', () => {
         },
         { type: 'XPath', selector: { type: 'xpath', value: '//h1' } },
         {
-          type: 'JQuery',
+          type: 'CSS',
           selectors: [
             { type: 'attribute', value: 'a' },
             { type: 'class', value: 'btn' },
@@ -339,7 +339,7 @@ context('XPath utils', () => {
         },
         { type: 'XPath', selector: { type: 'xpath', value: '//div' } },
         {
-          type: 'JQuery',
+          type: 'CSS',
           selectors: [
             { type: 'attribute', value: 'a' },
             { type: 'id', value: 'def' },

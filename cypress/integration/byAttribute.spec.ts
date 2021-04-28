@@ -53,6 +53,28 @@ context('ByAttribute selector', () => {
     Case1_3.childrenOfSibling.should('have.text', 'child-a-b');
   });
 
+  class Case1_3_1 {
+    // @ByAttribute('parent-a', { alias: 'parentA' })
+    @ByAttribute('parent-a')
+    static parent: Chainable;
+
+    // @ByAttribute('parent-b', { alias: 'parentB', parentAlias: 'parentA' })
+    @ByAttribute('parent-b', { parent: Case1_3_1.parent })
+    static sibling: Chainable;
+
+    // @ByAttribute('child-a-b', { parentAlias: 'parentB' })
+    @ByAttribute('child-a-b', { parent: Case1_3_1.sibling })
+    static childrenOfSibling: Chainable;
+
+    // @ByAttribute('child-a-b', { parentAlias: 'parentB' })
+    @ByAttribute('child-a-b', { parent: Case1_3_1.sibling })
+    static childrenOfSibling1: Chainable;
+  }
+  it('should locate element by attribute inside 2 parents (parent-child relation is defined by link)', () => {
+    cy.visit('/TestPage.html#1.3');
+    Case1_3_1.childrenOfSibling.should('have.text', 'child-a-b');
+  });
+
   class Case1_4 {
     @ByAttribute('parent-a', { alias: 'parentA' })
     static parentA: Chainable;

@@ -47,4 +47,20 @@ context('ByType selector', () => {
     Case4_2.firstH1.should('have.text', 'first H1');
     Case4_2.secondH1.should('have.text', 'second H1');
   });
+
+  class Case4_2_1 {
+    @ById('TEST_CASE_rendered-html') static sandbox: Chainable;
+
+    @ByType('div', { parent: Case4_2_1.sandbox }) static divParent: Chainable;
+    @ByType('h1', { parent: Case4_2_1.divParent }) static firstH1: Chainable;
+
+    @ByType('span', { parent: Case4_2_1.sandbox }) static spanParent: Chainable;
+    @ByType('h1', { parent: Case4_2_1.spanParent }) static secondH1: Chainable;
+  }
+  it('should find elements with the same types inside elements with different types (parent-child relation is defined by link)', () => {
+    cy.visit('/TestPage.html#4.2');
+
+    Case4_2_1.firstH1.should('have.text', 'first H1');
+    Case4_2_1.secondH1.should('have.text', 'second H1');
+  });
 });

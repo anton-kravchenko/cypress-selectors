@@ -37,4 +37,14 @@ context('ById selector', () => {
     cy.visit('/TestPage.html#2.2');
     Case2_2.children.should('have.text', `children of 'parent-a'`);
   });
+
+  class Case2_2_1 {
+    @ById('parent-a') static parentA: Chainable;
+    @ById('children', { parent: Case2_2_1.parentA }) static children: Chainable;
+    @ById('parent-b') static parentB: Chainable;
+  }
+  it('should find proper child by id inside proper parent found by id (parent-child relation is defined by link)', () => {
+    cy.visit('/TestPage.html#2.2');
+    Case2_2_1.children.should('have.text', `children of 'parent-a'`);
+  });
 });

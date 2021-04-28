@@ -56,4 +56,26 @@ context('BySelector', () => {
     Case5_2.elementA.should('have.text', '[A-tree] p tag');
     Case5_2.elementB.should('have.text', '[B-tree] span tag');
   });
+
+  class Case5_2_1 {
+    @BySelector('#tree-a') static lvl1A: Chainable;
+    @BySelector('.parent', { parent: Case5_2_1.lvl1A }) static lvl2A: Chainable;
+    @BySelector('.children', { parent: Case5_2_1.lvl2A }) static lvl3A: Chainable;
+    @BySelector('[cypress-id=the-element]', { parent: Case5_2_1.lvl3A })
+    static lvl4A: Chainable;
+    @BySelector('p', { parent: Case5_2_1.lvl4A }) static elementA: Chainable;
+
+    @BySelector('#tree-b', {}) static lvl1B: Chainable;
+    @BySelector('.parent', { parent: Case5_2_1.lvl1B }) static lvl2B: Chainable;
+    @BySelector('.children', { parent: Case5_2_1.lvl2B }) static lvl3B: Chainable;
+    @BySelector('[cypress-id=the-element]', { parent: Case5_2_1.lvl3B })
+    static lvl4B: Chainable;
+    @BySelector('span', { parent: Case5_2_1.lvl4B }) static elementB: Chainable;
+  }
+  it('should properly chain custom selectors to find elements (parent-child relation is defined by link)', () => {
+    cy.visit('/TestPage.html#5.2');
+
+    Case5_2_1.elementA.should('have.text', '[A-tree] p tag');
+    Case5_2_1.elementB.should('have.text', '[B-tree] span tag');
+  });
 });

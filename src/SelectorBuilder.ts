@@ -2,8 +2,11 @@
 
 import { max } from 'lodash';
 import type { Configuration } from './ConfigureSelectors';
-import { buildException, isConfigurableProperty, logSelector } from './utils';
+import { buildException, isConfigurableProperty, logSelector, internalAliasKey } from './utils';
+
 const selectorsByAliasKey: unique symbol = Symbol('SELECTORS_BY_ALIAS_STORAGE');
+// @ts-ignore
+window.sym = selectorsByAliasKey;
 
 type CommonSelectorConfig = {
   value: string;
@@ -12,6 +15,8 @@ type CommonSelectorConfig = {
   attribute?: string;
   eq?: number;
   timeout?: number;
+  internalAlias: string;
+  internalParentAlias?: string;
 };
 type Selector = CommonSelectorConfig &
   (
@@ -37,17 +42,45 @@ const buildSelector = (
   getConfig: () => Configuration,
 ): any => {
   const storage = registerStorageAndSelector(selector, host);
+  debugger;
   const getter = generateElementGetter(storage, selector, getConfig);
-
+  // @ts-ignore
+  getter[internalAliasKey] = selector.internalAlias; // TODO: check uniqueness of the key -> Symbol(propertyName);
+  debugger;
   if (isConfigurableProperty(host, propertyName)) {
     delete host[propertyName];
-    const descriptor = { get: getter, enumerable: false, configurable: false };
+    const proxy = generateProxy(getter, selector.internalAlias);
+    // const descriptor = { enumerable: false, configurable: false, get: getter };
+    const descriptor = { enumerable: false, configurable: false, value: proxy };
     return Object.defineProperty(host, propertyName, descriptor);
   }
   throw buildException(
     `Failed to assign selector - property "${propertyName}" is not 'configurable'`,
     'NON CONFIGURABLE FIELD',
   );
+};
+
+const generateProxy = (getter: () => Cypress.Chainable<any>, internalAlias: string) => {
+  const proxy = new Proxy(
+    {},
+    {
+      get(_host: object, field: string | symbol, _receiver: any): any {
+        // @ts-ignore
+        if (typeof field === 'symbol') return _host[field];
+        const chainer = getter();
+        // @ts-ignore
+        const value = chainer[field];
+        // @ts-ignore
+        console.log('PARENT ALIAS', _host[internalAlias], _host[internalAliasKey]);
+        return value;
+      },
+    },
+  );
+
+  // @ts-ignore
+  proxy[internalAliasKey] = internalAlias;
+
+  return proxy;
 };
 
 const registerStorageAndSelector = (selector: Selector, host: Host): HostWithSelectors => {
@@ -58,19 +91,24 @@ const registerStorageAndSelector = (selector: Selector, host: Host): HostWithSel
 };
 
 const registerSelectorsStorageIfNotRegistered = (host: Host): HostWithSelectors => {
-  if (hasSelectorsStorage(host) === false)
+  if (hasSelectorsStorage(host) === false) {
+    debugger;
     (host as HostWithSelectors)[selectorsByAliasKey] = new Map();
+  }
   return host as HostWithSelectors;
 };
 
 const hasSelectorsStorage = (host: Host): boolean => host.hasOwnProperty(selectorsByAliasKey);
 
-const shouldSelectorBeRegistered = (selector: Selector) => typeof selector.alias === 'string';
+const shouldSelectorBeRegistered = (selector: Selector) =>
+  typeof selector.alias === 'string' || typeof selector.internalAlias === 'string';
 
 const registerSelector = (selector: Selector, hostWithStorage: HostWithSelectors) => {
-  const alias = selector.alias as string;
+  const { alias, internalAlias } = selector; // TODO: just pass `selector` to registerSelectorInStorageByAlias
   const selectorStorage = getSelectorsStorage(hostWithStorage);
-  registerSelectorInStorageByAlias(selectorStorage, alias, selector);
+
+  if (alias) registerSelectorInStorageByAlias(selectorStorage, alias, selector);
+  registerSelectorInStorageByAlias(selectorStorage, internalAlias, selector);
 };
 
 const getSelectorsStorage = (host: HostWithSelectors): SelectorsStorage =>
@@ -116,6 +154,7 @@ const collectSelectorsChain = (
 };
 
 const getParentSelectorOrThrow = (storage: SelectorsStorage, alias: string) => {
+  debugger;
   if (storage.has(alias)) return storage.get(alias) as Selector;
   else throw buildException(`Failed to retrieve parent selector by "${alias}"`, 'NO SUCH ALIAS');
 };

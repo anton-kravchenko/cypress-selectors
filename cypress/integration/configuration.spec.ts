@@ -67,4 +67,37 @@ context('Configuration', () => {
     Case6_4.byId.should('have.text', 'Unique id');
     Case6_4.bySelector.should('have.text', 'Div inside div inside span');
   });
+
+  // TODO: introduce and "brand" "selector" type
+  // FIXME: issue with duplicate "aliases": either 1) use different storage 2) generate unique prefixes for aliases
+  class Case1_2 {
+    @ByAttribute('parent-a', { alias: 'parent-1' })
+    static rootParent: Chainable;
+
+    @ByAttribute('child-a', { parent: Case1_2.rootParent }) static child: Chainable;
+  }
+  it('should find element by attribute inside its parent located by attribute', () => {
+    cy.visit('/TestPage.html#1.2');
+    Case1_2.child.should('have.text', 'child-a');
+  });
+
+  class Case1_4 {
+    @ByAttribute('parent-a', { alias: 'parentA' })
+    static parentA: Chainable;
+    @ByAttribute('child-a', { parent: Case1_4.parentA })
+    static childA: Chainable;
+
+    @ByAttribute('parent-b', { alias: 'parentB' })
+    static parentB: Chainable;
+    @ByAttribute('child-a', { parent: Case1_4.parentB })
+    static childB: Chainable;
+  }
+  it('should select the element with right attribute inside right parent', () => {
+    cy.visit('/TestPage.html#1.4');
+    Case1_4.childA.should('have.length', '1').and('have.text', `'child-a' of 'parent-a'`);
+  });
 });
+
+// FIXME: timeout stopped working
+// FIXME: [cypress-selectors] Querying by selector [Object object] - logging might be broken
+// TODO: throw when supplying both parent and parentAlias?

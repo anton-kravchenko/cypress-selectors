@@ -40,4 +40,18 @@ context('ByClass selector', () => {
     Case3_2.childrenA.should('have.text', 'children of "parent-a"');
     Case3_2.childrenB.should('have.text', 'children of "parent-b"');
   });
+
+  class Case3_2_1 {
+    @ByClass('parent-a', { alias: 'parentA' }) static parentA: Chainable;
+    @ByClass('children', { parent: Case3_2_1.parentA }) static childrenA: Chainable;
+
+    @ByClass('parent-b', { parent: Case3_2_1.parentB }) static parentB: Chainable;
+    @ByClass('children', { parent: Case3_2_1.parentB }) static childrenB: Chainable;
+  }
+  it('should locate elements with the same class inside parents with different classes (parent-child relation is defined by link)', () => {
+    cy.visit('/TestPage.html#3.2');
+
+    Case3_2_1.childrenA.should('have.text', 'children of "parent-a"');
+    Case3_2_1.childrenB.should('have.text', 'children of "parent-b"');
+  });
 });

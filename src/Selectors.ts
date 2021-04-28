@@ -10,27 +10,44 @@ import { registerInternalXPathCommand } from './XPath';
 registerInternalXPathCommand();
 
 import type { Host, SelectorType } from './SelectorBuilder';
+import { internalAliasKey } from './utils';
 
-const BuildSelectorBy = (type: SelectorType) => (
-  value: string,
-  config: {
-    alias?: string;
-    parentAlias?: string;
-    attribute?: string;
-    eq?: number;
-    timeout?: number;
-  } = {},
-) => {
+type SelectorConfig = {
+  alias?: string;
+  parentAlias?: string;
+  attribute?: string;
+  eq?: number;
+  timeout?: number;
+  parent?: any;
+};
+
+/**
+ * Options:
+ 1) string literal of keys as parent
+ 2) link to element
+ */
+const BuildSelectorBy = (type: SelectorType) => (value: string, config: SelectorConfig = {}) => {
   throwIfNotRunningInCypressEnv();
 
   const selectorConfig = {
-    ...pick(config, ['alias', 'parentAlias', 'attribute', 'eq', 'timeout']),
+    ...pick(config, ['alias', 'parentAlias', 'attribute', 'eq', 'timeout', 'parent']),
     value,
     type,
   };
 
-  return (host: Host, propertyName: string) =>
-    buildSelector(selectorConfig, host, propertyName, getConfiguration);
+  return (host: Host, propertyName: string) => {
+    const internalParentAlias = selectorConfig.parent
+      ? selectorConfig.parent[internalAliasKey]
+      : undefined;
+    const internalAlias = `internal-alias-${propertyName}`;
+
+    const config = internalParentAlias
+      ? { ...selectorConfig, internalAlias, internalParentAlias, parentAlias: internalParentAlias } // TODO: figure out how to differ them
+      : { ...selectorConfig, internalAlias };
+
+    debugger;
+    return buildSelector(config, host, propertyName, getConfiguration);
+  };
 };
 
 const ByAttribute = BuildSelectorBy('attribute');
@@ -50,3 +67,5 @@ const By = {
 };
 
 export { By, ByAttribute, ByType, ByClass, ById, BySelector, ByXPath };
+
+// Совершенство утомляет тех у кого нет вкуса

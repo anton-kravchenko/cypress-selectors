@@ -192,6 +192,17 @@ context('ByXPath selector', () => {
     cy.visit('/TestPage.html#8.6?timeout=1500');
     Case8_6.p.should('have.text', 'p inside span inside div');
   });
+
+  class Case8_6_1 {
+    @ByAttribute('div', { alias: 'div', timeout: 10 }) static div: Cypress.Chainable;
+    @ByType('span', { parentAlias: 'div', alias: 'span', timeout: 20 })
+    static span: Cypress.Chainable;
+    @ByType('p', { parentAlias: 'span', timeout: 2000 }) static p: Cypress.Chainable;
+  }
+  it('should use the biggest timeout in a chain of selectors (parent-child relation is defined by link)', () => {
+    cy.visit('/TestPage.html#8.6?timeout=1500');
+    Case8_6_1.p.should('have.text', 'p inside span inside div');
+  });
 });
 
 context('XPath utils', () => {

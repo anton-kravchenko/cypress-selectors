@@ -1,4 +1,4 @@
-import type { Host, Selector } from './SelectorBuilder';
+import type { Host } from './SelectorBuilder';
 // FIXME: bad destination for it
 export const internalAliasKey: unique symbol = Symbol('INTERNAL_ALIAS_KEY');
 
@@ -7,10 +7,9 @@ const LOG_PREFIX = `[cypress-selectors]`;
 const buildException = (message: string, kind = 'INTERNAL ERROR'): Error =>
   new Error(`${LOG_PREFIX} Error type: ${kind}, message: ${message}`);
 
-const logSelector = (selector: Selector): void =>
-  selector.alias
-    ? log(`Querying "${selector.alias}" by selector: ${selector}`)
-    : log(`Querying by selector: ${selector}`);
+// TODO: check it alias is an empty string
+const logSelector = (selector: string, propertyPath: string): void =>
+  log(`Querying "${propertyPath}" by selector: ${selector}`);
 
 const log = (message: string): void => console.log(`${LOG_PREFIX} ${message}`);
 

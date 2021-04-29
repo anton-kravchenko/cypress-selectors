@@ -18,8 +18,10 @@ type SelectorConfig = {
   attribute?: string;
   eq?: number;
   timeout?: number;
-  parent?: any;
+  parent?: any; // TODO: add branded type
 };
+
+// TODO: is it possible to use parents from another POs?
 
 /**
  * Options:
@@ -45,7 +47,12 @@ const BuildSelectorBy = (type: SelectorType) => (value: string, config: Selector
       ? { ...selectorConfig, internalAlias, internalParentAlias, parentAlias: internalParentAlias } // TODO: figure out how to differ them
       : { ...selectorConfig, internalAlias };
 
-    return buildSelector(config, host, propertyName, getConfiguration);
+    return buildSelector(
+      { ...config, meta: { host: host.name, property: propertyName } },
+      host,
+      propertyName,
+      getConfiguration,
+    );
   };
 };
 

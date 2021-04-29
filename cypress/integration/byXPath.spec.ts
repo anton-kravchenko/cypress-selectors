@@ -243,9 +243,9 @@ context('XPath utils', () => {
   context('groupSelectorsByTypeSequentially function', () => {
     it('should return a single array inside array for non XPath selectors', () => {
       const nonXPathSelectors: Array<Selector> = [
-        { type: 'attribute', value: 'a' },
-        { type: 'class', value: 'btn' },
-        { type: 'id', value: 'app' },
+        { type: 'attribute', value: 'a' } as Selector,
+        { type: 'class', value: 'btn' } as Selector,
+        { type: 'id', value: 'app' } as Selector,
       ];
 
       expect(groupSelectorsByTypeSequentially(nonXPathSelectors)).to.deep.equal([
@@ -255,11 +255,11 @@ context('XPath utils', () => {
 
     it('should return 3 groups if XPath selector is in the middle of an array of selectors', () => {
       const selectorsWithXPathInTheMiddle: Array<Selector> = [
-        { type: 'attribute', value: 'a' },
-        { type: 'class', value: 'btn' },
-        { type: 'xpath', value: '//h1' },
-        { type: 'id', value: 'app' },
-        { type: 'type', value: 'button' },
+        { type: 'attribute', value: 'a' } as Selector,
+        { type: 'class', value: 'btn' } as Selector,
+        { type: 'xpath', value: '//h1' } as Selector,
+        { type: 'id', value: 'app' } as Selector,
+        { type: 'type', value: 'button' } as Selector,
       ];
 
       expect(groupSelectorsByTypeSequentially(selectorsWithXPathInTheMiddle)).to.deep.equal([
@@ -283,9 +283,9 @@ context('XPath utils', () => {
 
     it('should return 2 chunks if XPath selector is the first one', () => {
       const selectorsWithXPathSelectorInTheBeginning: Array<Selector> = [
-        { type: 'xpath', value: '//h1' },
-        { type: 'attribute', value: 'a' },
-        { type: 'class', value: 'btn' },
+        { type: 'xpath', value: '//h1' } as Selector,
+        { type: 'attribute', value: 'a' } as Selector,
+        { type: 'class', value: 'btn' } as Selector,
       ];
 
       expect(
@@ -304,9 +304,9 @@ context('XPath utils', () => {
 
     it('should return 2 chunks if XPath selector is in the end of list', () => {
       const selectorsWithXPathSelectorInTheEnd: Array<Selector> = [
-        { type: 'attribute', value: 'a' },
-        { type: 'class', value: 'btn' },
-        { type: 'xpath', value: '//h1' },
+        { type: 'attribute', value: 'a' } as Selector,
+        { type: 'class', value: 'btn' } as Selector,
+        { type: 'xpath', value: '//h1' } as Selector,
       ];
       expect(groupSelectorsByTypeSequentially(selectorsWithXPathSelectorInTheEnd)).to.deep.equal([
         {
@@ -320,16 +320,17 @@ context('XPath utils', () => {
       ]);
     });
 
+    // TODO: revisit structure of selector and remove type CAST
     it('should return 5 chunks with 2 XPath chunks', () => {
       const selectors: Array<Selector> = [
-        { type: 'selector', value: 'a' },
-        { type: 'id', value: 'abc' },
-        { type: 'xpath', value: '//h1' },
-        { type: 'attribute', value: 'a' },
-        { type: 'class', value: 'btn' },
-        { type: 'xpath', value: '//div' },
-        { type: 'attribute', value: 'a' },
-        { type: 'id', value: 'def' },
+        { type: 'selector', value: 'a' } as Selector,
+        { type: 'id', value: 'abc' } as Selector,
+        { type: 'xpath', value: '//h1' } as Selector,
+        { type: 'attribute', value: 'a' } as Selector,
+        { type: 'class', value: 'btn' } as Selector,
+        { type: 'xpath', value: '//div' } as Selector,
+        { type: 'attribute', value: 'a' } as Selector,
+        { type: 'id', value: 'def' } as Selector,
       ];
 
       expect(groupSelectorsByTypeSequentially(selectors)).to.deep.equal([

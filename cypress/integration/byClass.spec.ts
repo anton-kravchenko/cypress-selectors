@@ -42,7 +42,7 @@ context('ByClass selector', () => {
   });
 
   class Case3_2_1 {
-    @ByClass('parent-a', { alias: 'parentA' }) static parentA: Chainable;
+    @ByClass('parent-a') static parentA: Chainable;
     @ByClass('children', { parent: Case3_2_1.parentA }) static childrenA: Chainable;
 
     @ByClass('parent-b', { parent: Case3_2_1.parentB }) static parentB: Chainable;

@@ -18,6 +18,7 @@ type CommonSelectorConfig = {
   internalAlias: string;
   internalParentAlias?: string;
 };
+type SelectorMeta = { host: string; property: string };
 type Selector = CommonSelectorConfig &
   (
     | { type: 'attribute'; attribute?: string }
@@ -26,7 +27,8 @@ type Selector = CommonSelectorConfig &
     | { type: 'type' }
     | { type: 'selector' }
     | { type: 'xpath' }
-  );
+  ) & { meta: SelectorMeta };
+
 type SelectorType = Selector['type'];
 type Host = { [key: string]: any };
 type SelectorsStorage = Map<string, Selector>;
@@ -64,9 +66,7 @@ const generateProxy = (getter: () => Cypress.Chainable<any>, internalAlias: stri
   const proxy = new Proxy(
     {},
     {
-      get(_host: object, field: string | symbol, _receiver: any): any {
-        debugger;
-
+      get(_host: object, field: string | symbol): any {
         if (typeof field === 'symbol' && internalAliasKey === field) {
           // @ts-ignore
           return _host[field];
@@ -138,7 +138,13 @@ const generateElementGetter = (
   getConfig: () => Configuration,
 ) => () => {
   const configuration = getConfig();
-  if (configuration.isLoggingEnabled) logSelector(selector);
+  if (configuration.isLoggingEnabled) {
+    logSelector(
+      mapSelectorByType(selector, configuration),
+      // TODO: replace with `displayPass`?
+      `${selector.meta.host}.${selector.meta.property}`,
+    );
+  }
 
   const chainOfSelectors = collectSelectorsChain(storage[selectorsByAliasKey], selector);
   return mapSelectorConfigsToSelectorsChain(chainOfSelectors, configuration);

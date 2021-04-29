@@ -30,7 +30,7 @@ context('ById selector', () => {
 
   class Case2_2 {
     @ById('parent-a', { alias: 'parentA' }) static parentA: Chainable;
-    @ById('children', { parentAlias: 'parentA' }) static children: Chainable;
+    @ById('children', { alias: 'children', parentAlias: 'parentA' }) static children: Chainable;
     @ById('parent-b') static parentB: Chainable;
   }
   it('should find proper child by id inside proper parent found by id', () => {

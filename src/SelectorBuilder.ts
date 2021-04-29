@@ -46,8 +46,6 @@ const buildSelector = (
   const storage = registerStorageAndSelector(selector, host);
 
   const getter = generateElementGetter(storage, selector, getConfig);
-  // @ts-ignore
-  getter[internalAliasKey] = selector.internalAlias; // TODO: check uniqueness of the key -> Symbol(propertyName);
 
   if (isConfigurableProperty(host, propertyName)) {
     delete host[propertyName];

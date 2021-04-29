@@ -41,7 +41,7 @@ const BuildSelectorBy = (type: SelectorType) => (value: string, config: Selector
     const internalParentAlias = selectorConfig.parent
       ? selectorConfig.parent[internalAliasKey]
       : undefined;
-    const internalAlias = `internal-alias-${propertyName}`;
+    const internalAlias = `internal-alias-${propertyName}`; // TODO: check uniqueness of the key -> Symbol(propertyName);
 
     const config = internalParentAlias
       ? { ...selectorConfig, internalAlias, internalParentAlias, parentAlias: internalParentAlias } // TODO: figure out how to differ them

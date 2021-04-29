@@ -45,7 +45,6 @@ const BuildSelectorBy = (type: SelectorType) => (value: string, config: Selector
       ? { ...selectorConfig, internalAlias, internalParentAlias, parentAlias: internalParentAlias } // TODO: figure out how to differ them
       : { ...selectorConfig, internalAlias };
 
-    debugger;
     return buildSelector(config, host, propertyName, getConfiguration);
   };
 };

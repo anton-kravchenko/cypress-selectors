@@ -94,7 +94,7 @@ context('ByXPath selector', () => {
       else done(e);
     });
 
-    Case7_8.doesNotExist;
+    Case7_8.doesNotExist.should('exist');
   });
 
   class Case7_9 {
@@ -147,7 +147,7 @@ context('ByXPath selector', () => {
       else done(e);
     });
 
-    Case8_2.children;
+    Case8_2.children.should('exist');
   });
 
   class Case8_3 {
@@ -179,7 +179,7 @@ context('ByXPath selector', () => {
       else done(e);
     });
 
-    Case8_5.div;
+    Case8_5.div.should('exist');
   });
 
   class Case8_6 {

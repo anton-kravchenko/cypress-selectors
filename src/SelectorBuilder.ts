@@ -42,11 +42,11 @@ const buildSelector = (
   getConfig: () => Configuration,
 ): any => {
   const storage = registerStorageAndSelector(selector, host);
-  debugger;
+
   const getter = generateElementGetter(storage, selector, getConfig);
   // @ts-ignore
   getter[internalAliasKey] = selector.internalAlias; // TODO: check uniqueness of the key -> Symbol(propertyName);
-  debugger;
+
   if (isConfigurableProperty(host, propertyName)) {
     delete host[propertyName];
     const proxy = generateProxy(getter, selector.internalAlias);
@@ -65,14 +65,19 @@ const generateProxy = (getter: () => Cypress.Chainable<any>, internalAlias: stri
     {},
     {
       get(_host: object, field: string | symbol, _receiver: any): any {
-        // @ts-ignore
-        if (typeof field === 'symbol') return _host[field];
-        const chainer = getter();
+        debugger;
+
+        if (typeof field === 'symbol' && internalAliasKey === field) {
+          // @ts-ignore
+          return _host[field];
+        }
+
+        // TODO: set type of chainer
+        const chainer = getter(); // TODO: rename to chainer
         // @ts-ignore
         const value = chainer[field];
-        // @ts-ignore
-        console.log('PARENT ALIAS', _host[internalAlias], _host[internalAliasKey]);
-        return value;
+
+        return typeof value === 'function' ? value.bind(chainer) : value;
       },
     },
   );
@@ -92,7 +97,6 @@ const registerStorageAndSelector = (selector: Selector, host: Host): HostWithSel
 
 const registerSelectorsStorageIfNotRegistered = (host: Host): HostWithSelectors => {
   if (hasSelectorsStorage(host) === false) {
-    debugger;
     (host as HostWithSelectors)[selectorsByAliasKey] = new Map();
   }
   return host as HostWithSelectors;
@@ -154,7 +158,6 @@ const collectSelectorsChain = (
 };
 
 const getParentSelectorOrThrow = (storage: SelectorsStorage, alias: string) => {
-  debugger;
   if (storage.has(alias)) return storage.get(alias) as Selector;
   else throw buildException(`Failed to retrieve parent selector by "${alias}"`, 'NO SUCH ALIAS');
 };

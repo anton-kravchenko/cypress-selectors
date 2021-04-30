@@ -1,5 +1,7 @@
 import type { Host } from './SelectorBuilder';
 // FIXME: bad destination for it
+
+export const internalAliasLabel = 'INTERNAL_ALIAS_KEY';
 export const internalAliasKey: unique symbol = Symbol('INTERNAL_ALIAS_KEY');
 
 const LOG_PREFIX = `[cypress-selectors]`;

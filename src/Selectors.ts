@@ -10,7 +10,10 @@ import { registerInternalXPathCommand } from './XPath';
 registerInternalXPathCommand();
 
 import type { Host, SelectorType, SelectorMeta } from './SelectorBuilder';
-import { internalAliasKey } from './utils';
+import { internalAliasKey, internalAliasLabel } from './utils';
+
+// TODO: maybe use interface to hide the details
+type Selector = Cypress.Chainable & { [internalAliasLabel]: string };
 
 type ExternalSelectorConfig = {
   alias?: string;
@@ -18,7 +21,7 @@ type ExternalSelectorConfig = {
   attribute?: string;
   eq?: number;
   timeout?: number;
-  parent?: Cypress.Chainable; // TODO: add branded type
+  parent?: Selector; // TODO: add branded type
 };
 
 // TODO: is it possible to use parents from another POs?
@@ -70,5 +73,6 @@ const By = {
 };
 
 export { By, ByAttribute, ByType, ByClass, ById, BySelector, ByXPath };
+export type { Selector };
 
 // Совершенство утомляет тех у кого нет вкуса

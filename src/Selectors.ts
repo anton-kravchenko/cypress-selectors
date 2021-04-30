@@ -4,55 +4,52 @@
 import { pick } from 'lodash';
 
 import { buildSelector } from './SelectorBuilder';
-import { getConfiguration } from './ConfigureSelectors';
+
 import { throwIfNotRunningInCypressEnv } from './utils';
 import { registerInternalXPathCommand } from './XPath';
 registerInternalXPathCommand();
 
-import type { Host, SelectorType } from './SelectorBuilder';
+import type { Host, SelectorType, SelectorMeta } from './SelectorBuilder';
 import { internalAliasKey } from './utils';
 
-type SelectorConfig = {
+type ExternalSelectorConfig = {
   alias?: string;
   parentAlias?: string;
   attribute?: string;
   eq?: number;
   timeout?: number;
-  parent?: any; // TODO: add branded type
+  parent?: Cypress.Chainable; // TODO: add branded type
 };
 
 // TODO: is it possible to use parents from another POs?
 
-/**
- * Options:
- 1) string literal of keys as parent
- 2) link to element
- */
-const BuildSelectorBy = (type: SelectorType) => (value: string, config: SelectorConfig = {}) => {
+const BuildSelectorBy = (type: SelectorType) => (
+  value: string,
+  config: ExternalSelectorConfig = {},
+) => {
   throwIfNotRunningInCypressEnv();
 
-  const selectorConfig = {
-    ...pick(config, ['alias', 'parentAlias', 'attribute', 'eq', 'timeout', 'parent']),
-    value,
-    type,
-  };
+  const safeConfig = pick(config, ['alias', 'parentAlias', 'attribute', 'eq', 'timeout', 'parent']);
+  const selectorConfig = { ...safeConfig, value, type };
 
-  return (host: Host, propertyName: string) => {
+  return (host: Host, property: string) => {
+    const internalAlias = `[cypress-selectors] internal-alias-${property} [${new Date().getTime()}]`;
+
     const internalParentAlias = selectorConfig.parent
-      ? selectorConfig.parent[internalAliasKey]
+      ? // @ts-ignore
+        selectorConfig.parent[internalAliasKey]
       : undefined;
-    const internalAlias = `internal-alias-${propertyName}`; // TODO: check uniqueness of the key -> Symbol(propertyName);
+
+    // TODO: what if parent is defined but internalParentAlias is not?
+    // TODO: what to do if given both parentAlias and parent?
 
     const config = internalParentAlias
-      ? { ...selectorConfig, internalAlias, internalParentAlias, parentAlias: internalParentAlias } // TODO: figure out how to differ them
+      ? { ...selectorConfig, internalAlias, internalParentAlias, parentAlias: internalParentAlias } // TODO: figure out how to differ them (parentAlias vs internalParentAlias)
       : { ...selectorConfig, internalAlias };
 
-    return buildSelector(
-      { ...config, meta: { host: host.name, property: propertyName } },
-      host,
-      propertyName,
-      getConfiguration,
-    );
+    const meta: SelectorMeta = { host, property };
+
+    return buildSelector({ type, config, meta });
   };
 };
 

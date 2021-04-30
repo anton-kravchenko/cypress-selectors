@@ -147,3 +147,5 @@ ResetSelectorsConfiguration();
 <!-- TODO: improve configuration docs -->
 <!-- TODO: `eq` can't be used for XPath-->
 <!-- TODO: add link to the article in the "Motivation" section -->
+<!-- TODO: think about "typing" parentAliases -->
+<!-- TODO: Add supported Cypress versions -->

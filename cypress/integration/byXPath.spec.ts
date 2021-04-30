@@ -243,9 +243,9 @@ context('XPath utils', () => {
   context('groupSelectorsByTypeSequentially function', () => {
     it('should return a single array inside array for non XPath selectors', () => {
       const nonXPathSelectors: Array<Selector> = [
-        { type: 'attribute', value: 'a' } as Selector,
-        { type: 'class', value: 'btn' } as Selector,
-        { type: 'id', value: 'app' } as Selector,
+        withMeta({ type: 'attribute', config: { value: 'a', internalAlias: 'a' } }),
+        withMeta({ type: 'class', config: { value: 'btn', internalAlias: 'btn' } }),
+        withMeta({ type: 'id', config: { value: 'app', internalAlias: 'app' } }),
       ];
 
       expect(groupSelectorsByTypeSequentially(nonXPathSelectors)).to.deep.equal([
@@ -255,27 +255,30 @@ context('XPath utils', () => {
 
     it('should return 3 groups if XPath selector is in the middle of an array of selectors', () => {
       const selectorsWithXPathInTheMiddle: Array<Selector> = [
-        { type: 'attribute', value: 'a' } as Selector,
-        { type: 'class', value: 'btn' } as Selector,
-        { type: 'xpath', value: '//h1' } as Selector,
-        { type: 'id', value: 'app' } as Selector,
-        { type: 'type', value: 'button' } as Selector,
+        withMeta({ type: 'attribute', config: { value: 'a', internalAlias: 'a' } }),
+        withMeta({ type: 'class', config: { value: 'btn', internalAlias: 'btn' } }),
+        withMeta({ type: 'xpath', config: { value: '//h1', internalAlias: '//h1' } }),
+        withMeta({ type: 'id', config: { value: 'app', internalAlias: 'app' } }),
+        withMeta({ type: 'type', config: { value: 'button', internalAlias: 'button' } }),
       ];
 
       expect(groupSelectorsByTypeSequentially(selectorsWithXPathInTheMiddle)).to.deep.equal([
         {
           type: 'CSS',
           selectors: [
-            { type: 'attribute', value: 'a' },
-            { type: 'class', value: 'btn' },
+            withMeta({ type: 'attribute', config: { value: 'a', internalAlias: 'a' } }),
+            withMeta({ type: 'class', config: { value: 'btn', internalAlias: 'btn' } }),
           ],
         },
-        { type: 'XPath', selector: { type: 'xpath', value: '//h1' } },
+        {
+          type: 'XPath',
+          selector: withMeta({ type: 'xpath', config: { value: '//h1', internalAlias: '//h1' } }),
+        },
         {
           type: 'CSS',
           selectors: [
-            { type: 'id', value: 'app' },
-            { type: 'type', value: 'button' },
+            withMeta({ type: 'id', config: { value: 'app', internalAlias: 'app' } }),
+            withMeta({ type: 'type', config: { value: 'button', internalAlias: 'button' } }),
           ],
         },
       ]);
@@ -283,20 +286,23 @@ context('XPath utils', () => {
 
     it('should return 2 chunks if XPath selector is the first one', () => {
       const selectorsWithXPathSelectorInTheBeginning: Array<Selector> = [
-        { type: 'xpath', value: '//h1' } as Selector,
-        { type: 'attribute', value: 'a' } as Selector,
-        { type: 'class', value: 'btn' } as Selector,
+        withMeta({ type: 'xpath', config: { value: '//h1', internalAlias: '//h1' } }),
+        withMeta({ type: 'attribute', config: { value: 'a', internalAlias: 'a' } }),
+        withMeta({ type: 'class', config: { value: 'btn', internalAlias: 'btn' } }),
       ];
 
       expect(
         groupSelectorsByTypeSequentially(selectorsWithXPathSelectorInTheBeginning),
       ).to.deep.equal([
-        { type: 'XPath', selector: { type: 'xpath', value: '//h1' } },
+        {
+          type: 'XPath',
+          selector: withMeta({ type: 'xpath', config: { value: '//h1', internalAlias: '//h1' } }),
+        },
         {
           type: 'CSS',
           selectors: [
-            { type: 'attribute', value: 'a' },
-            { type: 'class', value: 'btn' },
+            withMeta({ type: 'attribute', config: { value: 'a', internalAlias: 'a' } }),
+            withMeta({ type: 'class', config: { value: 'btn', internalAlias: 'btn' } }),
           ],
         },
       ]);
@@ -304,60 +310,73 @@ context('XPath utils', () => {
 
     it('should return 2 chunks if XPath selector is in the end of list', () => {
       const selectorsWithXPathSelectorInTheEnd: Array<Selector> = [
-        { type: 'attribute', value: 'a' } as Selector,
-        { type: 'class', value: 'btn' } as Selector,
-        { type: 'xpath', value: '//h1' } as Selector,
+        withMeta({ type: 'attribute', config: { value: 'a', internalAlias: 'a' } }),
+        withMeta({ type: 'class', config: { value: 'btn', internalAlias: 'btn' } }),
+        withMeta({ type: 'xpath', config: { value: '//h1', internalAlias: '//h1' } }),
       ];
       expect(groupSelectorsByTypeSequentially(selectorsWithXPathSelectorInTheEnd)).to.deep.equal([
         {
           type: 'CSS',
           selectors: [
-            { type: 'attribute', value: 'a' },
-            { type: 'class', value: 'btn' },
+            withMeta({ type: 'attribute', config: { value: 'a', internalAlias: 'a' } }),
+            withMeta({ type: 'class', config: { value: 'btn', internalAlias: 'btn' } }),
           ],
         },
-        { type: 'XPath', selector: { type: 'xpath', value: '//h1' } },
+        {
+          type: 'XPath',
+          selector: withMeta({ type: 'xpath', config: { value: '//h1', internalAlias: '//h1' } }),
+        },
       ]);
     });
 
-    // TODO: revisit structure of selector and remove type CAST
     it('should return 5 chunks with 2 XPath chunks', () => {
       const selectors: Array<Selector> = [
-        { type: 'selector', value: 'a' } as Selector,
-        { type: 'id', value: 'abc' } as Selector,
-        { type: 'xpath', value: '//h1' } as Selector,
-        { type: 'attribute', value: 'a' } as Selector,
-        { type: 'class', value: 'btn' } as Selector,
-        { type: 'xpath', value: '//div' } as Selector,
-        { type: 'attribute', value: 'a' } as Selector,
-        { type: 'id', value: 'def' } as Selector,
+        withMeta({ type: 'selector', config: { value: 'a', internalAlias: 'a' } }),
+        withMeta({ type: 'id', config: { value: 'abc', internalAlias: 'abc' } }),
+        withMeta({ type: 'xpath', config: { value: '//h1', internalAlias: '//h1' } }),
+        withMeta({ type: 'attribute', config: { value: 'a', internalAlias: 'a' } }),
+        withMeta({ type: 'class', config: { value: 'btn', internalAlias: 'btn' } }),
+        withMeta({ type: 'xpath', config: { value: '//div', internalAlias: '//div' } }),
+        withMeta({ type: 'attribute', config: { value: 'a', internalAlias: 'a' } }),
+        withMeta({ type: 'id', config: { value: 'def', internalAlias: 'def' } }),
       ];
 
       expect(groupSelectorsByTypeSequentially(selectors)).to.deep.equal([
         {
           type: 'CSS',
           selectors: [
-            { type: 'selector', value: 'a' },
-            { type: 'id', value: 'abc' },
+            withMeta({ type: 'selector', config: { value: 'a', internalAlias: 'a' } }),
+            withMeta({ type: 'id', config: { value: 'abc', internalAlias: 'abc' } }),
           ],
         },
-        { type: 'XPath', selector: { type: 'xpath', value: '//h1' } },
+        {
+          type: 'XPath',
+          selector: withMeta({ type: 'xpath', config: { value: '//h1', internalAlias: '//h1' } }),
+        },
         {
           type: 'CSS',
           selectors: [
-            { type: 'attribute', value: 'a' },
-            { type: 'class', value: 'btn' },
+            withMeta({ type: 'attribute', config: { value: 'a', internalAlias: 'a' } }),
+            withMeta({ type: 'class', config: { value: 'btn', internalAlias: 'btn' } }),
           ],
         },
-        { type: 'XPath', selector: { type: 'xpath', value: '//div' } },
+        {
+          type: 'XPath',
+          selector: withMeta({ type: 'xpath', config: { value: '//div', internalAlias: '//div' } }),
+        },
         {
           type: 'CSS',
           selectors: [
-            { type: 'attribute', value: 'a' },
-            { type: 'id', value: 'def' },
+            withMeta({ type: 'attribute', config: { value: 'a', internalAlias: 'a' } }),
+            withMeta({ type: 'id', config: { value: 'def', internalAlias: 'def' } }),
           ],
         },
       ]);
     });
   });
+});
+
+const withMeta = (selector: Omit<Selector, 'meta'>): Selector => ({
+  ...selector,
+  meta: { host: {}, property: 'foo' },
 });

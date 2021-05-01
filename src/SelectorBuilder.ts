@@ -4,9 +4,9 @@ import { max } from 'lodash';
 import { buildException, isConfigurableProperty, logSelector, internalAliasKey } from './utils';
 import { getConfiguration } from './ConfigureSelectors';
 import type { Configuration } from './ConfigureSelectors';
+import { hostIDKey } from './utils';
 
 const selectorsByAliasKey: unique symbol = Symbol('SELECTORS_BY_ALIAS_STORAGE');
-
 type InternalSelectorConfig = {
   value: string;
   alias?: string;
@@ -18,26 +18,30 @@ type InternalSelectorConfig = {
   internalParentAlias?: string;
 };
 type SelectorType = 'attribute' | 'id' | 'class' | 'type' | 'selector' | 'xpath';
-type SelectorMeta = { host: Host; property: string };
+type SelectorMeta = { host: Host; property: string; hostID: number };
 
 type Selector = { config: InternalSelectorConfig; type: SelectorType; meta: SelectorMeta };
 
 type Host = { [key: string]: any };
+type Env = Cypress.cy;
 type SelectorsStorage = Map<string, Selector>;
-type HostWithSelectors = Host & { [selectorsByAliasKey]: SelectorsStorage };
+type EnvWithSelectorsStorage = Env & {
+  [selectorsByAliasKey]: SelectorsStorage;
+  [hostIDKey]: number;
+};
 type SelectorsByEngine =
   | { type: 'CSS'; selectors: Array<Selector> }
   | { type: 'XPath'; selector: Selector };
 
-const buildSelector = (selector: Selector): any => {
+const buildSelector = (selector: Selector, env: Cypress.cy): any => {
   const { host, property } = selector.meta;
-  const storage = registerStorageAndSelector(selector, host);
+  const storage = registerStorageAndSelector(selector, env);
 
   const getter = generateElementGetter(storage, selector);
 
   if (isConfigurableProperty(host, property)) {
     delete host[property];
-    const proxy = generateProxy(getter, selector.config.internalAlias);
+    const proxy = generateProxy(host, selector.meta, getter, selector.config.internalAlias);
     // const descriptor = { enumerable: false, configurable: false, get: getter };
     const descriptor = { enumerable: false, configurable: false, value: proxy };
     return Object.defineProperty(host, property, descriptor);
@@ -48,60 +52,74 @@ const buildSelector = (selector: Selector): any => {
   );
 };
 
-const generateProxy = (getChainer: () => Cypress.Chainable<any>, internalAlias: string) => {
+const generateProxy = (
+  host: Host,
+  meta: SelectorMeta,
+  getChainer: () => Cypress.Chainable<any>,
+  internalAlias: string,
+) => {
   const proxy = new Proxy(
     {},
     {
-      get(_host: object, field: string | symbol): any {
+      // TODO: fix Host type
+      get(proxy: Host, field: string | symbol): any {
         if (typeof field === 'symbol' && internalAliasKey === field) {
-          // @ts-ignore
-          return _host[field];
+          return proxy[(field as unknown) as string];
         }
+        // @ts-ignore
+        console.log('STORAGE', cy[internalAliasKey]);
+
+        // @ts-ignore
+        const hostID = host[hostIDKey];
+        console.log(`[cypress-selectors] Encountered PO ${meta.host.name} with an ID ${hostID}`);
 
         const chainer = getChainer();
-        // @ts-ignore
-        const value = chainer[field];
+        const value = chainer[field as keyof typeof chainer];
 
         return typeof value === 'function' ? value.bind(chainer) : value;
       },
     },
   );
 
-  // @ts-ignore
-  proxy[internalAliasKey] = internalAlias;
+  proxy[(internalAliasKey as unknown) as string] = internalAlias;
 
   return proxy;
 };
 
-const registerStorageAndSelector = (selector: Selector, host: Host): HostWithSelectors => {
-  const hostWithStorage = registerSelectorsStorageIfNotRegistered(host);
-  if (shouldSelectorBeRegistered(selector)) registerSelector(selector, hostWithStorage);
+const registerStorageAndSelector = (
+  selector: Selector,
+  env: Cypress.cy,
+): EnvWithSelectorsStorage => {
+  const envWithStorage = registerSelectorsStorageIfNotRegistered(env);
+  if (shouldSelectorBeRegistered(selector)) registerSelector(selector, envWithStorage);
 
-  return hostWithStorage;
+  return envWithStorage;
 };
 
-const registerSelectorsStorageIfNotRegistered = (host: Host): HostWithSelectors => {
-  if (hasSelectorsStorage(host) === false) {
-    (host as HostWithSelectors)[selectorsByAliasKey] = new Map();
+const registerSelectorsStorageIfNotRegistered = (env: Cypress.cy): EnvWithSelectorsStorage => {
+  if (hasSelectorsStorage(env) === false) {
+    // @ts-ignore
+    env[selectorsByAliasKey] = new Map();
   }
-  return host as HostWithSelectors;
+  // @ts-ignore
+  return env as EnvWithSelectorsStorage;
 };
 
-const hasSelectorsStorage = (host: Host): boolean => host.hasOwnProperty(selectorsByAliasKey);
+const hasSelectorsStorage = (env: Env): boolean => env.hasOwnProperty(selectorsByAliasKey);
 
 const shouldSelectorBeRegistered = (selector: Selector) =>
   typeof selector.config.alias === 'string' || typeof selector.config.internalAlias === 'string';
 
-const registerSelector = (selector: Selector, hostWithStorage: HostWithSelectors) => {
+const registerSelector = (selector: Selector, envWithStorage: EnvWithSelectorsStorage) => {
   const { alias, internalAlias } = selector.config;
-  const selectorStorage = getSelectorsStorage(hostWithStorage);
+  const selectorStorage = getSelectorsStorage(envWithStorage);
 
   if (alias) registerSelectorInStorageByAlias(selector, selectorStorage, alias);
   registerSelectorInStorageByAlias(selector, selectorStorage, internalAlias);
 };
 
-const getSelectorsStorage = (host: HostWithSelectors): SelectorsStorage =>
-  host[selectorsByAliasKey];
+const getSelectorsStorage = (env: EnvWithSelectorsStorage): SelectorsStorage =>
+  env[selectorsByAliasKey];
 
 const registerSelectorInStorageByAlias = (
   selector: Selector,
@@ -117,7 +135,7 @@ const registerSelectorInStorageByAlias = (
   return storage.set(alias, selector);
 };
 
-const generateElementGetter = (storage: HostWithSelectors, selector: Selector) => () => {
+const generateElementGetter = (env: EnvWithSelectorsStorage, selector: Selector) => () => {
   const configuration = getConfiguration();
 
   if (configuration.isLoggingEnabled) {
@@ -127,7 +145,7 @@ const generateElementGetter = (storage: HostWithSelectors, selector: Selector) =
     );
   }
 
-  const chainOfSelectors = collectSelectorsChain(storage[selectorsByAliasKey], selector);
+  const chainOfSelectors = collectSelectorsChain(getSelectorsStorage(env), selector);
   return mapSelectorConfigsToSelectorsChain(chainOfSelectors, configuration);
 };
 
@@ -140,13 +158,22 @@ const collectSelectorsChain = (
   const { parentAlias } = entrySelector.config;
 
   return parentAlias
-    ? collectSelectorsChain(storage, getParentSelectorOrThrow(storage, parentAlias), selectorsChain)
+    ? collectSelectorsChain(
+        storage,
+        getParentSelectorOrThrow(storage, entrySelector),
+        selectorsChain,
+      )
     : selectorsChain;
 };
 
-const getParentSelectorOrThrow = (storage: SelectorsStorage, alias: string) => {
-  if (storage.has(alias)) return storage.get(alias) as Selector;
-  else throw buildException(`Failed to retrieve parent selector by "${alias}"`, 'NO SUCH ALIAS');
+const getParentSelectorOrThrow = (storage: SelectorsStorage, entrySelector: Selector) => {
+  const { parentAlias } = entrySelector.config;
+
+  console.log('STORAGE', storage);
+
+  if (parentAlias && storage.has(parentAlias)) return storage.get(parentAlias) as Selector;
+  else
+    throw buildException(`Failed to retrieve parent selector by "${parentAlias}"`, 'NO SUCH ALIAS');
 };
 
 const ANY_LEVEL_DESCENDANT = ' ';

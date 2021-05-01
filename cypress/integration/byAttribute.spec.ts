@@ -42,9 +42,6 @@ context('ByAttribute selector', () => {
 
     @ByAttribute('child-a-b', { parentAlias: 'parentB' })
     static childrenOfSibling: Selector;
-
-    @ByAttribute('child-a-b', { parentAlias: 'parentB' })
-    static childrenOfSibling1: Selector;
   }
   it('should locate element by attribute inside 2 parents', () => {
     cy.visit('/TestPage.html#1.3');
@@ -52,21 +49,9 @@ context('ByAttribute selector', () => {
   });
 
   class Case1_3_1 {
-    // @ByAttribute('parent-a', { alias: 'parentA' })
-    @ByAttribute('parent-a')
-    static parent: Selector;
-
-    // @ByAttribute('parent-b', { alias: 'parentB', parentAlias: 'parentA' })
-    @ByAttribute('parent-b', { parent: Case1_3_1.parent })
-    static sibling: Selector;
-
-    // @ByAttribute('child-a-b', { parentAlias: 'parentB' })
-    @ByAttribute('child-a-b', { parent: Case1_3_1.sibling })
-    static childrenOfSibling: Selector;
-
-    // @ByAttribute('child-a-b', { parentAlias: 'parentB' })
-    @ByAttribute('child-a-b', { parent: Case1_3_1.sibling })
-    static childrenOfSibling1: Selector;
+    @ByAttribute('parent-a') static parent: Selector;
+    @ByAttribute('parent-b', { parent: Case1_3_1.parent }) static sibling: Selector;
+    @ByAttribute('child-a-b', { parent: Case1_3_1.sibling }) static childrenOfSibling: Selector;
   }
   it('should locate element by attribute inside 2 parents (parent-child relation is defined by link)', () => {
     cy.visit('/TestPage.html#1.3');
@@ -149,5 +134,24 @@ context('ByAttribute selector', () => {
 
     ConfigureSelectors({ defaultAttribute: 'second-custom-attribute' });
     Case1_8.secondElement.should('have.text', `[second-custom-attribute=another-id]`);
+  });
+
+  class Case1_9_parent {
+    @ByAttribute('root', { alias: 'root' }) static root: Selector;
+    @ByAttribute('parent', { parentAlias: 'root' }) static parent: Selector;
+  }
+
+  class Case1_9_children {
+    @ByAttribute('children', { parent: Case1_9_parent.root }) static childrenOfRoot: Selector;
+    @ByAttribute('children', { parent: Case1_9_parent.parent, parentAlias: '123' }) // TODO: must ignored
+    static childrenOfParent: Selector;
+  }
+
+  it('should allow using selectors from external classes as parents', () => {
+    cy.visit('/TestPage.html#1.9');
+    ConfigureSelectors({ searchOnlyFirstLevelDescendants: true });
+
+    Case1_9_children.childrenOfParent.should('have.text', 'Children of parent');
+    Case1_9_children.childrenOfRoot.should('have.text', 'Children of root');
   });
 });

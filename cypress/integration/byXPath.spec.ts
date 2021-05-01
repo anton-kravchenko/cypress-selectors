@@ -375,5 +375,5 @@ context('XPath utils', () => {
 
 const withMeta = (selector: Omit<SelectorType, 'meta'>): SelectorType => ({
   ...selector,
-  meta: { host: {}, property: 'foo' },
+  meta: { host: {}, property: 'foo', hostID: 123 },
 });

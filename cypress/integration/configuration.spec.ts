@@ -82,7 +82,5 @@ context('Configuration', () => {
 });
 
 // TODO: introduce and "brand" "selector" type
-// FIXME: issue with duplicate "aliases": either 1) use different storage 2) generate unique prefixes for aliases
-
-// FIXME: [cypress-selectors] Querying by selector [Object object] - logging might be broken
 // TODO: throw when supplying both parent and parentAlias?
+// TODO warn about empty alias and parentAlias

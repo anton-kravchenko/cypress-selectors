@@ -1,19 +1,19 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 /// <reference types="cypress" />
 
-import { pick } from 'lodash';
+import { pick, uniqueId } from 'lodash';
 
 import { buildSelector } from './SelectorBuilder';
-import { hostIDKey, internalAliasKey, internalAliasLabel } from './InternalSymbols';
+import { hostIDKey, internalAliasKey } from './InternalSymbols';
 import { throwIfNotRunningInCypressEnv, validate } from './Validators';
 
 import { registerInternalXPathCommand } from './XPath';
 registerInternalXPathCommand();
 
-import type { Host, SelectorType, SelectorMeta } from './SelectorBuilder';
+import type { Host, SelectorType, SelectorMeta, EnvWithSelectorsStorage } from './SelectorBuilder';
 
 interface Selector extends Cypress.Chainable {
-  [internalAliasLabel]: string;
+  [internalAliasKey]: string;
 }
 
 export type ExternalSelectorConfig = {
@@ -25,11 +25,9 @@ export type ExternalSelectorConfig = {
   parent?: Selector;
 };
 
-const getNewHostID = (): number => {
-  // @ts-ignore
-  const hostID = (cy[hostIDKey] ?? 0) + 1;
-  // @ts-ignore
-  cy[hostIDKey] = hostID;
+const getNewHostID = (env: EnvWithSelectorsStorage): number => {
+  const hostID = (env[hostIDKey] ?? 0) + 1;
+  env[hostIDKey] = hostID;
 
   return hostID;
 };
@@ -55,19 +53,14 @@ const BuildSelectorBy = (type: SelectorType) => (
       value,
       type,
     };
-    const hostID = host[(hostIDKey as unknown) as string] ?? getNewHostID();
+    const hostID = host[hostIDKey] ?? getNewHostID((cy as unknown) as EnvWithSelectorsStorage);
+    host[hostIDKey] = hostID;
 
-    // @ts-ignore
-    host[(hostIDKey as unknown) as string] = hostID;
-    // @ts-ignore
-    console.log(`[cypress-selectors] ${host.name} with an id`, host[hostIDKey]);
-
-    const internalAlias = `host-id: ${hostID}, internal-alias: ${property} [${new Date().getTime()}]`;
-    // const internalAlias = `[cypress-selectors] host-id:${hostID}, internal-alias-${property} [${new Date().getTime()}]`;
+    // const internalAlias = `host-id: ${hostID}, internal-alias: ${property} [${new Date().getTime()}]`;
+    const internalAlias = `host-id: ${hostID}, internal-alias: ${property}`;
 
     const internalParentAlias = selectorConfig.parent
-      ? // @ts-ignore
-        selectorConfig.parent[internalAliasKey]
+      ? selectorConfig.parent[internalAliasKey]
       : undefined;
 
     // TODO: what if parent is defined but internalParentAlias is not?
@@ -76,10 +69,9 @@ const BuildSelectorBy = (type: SelectorType) => (
       ? { ...selectorConfig, internalAlias, internalParentAlias, parentAlias: internalParentAlias } // TODO: figure out how to differ them (parentAlias vs internalParentAlias)
       : { ...selectorConfig, internalAlias };
 
-    config = {
-      ...config,
-      alias: config.alias ? `host-id: ${hostID}, alias: ${config.alias}` : undefined,
-    };
+    if (config.alias) {
+      config = { ...config, alias: `host-id: ${hostID}, alias: ${config.alias}` };
+    }
 
     if (safeConfig.parentAlias) {
       config = { ...config, parentAlias: `host-id: ${hostID}, alias: ${safeConfig.parentAlias}` };
@@ -90,8 +82,6 @@ const BuildSelectorBy = (type: SelectorType) => (
     return buildSelector({ type, config, meta }, cy);
   };
 };
-
-// TODO: check logging without hostID
 
 const ByAttribute = BuildSelectorBy('attribute');
 const ByType = BuildSelectorBy('type');

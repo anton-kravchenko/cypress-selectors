@@ -1,14 +1,14 @@
 // FIXME: install linter for ts
 
 import { flow } from 'lodash';
-import { log, appendLogPrefix } from './Logger';
+import { Logger } from './Logger';
 import { internalAliasKey } from './InternalSymbols';
 import type { ExternalSelectorConfig } from './Selectors';
 
 const throwIfNotRunningInCypressEnv = (): void | never => {
   if (!cy || typeof cy.get !== 'function')
     throw Error(
-      appendLogPrefix(
+      Logger.appendLogPrefix(
         `Can't find \`cy.get\` function. Probably you're running outside of Cypress context. Please make sure, that you're querying elements inside Cypress tests.`,
       ),
     );
@@ -46,7 +46,8 @@ const shouldHaveType = (
   expectedType: string,
 ): ExternalSelectorConfig => {
   const actualType = typeof externalConfig[attribute];
-  if (actualType !== expectedType) {
+
+  if (attribute in externalConfig && actualType !== expectedType) {
     warnAboutTypeMismatch(displayProperty, attribute, expectedType, actualType);
     delete externalConfig[attribute];
   }
@@ -145,11 +146,7 @@ const shouldProvideParentDefinedOnlyViaCypressSelectors = ({
   externalConfig,
   displayProperty,
 }: ExternalSelectorConfigWithDisplayProperty): ExternalSelectorConfigWithDisplayProperty => {
-  if (
-    externalConfig.parent &&
-    // @ts-ignore
-    typeof externalConfig.parent[(internalAliasKey as unknown) as string] !== 'string'
-  ) {
+  if (externalConfig.parent && typeof externalConfig.parent[internalAliasKey] !== 'string') {
     warnAboutInvalidParent(displayProperty);
     delete externalConfig['parent'];
   }
@@ -162,37 +159,37 @@ const warnAboutSupplyingParentAndParentAlias = (displayProperty: string): void =
     `To fix this warning remove either 'parent' or 'parentAlias' attribute.`,
   ].join(' ');
 
-  log(message, 'warning');
+  Logger.log(message, 'warning');
 };
 
 const warnAboutEmptyAlias = (displayProperty: string): void => {
   const message = `Selector "${displayProperty}": 'alias' attribute can't hold an empty string as a value. Consider either removing it or supplying non empty string as an alias.`;
-  log(message, 'warning');
+  Logger.log(message, 'warning');
 };
 
 const warnAboutEmptyParentAlias = (displayProperty: string): void => {
   const message = `Selector "${displayProperty}": 'parentAlias' attribute can't hold an empty string as a value. Consider either removing it or supplying non empty string as a parentAlias.`;
-  log(message, 'warning');
+  Logger.log(message, 'warning');
 };
 
 const warnAboutEmptyCustomAttribute = (displayProperty: string): void => {
   const message = `Selector "${displayProperty}": 'attribute' attribute can't hold an empty string as a value. Consider either removing it or supplying non empty string as a custom attribute.`;
-  log(message, 'error');
+  Logger.log(message, 'error');
 };
 
 const warnAboutNegativeEqAttribute = (displayProperty: string): void => {
   const message = `Selector "${displayProperty}": 'eq' attribute be a negative value.`;
-  log(message, 'error');
+  Logger.log(message, 'error');
 };
 
 const warnAboutNegativeTimeout = (displayProperty: string): void => {
   const message = `Selector "${displayProperty}": 'timeout' attribute can't be a negative value`;
-  log(message, 'error');
+  Logger.log(message, 'error');
 };
 
 const warnAboutInvalidParent = (displayProperty: string): void => {
   const message = `Selector "${displayProperty}": the value set as 'parent' is not a valid Selector.`;
-  log(message, 'error');
+  Logger.log(message, 'error');
 };
 
 const warnAboutTypeMismatch = (
@@ -202,7 +199,7 @@ const warnAboutTypeMismatch = (
   actualType: string,
 ) => {
   const message = `Selector "${displayProperty}": attribute "${attribute}" has the wrong type: expected - ${expectedType}, actual - ${actualType}.`;
-  log(message, 'error');
+  Logger.log(message, 'error');
 };
 
 export { throwIfNotRunningInCypressEnv, validate };

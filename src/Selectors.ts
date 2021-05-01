@@ -4,13 +4,8 @@
 import { pick } from 'lodash';
 
 import { buildSelector } from './SelectorBuilder';
-import {
-  throwIfNotRunningInCypressEnv,
-  hostIDKey,
-  internalAliasKey,
-  internalAliasLabel,
-  warnAboutSupplyingParentAndParentAlias,
-} from './utils';
+import { hostIDKey, internalAliasKey, internalAliasLabel } from './InternalSymbols';
+import { throwIfNotRunningInCypressEnv, validate } from './Validators';
 
 import { registerInternalXPathCommand } from './XPath';
 registerInternalXPathCommand();
@@ -21,7 +16,7 @@ interface Selector extends Cypress.Chainable {
   [internalAliasLabel]: string;
 }
 
-type ExternalSelectorConfig = {
+export type ExternalSelectorConfig = {
   alias?: string;
   parentAlias?: string;
   attribute?: string;
@@ -29,8 +24,6 @@ type ExternalSelectorConfig = {
   timeout?: number;
   parent?: Selector;
 };
-
-// TODO: is it possible to use parents from another POs?
 
 const getNewHostID = (): number => {
   // @ts-ignore
@@ -47,26 +40,23 @@ const BuildSelectorBy = (type: SelectorType) => (
 ) => {
   throwIfNotRunningInCypressEnv();
 
-  const safeConfig = pick(config, ['alias', 'parentAlias', 'attribute', 'eq', 'timeout', 'parent']);
-  const selectorConfig = { ...safeConfig, value, type };
+  const safeConfig: ExternalSelectorConfig = pick(config, [
+    'alias',
+    'parentAlias',
+    'attribute',
+    'eq',
+    'timeout',
+    'parent',
+  ]);
 
   return (host: Host, property: string) => {
+    const selectorConfig = {
+      ...validate({ externalConfig: safeConfig, displayProperty: property }),
+      value,
+      type,
+    };
     const hostID = host[(hostIDKey as unknown) as string] ?? getNewHostID();
 
-    if (
-      typeof selectorConfig.parent !== 'undefined' &&
-      typeof selectorConfig.parentAlias === 'string'
-    ) {
-      warnAboutSupplyingParentAndParentAlias(
-        `${host.name}.${property}`,
-        // @ts-ignore
-        selectorConfig.parent[internalAliasKey],
-        selectorConfig.parentAlias,
-      );
-      // TODO: remove parentAlias rom config
-      // TODO: add validation to selector config
-      // TODO: add a test checking that parentAlias is really ignored
-    }
     // @ts-ignore
     host[(hostIDKey as unknown) as string] = hostID;
     // @ts-ignore
@@ -81,7 +71,6 @@ const BuildSelectorBy = (type: SelectorType) => (
       : undefined;
 
     // TODO: what if parent is defined but internalParentAlias is not?
-    // TODO: what to do if given both parentAlias and parent?
 
     let config = internalParentAlias
       ? { ...selectorConfig, internalAlias, internalParentAlias, parentAlias: internalParentAlias } // TODO: figure out how to differ them (parentAlias vs internalParentAlias)
@@ -120,10 +109,7 @@ const By = {
   XPath: ByXPath,
 };
 // TODO: handle format of error [cypress-selectors] Error type: NO SUCH ALIAS, message: Failed to retrieve parent selector by "[cypress-selectors] internal-alias-root [1619786948276]"
-
-// TODO: check how relation and aliases work when dealing with different tests/modules
-// TODO: check if cy resets between test runs
-// TODO: try to choose more predictable hostID
+// TODO: revise format of aliases
 // TODO: implement internal debugging
 
 export { By, ByAttribute, ByType, ByClass, ById, BySelector, ByXPath };

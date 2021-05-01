@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { max } from 'lodash';
-import { buildException, isConfigurableProperty, logSelector, internalAliasKey } from './utils';
+import { buildException, isConfigurableProperty } from './utils';
 import { getConfiguration } from './ConfigureSelectors';
+import { internalAliasKey, hostIDKey } from './InternalSymbols';
+import { logSelector } from './Logger';
+
 import type { Configuration } from './ConfigureSelectors';
-import { hostIDKey } from './utils';
 
 const selectorsByAliasKey: unique symbol = Symbol('SELECTORS_BY_ALIAS_STORAGE');
 type InternalSelectorConfig = {

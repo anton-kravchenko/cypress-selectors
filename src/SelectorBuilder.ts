@@ -1,9 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { max } from 'lodash';
-import { buildException, isConfigurableProperty } from './utils';
+import {
+  buildException,
+  isConfigurableProperty,
+  makeDisplayPropName,
+  makeInternalAlias,
+} from './utils';
 import { getConfiguration } from './ConfigureSelectors';
-import { internalAliasKey, hostIDKey } from './InternalSymbols';
+import { internalAliasKey, hostIDKey, byExternalAlias } from './InternalSymbols';
 import { Logger } from './Logger';
 
 import type { Configuration } from './ConfigureSelectors';
@@ -11,13 +16,14 @@ import type { Configuration } from './ConfigureSelectors';
 const selectorsByAliasKey: unique symbol = Symbol('SELECTORS_BY_ALIAS_STORAGE');
 type InternalSelectorConfig = {
   value: string;
+
   alias?: string;
+  internalAlias: string;
   parentAlias?: string;
+  internalParentAlias?: string;
   attribute?: string;
   eq?: number;
   timeout?: number;
-  internalAlias: string;
-  internalParentAlias?: string;
 };
 type SelectorType = 'attribute' | 'id' | 'class' | 'type' | 'selector' | 'xpath';
 type SelectorMeta = { host: Host; property: string; hostID: number };
@@ -27,6 +33,9 @@ type Selector = { config: InternalSelectorConfig; type: SelectorType; meta: Sele
 type Host = {
   [key: string]: any;
   [hostIDKey]?: number;
+  [byExternalAlias]?: Map<string, Selector>;
+};
+type SelectorProxy = {
   [internalAliasKey]?: string;
 };
 
@@ -49,7 +58,7 @@ const buildSelector = (selector: Selector, env: Env): any => {
 
   if (isConfigurableProperty(host, property)) {
     delete host[property];
-    const proxy = generateProxy(host, selector.meta, elementGetter, selector.config.internalAlias);
+    const proxy = generateProxy(selector, elementGetter);
 
     const descriptor = { enumerable: false, configurable: false, value: proxy };
     return Object.defineProperty(host, property, descriptor);
@@ -60,16 +69,11 @@ const buildSelector = (selector: Selector, env: Env): any => {
   );
 };
 
-const generateProxy = (
-  host: Host,
-  meta: SelectorMeta,
-  getChainer: () => Cypress.Chainable<any>,
-  internalAlias: string,
-) => {
+const generateProxy = (selector: Selector, getChainer: () => Cypress.Chainable<any>) => {
   const proxy = new Proxy(
     {},
     {
-      get(proxy: Host, field: string | symbol): any {
+      get(proxy: SelectorProxy, field: string | symbol): any {
         if (typeof field === 'symbol' && internalAliasKey === field) return proxy[internalAliasKey];
 
         // @ts-ignore
@@ -82,47 +86,36 @@ const generateProxy = (
     },
   );
 
-  proxy[(internalAliasKey as unknown) as string] = internalAlias;
-
+  proxy[internalAliasKey] = selector.config.internalAlias;
   return proxy;
 };
 
-const registerStorageAndSelector = (selector: Selector, env: Env): EnvWithSelectorsStorage => {
-  const envWithStorage = registerSelectorsStorageIfNotRegistered(env);
-  if (shouldSelectorBeRegistered(selector)) registerSelector(selector, envWithStorage);
+const registerStorageAndSelector = (selector: Selector, env: Env): SelectorsStorage => {
+  const storage = registerSelectorsStorageIfNotRegistered(env);
 
-  return envWithStorage;
+  registerSelectorByInternalAlias(selector, storage);
+  if (selector.config.alias) registerSelectorByExternalAlias(selector, selector.config.alias);
+
+  return storage;
 };
 
-const registerSelectorsStorageIfNotRegistered = (env: Env): EnvWithSelectorsStorage => {
+const registerSelectorsStorageIfNotRegistered = (env: Env): SelectorsStorage => {
   if (hasSelectorsStorage(env) === false) {
     (env as EnvWithSelectorsStorage)[selectorsByAliasKey] = new Map();
   }
 
-  return env as EnvWithSelectorsStorage;
+  return (env as EnvWithSelectorsStorage)[selectorsByAliasKey];
 };
 
 const hasSelectorsStorage = (env: Env): boolean => env.hasOwnProperty(selectorsByAliasKey);
 
-const shouldSelectorBeRegistered = (selector: Selector) =>
-  typeof selector.config.alias === 'string' || typeof selector.config.internalAlias === 'string';
-
-const registerSelector = (selector: Selector, envWithStorage: EnvWithSelectorsStorage) => {
-  const { alias, internalAlias } = selector.config;
-  const selectorStorage = getSelectorsStorage(envWithStorage);
-
-  if (alias) registerSelectorInStorageByAlias(selector, selectorStorage, alias);
-  registerSelectorInStorageByAlias(selector, selectorStorage, internalAlias);
+const registerSelectorByInternalAlias = (selector: Selector, storage: SelectorsStorage) => {
+  const { internalAlias } = selector.config;
+  registerSelectorInStorageByInternalAlias(selector, storage, internalAlias);
 };
 
-const getSelectorsStorage = (env: EnvWithSelectorsStorage): SelectorsStorage =>
-  env[selectorsByAliasKey];
-
-const registerSelectorInStorageByAlias = (
-  selector: Selector,
-  storage: SelectorsStorage,
-  alias: string,
-): SelectorsStorage => {
+const registerSelectorByExternalAlias = (selector: Selector, alias: string) => {
+  const storage = registerSelectorByExternalAliasStorageIfNotRegistered(selector.meta.host);
   if (storage.has(alias))
     throw buildException(
       `Element with the alias "${alias}" is already registered.`,
@@ -132,43 +125,81 @@ const registerSelectorInStorageByAlias = (
   return storage.set(alias, selector);
 };
 
-const generateElementGetter = (env: EnvWithSelectorsStorage, selector: Selector) => () => {
+const registerSelectorByExternalAliasStorageIfNotRegistered = (host: Host): Map<string, Selector> =>
+  host[byExternalAlias]
+    ? (host[byExternalAlias] as Map<string, Selector>)
+    : (host[byExternalAlias] = new Map<string, Selector>());
+
+const getStorageOfExternalAliases = (host: Host): SelectorsStorage =>
+  host[byExternalAlias] as SelectorsStorage;
+
+const registerSelectorInStorageByInternalAlias = (
+  selector: Selector,
+  storage: SelectorsStorage,
+  internalAlias: string,
+): SelectorsStorage => {
+  if (storage.has(internalAlias))
+    throw buildException(
+      `Element with the internal-alias "${internalAlias}" is already registered.`,
+      'DUPLICATE ALIAS',
+    );
+
+  return storage.set(internalAlias, selector);
+};
+
+const generateElementGetter = (storage: SelectorsStorage, selector: Selector) => () => {
   const configuration = getConfiguration();
 
   if (configuration.isLoggingEnabled) {
     Logger.logSelector(
       mapSelectorByType(selector, configuration),
-      `${selector.meta.host.name}.${selector.meta.property}`,
+      makeDisplayPropName(selector.meta.host, selector.meta.property),
     );
   }
 
-  const chainOfSelectors = collectSelectorsChain(getSelectorsStorage(env), selector);
+  const chainOfSelectors = collectSelectorsChain(storage, selector);
   return mapSelectorConfigsToSelectorsChain(chainOfSelectors, configuration);
 };
 
 const collectSelectorsChain = (
   storage: SelectorsStorage,
-  entrySelector: Selector,
+  selector: Selector,
   selectorsChain: Array<Selector> = [],
 ): Array<Selector> => {
-  selectorsChain = [entrySelector, ...selectorsChain];
-  const { parentAlias } = entrySelector.config;
+  selectorsChain = [selector, ...selectorsChain];
+  const { parentAlias, internalParentAlias } = selector.config;
 
-  return parentAlias
-    ? collectSelectorsChain(
-        storage,
-        getParentSelectorOrThrow(storage, entrySelector),
-        selectorsChain,
-      )
-    : selectorsChain;
+  if (parentAlias) {
+    const nextSelector = getSelectorByParentAliasOrThrow(selector.meta.host, parentAlias);
+    return collectSelectorsChain(storage, nextSelector, selectorsChain);
+  } else if (internalParentAlias) {
+    const nextSelector = getSelectorByInternalParentAlias(storage, internalParentAlias);
+    return collectSelectorsChain(storage, nextSelector, selectorsChain);
+  }
+  return selectorsChain;
 };
 
-const getParentSelectorOrThrow = (storage: SelectorsStorage, entrySelector: Selector) => {
-  const { parentAlias } = entrySelector.config;
-
-  if (parentAlias && storage.has(parentAlias)) return storage.get(parentAlias) as Selector;
+const getSelectorByParentAliasOrThrow = (host: Host, parentAlias: string) => {
+  const storage = getStorageOfExternalAliases(host);
+  console.log('HOST STORAGE:', storage);
+  if (storage.has(parentAlias)) return storage.get(parentAlias) as Selector;
   else
-    throw buildException(`Failed to retrieve parent selector by "${parentAlias}"`, 'NO SUCH ALIAS');
+    throw buildException(
+      `Failed to retrieve parent selector by "${parentAlias}" alias.`,
+      'NO_SUCH_ALIAS',
+    );
+};
+
+const getSelectorByInternalParentAlias = (
+  storage: SelectorsStorage,
+  internalParentAlias: string,
+) => {
+  if (storage.has(internalParentAlias)) return storage.get(internalParentAlias) as Selector;
+  else
+    throw buildException(
+      `Failed to retrieve parent selector by "${internalParentAlias}" alias.`,
+      'NO_SUCH_ALIAS',
+    );
 };
 
 const ANY_LEVEL_DESCENDANT = ' ';
@@ -273,4 +304,11 @@ const mapSelectorByType = (selector: Selector, configuration: Configuration) => 
 };
 
 export { buildSelector, collectSelectorsChain, groupSelectorsByTypeSequentially };
-export type { Host, Selector, SelectorType, SelectorMeta, EnvWithSelectorsStorage };
+export type {
+  Host,
+  Selector,
+  SelectorType,
+  SelectorMeta,
+  EnvWithSelectorsStorage,
+  InternalSelectorConfig,
+};

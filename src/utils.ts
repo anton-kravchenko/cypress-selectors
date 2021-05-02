@@ -1,5 +1,6 @@
 import { Logger } from './Logger';
-import type { Host } from './SelectorBuilder';
+import { hostIDKey } from './InternalSymbols';
+import type { Host, EnvWithSelectorsStorage } from './SelectorBuilder';
 
 const buildException = (message: string, kind = 'INTERNAL ERROR'): Error =>
   new Error(Logger.appendLogPrefix(`Error type: ${kind}, message: ${message}`));
@@ -10,5 +11,24 @@ const isConfigurableProperty = (host: Host, name: string): boolean => {
 };
 
 const makeDisplayPropName = (host: Host, property: string): string => `${host.name}.${property}`;
+const makeInternalAlias = (hostID: number, alias: string): string =>
+  `host-id: ${hostID}, internal-alias: ${alias}`;
 
-export { buildException, isConfigurableProperty, makeDisplayPropName };
+const registerAndAssignNewHostId = (env: EnvWithSelectorsStorage, host: Host): number => {
+  const hostID = (env[hostIDKey] ?? 0) + 1;
+  env[hostIDKey] = hostID;
+  host[hostIDKey] = hostID;
+
+  return hostID;
+};
+
+const getHostIdFromHost = (host: Host): number | undefined => host[hostIDKey];
+
+export {
+  buildException,
+  isConfigurableProperty,
+  makeDisplayPropName,
+  makeInternalAlias,
+  registerAndAssignNewHostId,
+  getHostIdFromHost,
+};

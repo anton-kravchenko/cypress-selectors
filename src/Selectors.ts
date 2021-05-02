@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 /// <reference types="cypress" />
 
-import { pick, uniqueId } from 'lodash';
+import { pick } from 'lodash';
 
 import { buildSelector } from './SelectorBuilder';
 import { hostIDKey, internalAliasKey } from './InternalSymbols';
@@ -25,13 +25,6 @@ export type ExternalSelectorConfig = {
   parent?: Selector;
 };
 
-const getNewHostID = (env: EnvWithSelectorsStorage): number => {
-  const hostID = (env[hostIDKey] ?? 0) + 1;
-  env[hostIDKey] = hostID;
-
-  return hostID;
-};
-
 const BuildSelectorBy = (type: SelectorType) => (
   value: string,
   config: ExternalSelectorConfig = {},
@@ -48,15 +41,10 @@ const BuildSelectorBy = (type: SelectorType) => (
   ]);
 
   return (host: Host, property: string) => {
-    const selectorConfig = {
-      ...validate({ externalConfig: safeConfig, displayProperty: property }),
-      value,
-      type,
-    };
+    const selectorConfig = { ...validate(safeConfig, property), value, type };
     const hostID = host[hostIDKey] ?? getNewHostID((cy as unknown) as EnvWithSelectorsStorage);
     host[hostIDKey] = hostID;
 
-    // const internalAlias = `host-id: ${hostID}, internal-alias: ${property} [${new Date().getTime()}]`;
     const internalAlias = `host-id: ${hostID}, internal-alias: ${property}`;
 
     const internalParentAlias = selectorConfig.parent
@@ -64,7 +52,7 @@ const BuildSelectorBy = (type: SelectorType) => (
       : undefined;
 
     // TODO: what if parent is defined but internalParentAlias is not?
-
+    // TODO: figure out why do I need alias/internalAlias and parentAlias/internalParentAlias
     let config = internalParentAlias
       ? { ...selectorConfig, internalAlias, internalParentAlias, parentAlias: internalParentAlias } // TODO: figure out how to differ them (parentAlias vs internalParentAlias)
       : { ...selectorConfig, internalAlias };
@@ -82,6 +70,15 @@ const BuildSelectorBy = (type: SelectorType) => (
     return buildSelector({ type, config, meta }, cy);
   };
 };
+
+const getNewHostID = (env: EnvWithSelectorsStorage): number => {
+  const hostID = (env[hostIDKey] ?? 0) + 1;
+  env[hostIDKey] = hostID;
+
+  return hostID;
+};
+
+// TODO: extract all of this
 
 const ByAttribute = BuildSelectorBy('attribute');
 const ByType = BuildSelectorBy('type');

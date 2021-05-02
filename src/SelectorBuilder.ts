@@ -24,7 +24,12 @@ type SelectorMeta = { host: Host; property: string; hostID: number };
 
 type Selector = { config: InternalSelectorConfig; type: SelectorType; meta: SelectorMeta };
 
-type Host = { [key: string]: any; [hostIDKey]?: number; [internalAliasKey]?: string };
+type Host = {
+  [key: string]: any;
+  [hostIDKey]?: number;
+  [internalAliasKey]?: string;
+};
+
 type Env = Cypress.cy;
 
 type SelectorsStorage = Map<string, Selector>;

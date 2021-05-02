@@ -18,6 +18,4 @@ const Logger = {
   },
 };
 
-// TODO: check if aliases are unique
-
 export { Logger };

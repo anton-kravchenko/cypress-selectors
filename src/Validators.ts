@@ -13,19 +13,17 @@ const throwIfNotRunningInCypressEnv = (): void | never => {
       ),
     );
 };
-type ExternalSelectorConfigWithDisplayProperty = {
+type ExtConfigWithDisplayProp = {
   externalConfig: ExternalSelectorConfig;
   displayProperty: string;
 };
 
-type Validator = (
-  input: ExternalSelectorConfigWithDisplayProperty,
-) => ExternalSelectorConfigWithDisplayProperty;
+type Validator = (input: ExtConfigWithDisplayProp) => ExtConfigWithDisplayProp;
 
-const validate = ({
-  externalConfig,
-  displayProperty,
-}: ExternalSelectorConfigWithDisplayProperty): ExternalSelectorConfig => {
+const validate = (
+  externalConfig: ExternalSelectorConfig,
+  displayProperty: string,
+): ExternalSelectorConfig => {
   const validate: Validator = flow(
     shouldNotProvideBothParentAndParentAlias,
     shouldNotProvideEmptyAlias,
@@ -42,7 +40,7 @@ const validate = ({
 
 const shouldHaveType = (
   attribute: keyof ExternalSelectorConfig,
-  { externalConfig, displayProperty }: ExternalSelectorConfigWithDisplayProperty,
+  { externalConfig, displayProperty }: ExtConfigWithDisplayProp,
   expectedType: string,
 ): ExternalSelectorConfig => {
   const actualType = typeof externalConfig[attribute];
@@ -58,7 +56,7 @@ const shouldHaveType = (
 const shouldNotProvideBothParentAndParentAlias = ({
   externalConfig,
   displayProperty,
-}: ExternalSelectorConfigWithDisplayProperty): ExternalSelectorConfigWithDisplayProperty => {
+}: ExtConfigWithDisplayProp): ExtConfigWithDisplayProp => {
   externalConfig = shouldHaveType('parentAlias', { externalConfig, displayProperty }, 'string');
 
   if (
@@ -78,7 +76,7 @@ const shouldNotProvideBothParentAndParentAlias = ({
 const shouldNotProvideEmptyAlias = ({
   externalConfig,
   displayProperty,
-}: ExternalSelectorConfigWithDisplayProperty): ExternalSelectorConfigWithDisplayProperty => {
+}: ExtConfigWithDisplayProp): ExtConfigWithDisplayProp => {
   externalConfig = shouldHaveType('alias', { externalConfig, displayProperty }, 'string');
 
   if (typeof externalConfig.alias === 'string' && externalConfig.alias.length === 0) {
@@ -92,7 +90,7 @@ const shouldNotProvideEmptyAlias = ({
 const shouldNotProvideEmptyParentAlias = ({
   externalConfig,
   displayProperty,
-}: ExternalSelectorConfigWithDisplayProperty): ExternalSelectorConfigWithDisplayProperty => {
+}: ExtConfigWithDisplayProp): ExtConfigWithDisplayProp => {
   externalConfig = shouldHaveType('parentAlias', { externalConfig, displayProperty }, 'string');
 
   if (typeof externalConfig.parentAlias === 'string' && externalConfig.parentAlias.length === 0) {
@@ -106,7 +104,7 @@ const shouldNotProvideEmptyParentAlias = ({
 const shouldNotProvideEmptyCustomAttribute = ({
   externalConfig,
   displayProperty,
-}: ExternalSelectorConfigWithDisplayProperty): ExternalSelectorConfigWithDisplayProperty => {
+}: ExtConfigWithDisplayProp): ExtConfigWithDisplayProp => {
   externalConfig = shouldHaveType('attribute', { externalConfig, displayProperty }, 'string');
 
   if (typeof externalConfig.attribute === 'string' && externalConfig.attribute.length === 0) {
@@ -119,7 +117,7 @@ const shouldNotProvideEmptyCustomAttribute = ({
 const shouldNotProvideNegativeEqAttribute = ({
   externalConfig,
   displayProperty,
-}: ExternalSelectorConfigWithDisplayProperty): ExternalSelectorConfigWithDisplayProperty => {
+}: ExtConfigWithDisplayProp): ExtConfigWithDisplayProp => {
   externalConfig = shouldHaveType('eq', { externalConfig, displayProperty }, 'number');
 
   if (typeof externalConfig.eq === 'number' && externalConfig.eq < 0) {
@@ -132,7 +130,7 @@ const shouldNotProvideNegativeEqAttribute = ({
 const shouldNotProvideNegativeTimeout = ({
   externalConfig,
   displayProperty,
-}: ExternalSelectorConfigWithDisplayProperty): ExternalSelectorConfigWithDisplayProperty => {
+}: ExtConfigWithDisplayProp): ExtConfigWithDisplayProp => {
   externalConfig = shouldHaveType('timeout', { externalConfig, displayProperty }, 'number');
 
   if (typeof externalConfig.timeout === 'number' && externalConfig.timeout < 0) {
@@ -145,7 +143,7 @@ const shouldNotProvideNegativeTimeout = ({
 const shouldProvideParentDefinedOnlyViaCypressSelectors = ({
   externalConfig,
   displayProperty,
-}: ExternalSelectorConfigWithDisplayProperty): ExternalSelectorConfigWithDisplayProperty => {
+}: ExtConfigWithDisplayProp): ExtConfigWithDisplayProp => {
   if (externalConfig.parent && typeof externalConfig.parent[internalAliasKey] !== 'string') {
     warnAboutInvalidParent(displayProperty);
     delete externalConfig['parent'];

@@ -1,12 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { max } from 'lodash';
-import {
-  buildException,
-  isConfigurableProperty,
-  makeDisplayPropName,
-  makeInternalAlias,
-} from './utils';
+import { buildException, isConfigurableProperty, makeDisplayPropName } from './utils';
 import { getConfiguration } from './ConfigureSelectors';
 import { internalAliasKey, hostIDKey, byExternalAlias } from './InternalSymbols';
 import { Logger } from './Logger';

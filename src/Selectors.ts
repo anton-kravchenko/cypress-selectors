@@ -4,9 +4,9 @@
 import { pick } from 'lodash';
 
 import { buildSelector } from './SelectorBuilder';
-import { hostIDKey, internalAliasKey } from './InternalSymbols';
+import { internalAliasKey } from './InternalSymbols';
 import { throwIfNotRunningInCypressEnv, validate } from './Validators';
-import { getHostIdFromHost, registerAndAssignNewHostId } from './utils';
+import { getHostIdFromHost, registerAndAssignNewHostId, makeInternalAlias } from './utils';
 
 import { registerInternalXPathCommand } from './XPath';
 registerInternalXPathCommand();
@@ -18,7 +18,6 @@ import type {
   EnvWithSelectorsStorage,
   InternalSelectorConfig,
 } from './SelectorBuilder';
-import { makeInternalAlias } from 'utils';
 
 interface Selector extends Cypress.Chainable {
   [internalAliasKey]: string;

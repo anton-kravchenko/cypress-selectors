@@ -35,8 +35,8 @@ npm i -D cypress-selectors
 1. Searching elements by `attribute`, `class`, `id`, `type`, `selector` and `xpath`:
 
    ```TypeScript
-    import type { Selector } from 'cypress-selectors';
     import { ByAttribute, ByClass, ById, BySelector, ByType, ByXPath } from 'cypress-selectors';
+    import type { Selector } from 'cypress-selectors';
 
     class HomePageSelectors {
       @ById('main')
@@ -91,7 +91,7 @@ npm i -D cypress-selectors
    ```TypeScript
     class Selector {
       @ByAttribute('submit', { attribute: 'cy-data' })
-      customAttribute!: Selector;
+      static customAttribute: Selector;
     }
    ```
 
@@ -99,8 +99,8 @@ npm i -D cypress-selectors
 
    ```TypeScript
     class Selector {
-      @ByAttribute('row', { eq: 0 }) firstRow!: Selector;
-      @ByAttribute('row', { eq: 1 }) secondRow!: Selector;
+      @ByAttribute('row', { eq: 0 }) static firstRow: Selector;
+      @ByAttribute('row', { eq: 1 }) static secondRow: Selector;
     }
    ```
 

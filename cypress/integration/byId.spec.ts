@@ -1,17 +1,15 @@
-import { ById } from '../../src/Selectors';
+import { ById, Selector } from '../../src/Selectors';
 import { ResetSelectorsConfiguration } from '../../src/ConfigureSelectors';
-
-type Chainable = Cypress.Chainable;
 
 beforeEach(ResetSelectorsConfiguration);
 
 context('ById selector', () => {
   class Case2_0 {
     @ById('id-1')
-    static firstElement: Chainable;
+    static firstElement: Selector;
 
     @ById('id-2')
-    static secondElement: Chainable;
+    static secondElement: Selector;
   }
   it('should locate elements by id', () => {
     cy.visit('/TestPage.html#2.0');
@@ -21,7 +19,7 @@ context('ById selector', () => {
 
   class Case2_1 {
     @ById('non-unique-id')
-    static elements: Chainable;
+    static elements: Selector;
   }
   it('should find only first occurrence among 2 elements with the same id', () => {
     cy.visit('/TestPage.html#2.1');
@@ -29,12 +27,22 @@ context('ById selector', () => {
   });
 
   class Case2_2 {
-    @ById('parent-a', { alias: 'parentA' }) static parentA: Chainable;
-    @ById('children', { parentAlias: 'parentA' }) static children: Chainable;
-    @ById('parent-b') static parentB: Chainable;
+    @ById('parent-a', { alias: 'parentA' }) static parentA: Selector;
+    @ById('children', { parentAlias: 'parentA' }) static children: Selector;
+    @ById('parent-b') static parentB: Selector;
   }
   it('should find proper child by id inside proper parent found by id', () => {
     cy.visit('/TestPage.html#2.2');
     Case2_2.children.should('have.text', `children of 'parent-a'`);
+  });
+
+  class Case2_2_1 {
+    @ById('parent-a') static parentA: Selector;
+    @ById('children', { parent: Case2_2_1.parentA }) static children: Selector;
+    @ById('parent-b') static parentB: Selector;
+  }
+  it('should find proper child by id inside proper parent found by id (parent-child relation is defined by link)', () => {
+    cy.visit('/TestPage.html#2.2');
+    Case2_2_1.children.should('have.text', `children of 'parent-a'`);
   });
 });

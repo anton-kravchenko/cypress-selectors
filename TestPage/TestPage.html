@@ -106,6 +106,20 @@
         `,
       },
       {
+        id: '1.9',
+        type: 'ByAttribute',
+        case: 'find 1 element by attribute inside parent',
+        html: `
+          <div cypress-id="root">
+            <div cypress-id="parent">
+              <div cypress-id="children">Children of parent</div>
+            </div>
+
+            <div cypress-id="children">Children of root</div>
+          </div>
+        `,
+      },
+      {
         id: '2.0',
         type: 'ById',
         case: 'find elements by id',

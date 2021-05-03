@@ -1,14 +1,12 @@
-import { By, ByAttribute } from '../../src/Selectors';
+import { By, ByAttribute, Selector } from '../../src/Selectors';
 import { ResetSelectorsConfiguration, ConfigureSelectors } from '../../src/ConfigureSelectors';
-
-type Chainable = Cypress.Chainable;
 
 beforeEach(ResetSelectorsConfiguration);
 
 context('Configuration', () => {
   class Case6_0 {
-    @ByAttribute('first-id') static first: Chainable;
-    @ByAttribute('second-id', { attribute: 'another-cypress-id' }) static second: Chainable;
+    @ByAttribute('first-id') static first: Selector;
+    @ByAttribute('second-id', { attribute: 'another-cypress-id' }) static second: Selector;
   }
   it('custom attribute should override default one', () => {
     cy.visit('/TestPage.html#6.0');
@@ -18,7 +16,7 @@ context('Configuration', () => {
   });
 
   class Case6_1 {
-    @ByAttribute('attr') static element: Chainable;
+    @ByAttribute('attr') static element: Selector;
   }
   it('should use global attribute value if it is set', () => {
     cy.visit('/TestPage.html#6.1');
@@ -28,7 +26,7 @@ context('Configuration', () => {
   });
 
   class Case6_2 {
-    @ByAttribute('attr', { attribute: 'custom-attribute' }) static element: Chainable;
+    @ByAttribute('attr', { attribute: 'custom-attribute' }) static element: Selector;
   }
   it('should prefer custom attribute even if global one is overridden', () => {
     cy.visit('/TestPage.html#6.2');
@@ -38,11 +36,11 @@ context('Configuration', () => {
   });
 
   class Case6_3 {
-    @ByAttribute('parent', { alias: 'parent-0', eq: 0 }) static firstRow: Chainable;
-    @ByAttribute('children', { parentAlias: 'parent-0' }) static firstRowChildren: Chainable;
+    @ByAttribute('parent', { alias: 'parent-0', eq: 0 }) static firstRow: Selector;
+    @ByAttribute('children', { parentAlias: 'parent-0' }) static firstRowChildren: Selector;
 
-    @ByAttribute('parent', { alias: 'parent-1', eq: 1 }) static secondRow: Chainable;
-    @ByAttribute('children', { parentAlias: 'parent-1' }) static secondRowChildren: Chainable;
+    @ByAttribute('parent', { alias: 'parent-1', eq: 1 }) static secondRow: Selector;
+    @ByAttribute('children', { parentAlias: 'parent-1' }) static secondRowChildren: Selector;
   }
   it('should use `eq` to locate element by index', () => {
     cy.visit('/TestPage.html#6.3');
@@ -51,12 +49,26 @@ context('Configuration', () => {
     Case6_3.secondRowChildren.should('have.text', 'children b');
   });
 
+  class Case6_3_1 {
+    @ByAttribute('parent', { eq: 0 }) static firstRow: Selector;
+    @ByAttribute('children', { parent: Case6_3_1.firstRow }) static firstRowChildren: Selector;
+
+    @ByAttribute('parent', { eq: 1 }) static secondRow: Selector;
+    @ByAttribute('children', { parent: Case6_3_1.secondRow }) static secondRowChildren: Selector;
+  }
+  it('should use `eq` to locate element by index (parent-child relation is defined by link)', () => {
+    cy.visit('/TestPage.html#6.3');
+
+    Case6_3_1.firstRowChildren.should('have.text', 'children a');
+    Case6_3_1.secondRowChildren.should('have.text', 'children b');
+  });
+
   class Case6_4 {
-    @By.Attribute('cypress-id') static byAttr: Chainable;
-    @By.Type('code-element') static byType: Chainable;
-    @By.Class('class-a') static byClass: Chainable;
-    @By.Id('unique-id') static byId: Chainable;
-    @By.Selector('div > span > div') static bySelector: Chainable;
+    @By.Attribute('cypress-id') static byAttr: Selector;
+    @By.Type('code-element') static byType: Selector;
+    @By.Class('class-a') static byClass: Selector;
+    @By.Id('unique-id') static byId: Selector;
+    @By.Selector('div > span > div') static bySelector: Selector;
   }
   it('"By" namespace should just point to other selectors', () => {
     cy.visit('/TestPage.html#6.4');

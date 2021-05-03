@@ -1,27 +1,34 @@
-import type { Host, Selector } from './SelectorBuilder';
-
-const LOG_PREFIX = `[cypress-selectors]`;
+import { Logger } from './Logger';
+import { hostIDKey } from './InternalSymbols';
+import type { Host, EnvWithSelectorsStorage } from './SelectorBuilder';
 
 const buildException = (message: string, kind = 'INTERNAL ERROR'): Error =>
-  new Error(`${LOG_PREFIX} Error type: ${kind}, message: ${message}`);
-
-const logSelector = (selector: Selector): void =>
-  selector.alias
-    ? log(`Querying "${selector.alias}" by selector: ${selector}`)
-    : log(`Querying by selector: ${selector}`);
-
-const log = (message: string): void => console.log(`${LOG_PREFIX} ${message}`);
+  new Error(Logger.appendLogPrefix(`Error type: ${kind}, message: ${message}`));
 
 const isConfigurableProperty = (host: Host, name: string): boolean => {
   const descriptor = Object.getOwnPropertyDescriptor(host, name);
   return descriptor ? Boolean(descriptor.configurable) : true;
 };
 
-const throwIfNotRunningInCypressEnv = (): void | never => {
-  if (!cy || typeof cy.get !== 'function')
-    throw Error(
-      `${LOG_PREFIX} Can't find \`cy.get\` function. Probably you're running outside of Cypress context. Please make sure, that you're querying elements inside Cypress tests.`,
-    );
+const makeDisplayPropName = (host: Host, property: string): string => `${host.name}.${property}`;
+const makeInternalAlias = (hostID: number, alias: string): string =>
+  `host-id: ${hostID}, internal-alias: ${alias}`;
+
+const registerAndAssignNewHostId = (env: EnvWithSelectorsStorage, host: Host): number => {
+  const hostID = (env[hostIDKey] ?? 0) + 1;
+  env[hostIDKey] = hostID;
+  host[hostIDKey] = hostID;
+
+  return hostID;
 };
 
-export { buildException, isConfigurableProperty, logSelector, throwIfNotRunningInCypressEnv };
+const getHostIdFromHost = (host: Host): number | undefined => host[hostIDKey];
+
+export {
+  buildException,
+  isConfigurableProperty,
+  makeDisplayPropName,
+  makeInternalAlias,
+  registerAndAssignNewHostId,
+  getHostIdFromHost,
+};

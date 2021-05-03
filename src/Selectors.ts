@@ -4,33 +4,59 @@
 import { pick } from 'lodash';
 
 import { buildSelector } from './SelectorBuilder';
-import { getConfiguration } from './ConfigureSelectors';
-import { throwIfNotRunningInCypressEnv } from './utils';
+import { internalAliasKey } from './InternalSymbols';
+import { throwIfNotRunningInCypressEnv, validate } from './Validators';
+import { getHostIdFromHost, registerAndAssignNewHostId, makeInternalAlias } from './utils';
+
 import { registerInternalXPathCommand } from './XPath';
 registerInternalXPathCommand();
 
-import type { Host, SelectorType } from './SelectorBuilder';
+import type {
+  Host,
+  SelectorType,
+  SelectorMeta,
+  EnvWithSelectorsStorage,
+  InternalSelectorConfig,
+} from './SelectorBuilder';
+
+interface Selector extends Cypress.Chainable {
+  [internalAliasKey]: string;
+}
+
+export type ExternalSelectorConfig = {
+  alias?: string;
+  parentAlias?: string;
+  attribute?: string;
+  eq?: number;
+  timeout?: number;
+  parent?: Selector;
+};
 
 const BuildSelectorBy = (type: SelectorType) => (
   value: string,
-  config: {
-    alias?: string;
-    parentAlias?: string;
-    attribute?: string;
-    eq?: number;
-    timeout?: number;
-  } = {},
+  externalConfig: ExternalSelectorConfig = {},
 ) => {
   throwIfNotRunningInCypressEnv();
 
-  const selectorConfig = {
-    ...pick(config, ['alias', 'parentAlias', 'attribute', 'eq', 'timeout']),
-    value,
-    type,
-  };
+  const configAttributes = ['alias', 'parentAlias', 'attribute', 'eq', 'timeout', 'parent'];
+  const safeConfig: ExternalSelectorConfig = pick(externalConfig, configAttributes);
 
-  return (host: Host, propertyName: string) =>
-    buildSelector(selectorConfig, host, propertyName, getConfiguration);
+  return (host: Host, property: string) => {
+    const selectorConfig = { ...validate(safeConfig, property), value, type };
+    const hostID =
+      getHostIdFromHost(host) ??
+      registerAndAssignNewHostId((cy as unknown) as EnvWithSelectorsStorage, host);
+
+    const internalAlias = makeInternalAlias(hostID, property);
+    const internalParentAlias = selectorConfig.parent && selectorConfig.parent[internalAliasKey];
+
+    const config: InternalSelectorConfig = { ...selectorConfig, internalAlias };
+    if (internalParentAlias) config.internalParentAlias = internalParentAlias;
+
+    const meta: SelectorMeta = { host, property, hostID };
+
+    return buildSelector({ type, config, meta }, cy);
+  };
 };
 
 const ByAttribute = BuildSelectorBy('attribute');
@@ -50,3 +76,4 @@ const By = {
 };
 
 export { By, ByAttribute, ByType, ByClass, ById, BySelector, ByXPath };
+export type { Selector };

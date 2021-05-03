@@ -1,18 +1,15 @@
-import { ByAttribute, ByType, ByXPath } from '../../src/Selectors';
+import { ByAttribute, ByType, ByXPath, Selector } from '../../src/Selectors';
 import { generateLogEntryForXPathResult } from '../../src/XPath';
 import { groupSelectorsByTypeSequentially } from '../../src/SelectorBuilder';
 import { ResetSelectorsConfiguration } from '../../src/ConfigureSelectors';
-
-import type { Selector } from '../../src/SelectorBuilder';
-
-type Chainable = Cypress.Chainable;
+import type { Selector as SelectorType } from '../../src/SelectorBuilder';
 
 beforeEach(ResetSelectorsConfiguration);
 
 context('ByXPath selector', () => {
   class Case7_0 {
-    @ByXPath(`//div[@cypress-id='parent-a']/div[@cypress-id='children']`) static first: Chainable;
-    @ByXPath(`//div[@cypress-id='parent-b']/div[@cypress-id='children']`) static second: Chainable;
+    @ByXPath(`//div[@cypress-id='parent-a']/div[@cypress-id='children']`) static first: Selector;
+    @ByXPath(`//div[@cypress-id='parent-b']/div[@cypress-id='children']`) static second: Selector;
   }
   it('should locate children with the same attribute inside parents with unique attributes', () => {
     cy.visit('/TestPage.html#7.0');
@@ -21,7 +18,7 @@ context('ByXPath selector', () => {
   });
 
   class Case7_1 {
-    @ByXPath(`count(//div[@cypress-id='parent-a']/div)`) static numberOfDivElements: Chainable;
+    @ByXPath(`count(//div[@cypress-id='parent-a']/div)`) static numberOfDivElements: Selector;
   }
   it('should return the right count of elements via `count()` function', () => {
     cy.visit('/TestPage.html#7.1');
@@ -30,7 +27,7 @@ context('ByXPath selector', () => {
 
   class Case7_2 {
     @ByXPath(`string(//div[@cypress-id='parent-a']/div/@custom-attribute)`)
-    static customAttrValue: Chainable;
+    static customAttrValue: Selector;
   }
   it('should get @value of attribute', () => {
     cy.visit('/TestPage.html#7.2');
@@ -39,10 +36,10 @@ context('ByXPath selector', () => {
 
   class Case7_3 {
     @ByXPath(`not(//div[@cypress-id='parent-a']/div[contains(@class, 'button-label')])`)
-    static doesntHaveClassButtonLabel: Chainable;
+    static doesntHaveClassButtonLabel: Selector;
 
     @ByXPath(`not(//div[@cypress-id='parent-a']/div[contains(@class, 'button-label-1')])`)
-    static doesntHaveClassButtonLabel1: Chainable;
+    static doesntHaveClassButtonLabel1: Selector;
   }
   it('should return proper result of `not()` function', () => {
     cy.visit('/TestPage.html#7.3');
@@ -52,10 +49,10 @@ context('ByXPath selector', () => {
 
   class Case7_4 {
     @ByXPath(`string(//div[@cypress-id='parent-a']/div/text())`)
-    static textInsideDiv: Chainable;
+    static textInsideDiv: Selector;
 
     @ByXPath(`//div[@cypress-id='parent-a']/div/text()`)
-    static textInsideDivWrapped: Chainable;
+    static textInsideDivWrapped: Selector;
   }
   it('should get text of an element via `text()` function', () => {
     cy.visit('/TestPage.html#7.4');
@@ -64,8 +61,8 @@ context('ByXPath selector', () => {
   });
 
   class Case7_6 {
-    @ByXPath(`boolean(//h5)`) static h5ElementExists: Chainable;
-    @ByXPath(`boolean(//h6)`) static h6ElementDoesNotExist: Chainable;
+    @ByXPath(`boolean(//h5)`) static h5ElementExists: Selector;
+    @ByXPath(`boolean(//h6)`) static h6ElementDoesNotExist: Selector;
   }
   it('should return proper result of `boolean()` function', () => {
     cy.visit('/TestPage.html#7.6');
@@ -74,7 +71,7 @@ context('ByXPath selector', () => {
   });
 
   class Case7_7 {
-    @ByXPath(`//input`) static input: Chainable;
+    @ByXPath(`//input`) static input: Selector;
   }
   it('should find input and enter text into it', () => {
     cy.visit('/TestPage.html#7.7?timeout=500');
@@ -83,7 +80,7 @@ context('ByXPath selector', () => {
   });
 
   class Case7_8 {
-    @ByXPath(`//h6`) static doesNotExist: Chainable;
+    @ByXPath(`//h6`) static doesNotExist: Selector;
   }
   it('should fail if fails to find element', (done) => {
     cy.visit('/TestPage.html#7.7');
@@ -94,15 +91,15 @@ context('ByXPath selector', () => {
       else done(e);
     });
 
-    Case7_8.doesNotExist;
+    Case7_8.doesNotExist.should('exist');
   });
 
   class Case7_9 {
-    @ByXPath(`//div[@cypress-id='parent-a']`, { alias: 'parent-a' }) static parentA: Chainable;
-    @ByXPath(`./p`, { parentAlias: 'parent-a' }) static textA: Chainable;
+    @ByXPath(`//div[@cypress-id='parent-a']`, { alias: 'parent-a' }) static parentA: Selector;
+    @ByXPath(`./p`, { parentAlias: 'parent-a' }) static textA: Selector;
 
-    @ByXPath(`//div[@cypress-id='parent-b']`, { alias: 'parent-b' }) static parentB: Chainable;
-    @ByXPath(`./p`, { parentAlias: 'parent-b' }) static textB: Chainable;
+    @ByXPath(`//div[@cypress-id='parent-b']`, { alias: 'parent-b' }) static parentB: Selector;
+    @ByXPath(`./p`, { parentAlias: 'parent-b' }) static textB: Selector;
   }
   it('should locate elements by relative XPath inside elements found by absolute XPath', () => {
     cy.visit('/TestPage.html#7.9');
@@ -111,11 +108,11 @@ context('ByXPath selector', () => {
   });
 
   class Case8_0 {
-    @ByAttribute('parent-a', { alias: 'parent-a' }) static parentA: Chainable;
-    @ByXPath(`.//p`, { parentAlias: 'parent-a' }) static textA: Chainable;
+    @ByAttribute('parent-a', { alias: 'parent-a' }) static parentA: Selector;
+    @ByXPath(`.//p`, { parentAlias: 'parent-a' }) static textA: Selector;
 
-    @ByAttribute('parent-b', { alias: 'parent-b' }) static parentB: Chainable;
-    @ByXPath(`.//p`, { parentAlias: 'parent-b' }) static textB: Chainable;
+    @ByAttribute('parent-b', { alias: 'parent-b' }) static parentB: Selector;
+    @ByXPath(`.//p`, { parentAlias: 'parent-b' }) static textB: Selector;
   }
   it('should locate elements by XPath inside elements found by CSS selector', () => {
     cy.visit('/TestPage.html#8.0');
@@ -124,9 +121,9 @@ context('ByXPath selector', () => {
   });
 
   class Case8_1 {
-    @ByXPath(`//div[@cypress-id='div']`, { alias: 'div' }) static div: Chainable;
-    @ByXPath(`//p[@cypress-id='global-p']`, { parentAlias: 'div' }) static globalText: Chainable;
-    @ByXPath(`./p`) static doesNotExist: Chainable;
+    @ByXPath(`//div[@cypress-id='div']`, { alias: 'div' }) static div: Selector;
+    @ByXPath(`//p[@cypress-id='global-p']`, { parentAlias: 'div' }) static globalText: Selector;
+    @ByXPath(`./p`) static doesNotExist: Selector;
   }
   it('should ignore parent when using global XPath selector', () => {
     cy.visit('/TestPage.html#8.1');
@@ -135,8 +132,8 @@ context('ByXPath selector', () => {
   });
 
   class Case8_2 {
-    @ByXPath(`//div[@cypress-id='div']`, { alias: 'div' }) static divs: Chainable;
-    @ByXPath(`./p`, { parentAlias: 'div' }) static children: Chainable;
+    @ByXPath(`//div[@cypress-id='div']`, { alias: 'div' }) static divs: Selector;
+    @ByXPath(`./p`, { parentAlias: 'div' }) static children: Selector;
   }
   it('should throw error if parent is not a single element', (done) => {
     cy.visit('/TestPage.html#8.2');
@@ -147,11 +144,11 @@ context('ByXPath selector', () => {
       else done(e);
     });
 
-    Case8_2.children;
+    Case8_2.children.should('exist');
   });
 
   class Case8_3 {
-    @ByXPath(`//div[@cypress-id='div']`, { timeout: 3000 }) static div: Chainable;
+    @ByXPath(`//div[@cypress-id='div']`, { timeout: 3000 }) static div: Selector;
   }
   it('should use custom `timeout` per XPath selector', () => {
     cy.visit('/TestPage.html#8.3?timeout=2000');
@@ -159,7 +156,7 @@ context('ByXPath selector', () => {
   });
 
   class Case8_4 {
-    @ByAttribute('div', { timeout: 3000 }) static div: Chainable;
+    @ByAttribute('div', { timeout: 3000 }) static div: Selector;
   }
   it('should use custom `timeout` per non XPath selector', () => {
     cy.visit('/TestPage.html#8.4?timeout=2000');
@@ -167,7 +164,7 @@ context('ByXPath selector', () => {
   });
 
   class Case8_5 {
-    @ByXPath(`//div[@cypress-id='div']`, { timeout: 1000 }) static div: Chainable;
+    @ByXPath(`//div[@cypress-id='div']`, { timeout: 1000 }) static div: Selector;
   }
   it(`should fail if doesn't find element withing given timeout`, (done) => {
     cy.visit('/TestPage.html#8.5?timeout=2000');
@@ -179,7 +176,7 @@ context('ByXPath selector', () => {
       else done(e);
     });
 
-    Case8_5.div;
+    Case8_5.div.should('exist');
   });
 
   class Case8_6 {
@@ -191,6 +188,17 @@ context('ByXPath selector', () => {
   it('should use the biggest timeout in a chain of selectors', () => {
     cy.visit('/TestPage.html#8.6?timeout=1500');
     Case8_6.p.should('have.text', 'p inside span inside div');
+  });
+
+  class Case8_6_1 {
+    @ByAttribute('div', { alias: 'div', timeout: 10 }) static div: Cypress.Chainable;
+    @ByType('span', { parentAlias: 'div', alias: 'span', timeout: 20 })
+    static span: Cypress.Chainable;
+    @ByType('p', { parentAlias: 'span', timeout: 2000 }) static p: Cypress.Chainable;
+  }
+  it('should use the biggest timeout in a chain of selectors (parent-child relation is defined by link)', () => {
+    cy.visit('/TestPage.html#8.6?timeout=1500');
+    Case8_6_1.p.should('have.text', 'p inside span inside div');
   });
 });
 
@@ -231,10 +239,10 @@ context('XPath utils', () => {
 
   context('groupSelectorsByTypeSequentially function', () => {
     it('should return a single array inside array for non XPath selectors', () => {
-      const nonXPathSelectors: Array<Selector> = [
-        { type: 'attribute', value: 'a' },
-        { type: 'class', value: 'btn' },
-        { type: 'id', value: 'app' },
+      const nonXPathSelectors: Array<SelectorType> = [
+        withMeta({ type: 'attribute', config: { value: 'a', internalAlias: 'a' } }),
+        withMeta({ type: 'class', config: { value: 'btn', internalAlias: 'btn' } }),
+        withMeta({ type: 'id', config: { value: 'app', internalAlias: 'app' } }),
       ];
 
       expect(groupSelectorsByTypeSequentially(nonXPathSelectors)).to.deep.equal([
@@ -243,109 +251,129 @@ context('XPath utils', () => {
     });
 
     it('should return 3 groups if XPath selector is in the middle of an array of selectors', () => {
-      const selectorsWithXPathInTheMiddle: Array<Selector> = [
-        { type: 'attribute', value: 'a' },
-        { type: 'class', value: 'btn' },
-        { type: 'xpath', value: '//h1' },
-        { type: 'id', value: 'app' },
-        { type: 'type', value: 'button' },
+      const selectorsWithXPathInTheMiddle: Array<SelectorType> = [
+        withMeta({ type: 'attribute', config: { value: 'a', internalAlias: 'a' } }),
+        withMeta({ type: 'class', config: { value: 'btn', internalAlias: 'btn' } }),
+        withMeta({ type: 'xpath', config: { value: '//h1', internalAlias: '//h1' } }),
+        withMeta({ type: 'id', config: { value: 'app', internalAlias: 'app' } }),
+        withMeta({ type: 'type', config: { value: 'button', internalAlias: 'button' } }),
       ];
 
       expect(groupSelectorsByTypeSequentially(selectorsWithXPathInTheMiddle)).to.deep.equal([
         {
           type: 'CSS',
           selectors: [
-            { type: 'attribute', value: 'a' },
-            { type: 'class', value: 'btn' },
+            withMeta({ type: 'attribute', config: { value: 'a', internalAlias: 'a' } }),
+            withMeta({ type: 'class', config: { value: 'btn', internalAlias: 'btn' } }),
           ],
         },
-        { type: 'XPath', selector: { type: 'xpath', value: '//h1' } },
+        {
+          type: 'XPath',
+          selector: withMeta({ type: 'xpath', config: { value: '//h1', internalAlias: '//h1' } }),
+        },
         {
           type: 'CSS',
           selectors: [
-            { type: 'id', value: 'app' },
-            { type: 'type', value: 'button' },
+            withMeta({ type: 'id', config: { value: 'app', internalAlias: 'app' } }),
+            withMeta({ type: 'type', config: { value: 'button', internalAlias: 'button' } }),
           ],
         },
       ]);
     });
 
     it('should return 2 chunks if XPath selector is the first one', () => {
-      const selectorsWithXPathSelectorInTheBeginning: Array<Selector> = [
-        { type: 'xpath', value: '//h1' },
-        { type: 'attribute', value: 'a' },
-        { type: 'class', value: 'btn' },
+      const selectorsWithXPathSelectorInTheBeginning: Array<SelectorType> = [
+        withMeta({ type: 'xpath', config: { value: '//h1', internalAlias: '//h1' } }),
+        withMeta({ type: 'attribute', config: { value: 'a', internalAlias: 'a' } }),
+        withMeta({ type: 'class', config: { value: 'btn', internalAlias: 'btn' } }),
       ];
 
       expect(
         groupSelectorsByTypeSequentially(selectorsWithXPathSelectorInTheBeginning),
       ).to.deep.equal([
-        { type: 'XPath', selector: { type: 'xpath', value: '//h1' } },
+        {
+          type: 'XPath',
+          selector: withMeta({ type: 'xpath', config: { value: '//h1', internalAlias: '//h1' } }),
+        },
         {
           type: 'CSS',
           selectors: [
-            { type: 'attribute', value: 'a' },
-            { type: 'class', value: 'btn' },
+            withMeta({ type: 'attribute', config: { value: 'a', internalAlias: 'a' } }),
+            withMeta({ type: 'class', config: { value: 'btn', internalAlias: 'btn' } }),
           ],
         },
       ]);
     });
 
     it('should return 2 chunks if XPath selector is in the end of list', () => {
-      const selectorsWithXPathSelectorInTheEnd: Array<Selector> = [
-        { type: 'attribute', value: 'a' },
-        { type: 'class', value: 'btn' },
-        { type: 'xpath', value: '//h1' },
+      const selectorsWithXPathSelectorInTheEnd: Array<SelectorType> = [
+        withMeta({ type: 'attribute', config: { value: 'a', internalAlias: 'a' } }),
+        withMeta({ type: 'class', config: { value: 'btn', internalAlias: 'btn' } }),
+        withMeta({ type: 'xpath', config: { value: '//h1', internalAlias: '//h1' } }),
       ];
       expect(groupSelectorsByTypeSequentially(selectorsWithXPathSelectorInTheEnd)).to.deep.equal([
         {
           type: 'CSS',
           selectors: [
-            { type: 'attribute', value: 'a' },
-            { type: 'class', value: 'btn' },
+            withMeta({ type: 'attribute', config: { value: 'a', internalAlias: 'a' } }),
+            withMeta({ type: 'class', config: { value: 'btn', internalAlias: 'btn' } }),
           ],
         },
-        { type: 'XPath', selector: { type: 'xpath', value: '//h1' } },
+        {
+          type: 'XPath',
+          selector: withMeta({ type: 'xpath', config: { value: '//h1', internalAlias: '//h1' } }),
+        },
       ]);
     });
 
     it('should return 5 chunks with 2 XPath chunks', () => {
-      const selectors: Array<Selector> = [
-        { type: 'selector', value: 'a' },
-        { type: 'id', value: 'abc' },
-        { type: 'xpath', value: '//h1' },
-        { type: 'attribute', value: 'a' },
-        { type: 'class', value: 'btn' },
-        { type: 'xpath', value: '//div' },
-        { type: 'attribute', value: 'a' },
-        { type: 'id', value: 'def' },
+      const selectors: Array<SelectorType> = [
+        withMeta({ type: 'selector', config: { value: 'a', internalAlias: 'a' } }),
+        withMeta({ type: 'id', config: { value: 'abc', internalAlias: 'abc' } }),
+        withMeta({ type: 'xpath', config: { value: '//h1', internalAlias: '//h1' } }),
+        withMeta({ type: 'attribute', config: { value: 'a', internalAlias: 'a' } }),
+        withMeta({ type: 'class', config: { value: 'btn', internalAlias: 'btn' } }),
+        withMeta({ type: 'xpath', config: { value: '//div', internalAlias: '//div' } }),
+        withMeta({ type: 'attribute', config: { value: 'a', internalAlias: 'a' } }),
+        withMeta({ type: 'id', config: { value: 'def', internalAlias: 'def' } }),
       ];
 
       expect(groupSelectorsByTypeSequentially(selectors)).to.deep.equal([
         {
           type: 'CSS',
           selectors: [
-            { type: 'selector', value: 'a' },
-            { type: 'id', value: 'abc' },
+            withMeta({ type: 'selector', config: { value: 'a', internalAlias: 'a' } }),
+            withMeta({ type: 'id', config: { value: 'abc', internalAlias: 'abc' } }),
           ],
         },
-        { type: 'XPath', selector: { type: 'xpath', value: '//h1' } },
+        {
+          type: 'XPath',
+          selector: withMeta({ type: 'xpath', config: { value: '//h1', internalAlias: '//h1' } }),
+        },
         {
           type: 'CSS',
           selectors: [
-            { type: 'attribute', value: 'a' },
-            { type: 'class', value: 'btn' },
+            withMeta({ type: 'attribute', config: { value: 'a', internalAlias: 'a' } }),
+            withMeta({ type: 'class', config: { value: 'btn', internalAlias: 'btn' } }),
           ],
         },
-        { type: 'XPath', selector: { type: 'xpath', value: '//div' } },
+        {
+          type: 'XPath',
+          selector: withMeta({ type: 'xpath', config: { value: '//div', internalAlias: '//div' } }),
+        },
         {
           type: 'CSS',
           selectors: [
-            { type: 'attribute', value: 'a' },
-            { type: 'id', value: 'def' },
+            withMeta({ type: 'attribute', config: { value: 'a', internalAlias: 'a' } }),
+            withMeta({ type: 'id', config: { value: 'def', internalAlias: 'def' } }),
           ],
         },
       ]);
     });
   });
+});
+
+const withMeta = (selector: Omit<SelectorType, 'meta'>): SelectorType => ({
+  ...selector,
+  meta: { host: {}, property: 'foo', hostID: 123 },
 });

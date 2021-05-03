@@ -149,3 +149,4 @@ ResetSelectorsConfiguration();
 <!-- TODO: add link to the article in the "Motivation" section -->
 <!-- TODO: think about "typing" parentAliases -->
 <!-- TODO: Add supported Cypress versions -->
+<!-- TODO: install linter for ts -->

@@ -71,9 +71,6 @@ const generateProxy = (selector: Selector, getChainer: () => Cypress.Chainable<a
       get(proxy: SelectorProxy, field: string | symbol): any {
         if (typeof field === 'symbol' && internalAliasKey === field) return proxy[internalAliasKey];
 
-        // @ts-ignore
-        console.log('STORAGE', cy[selectorsByAliasKey]);
-
         const chainer = getChainer();
         const value = chainer[field as keyof typeof chainer];
         return typeof value === 'function' ? value.bind(chainer) : value;
@@ -176,7 +173,7 @@ const collectSelectorsChain = (
 
 const getSelectorByParentAliasOrThrow = (host: Host, parentAlias: string) => {
   const storage = getStorageOfExternalAliases(host);
-  console.log('HOST STORAGE:', storage);
+
   if (storage.has(parentAlias)) return storage.get(parentAlias) as Selector;
   else
     throw buildException(
@@ -251,10 +248,10 @@ const mapSelectorsByType = (
         },
   );
 
-const getMaxTimeout = (selectors: Array<Selector>): number =>
-  max(
-    selectors.map(({ config }) => config.timeout ?? Cypress.config().defaultCommandTimeout),
-  ) as number;
+const getMaxTimeout = (selectors: Array<Selector>): number => {
+  const { defaultCommandTimeout } = Cypress.config();
+  return max(selectors.map(({ config }) => config.timeout ?? defaultCommandTimeout)) as number;
+};
 
 const groupSelectorsByTypeSequentially = (selectors: Array<Selector>): Array<SelectorsByEngine> => {
   const result = [];

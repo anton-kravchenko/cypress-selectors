@@ -1,5 +1,3 @@
-// FIXME: install linter for ts
-
 import { flow } from 'lodash';
 import { Logger } from './Logger';
 import { internalAliasKey } from './InternalSymbols';
@@ -66,9 +64,6 @@ const shouldNotProvideBothParentAndParentAlias = ({
     warnAboutSupplyingParentAndParentAlias(displayProperty);
 
     delete externalConfig['parentAlias'];
-
-    // TODO: add a test checking that parentAlias is really ignored
-    // TODO: check validation in general (unit)
   }
   return { externalConfig, displayProperty };
 };
@@ -161,17 +156,17 @@ const warnAboutSupplyingParentAndParentAlias = (displayProperty: string): void =
 };
 
 const warnAboutEmptyAlias = (displayProperty: string): void => {
-  const message = `Selector "${displayProperty}": 'alias' attribute can't hold an empty string as a value. Consider either removing it or supplying non empty string as an alias.`;
+  const message = `Selector "${displayProperty}": 'alias' attribute can't be an empty string. Consider either removing it or supplying non empty string as an alias.`;
   Logger.log(message, 'warning');
 };
 
 const warnAboutEmptyParentAlias = (displayProperty: string): void => {
-  const message = `Selector "${displayProperty}": 'parentAlias' attribute can't hold an empty string as a value. Consider either removing it or supplying non empty string as a parentAlias.`;
+  const message = `Selector "${displayProperty}": 'parentAlias' attribute can't be an empty string. Consider either removing it or supplying non empty string as a parentAlias.`;
   Logger.log(message, 'warning');
 };
 
 const warnAboutEmptyCustomAttribute = (displayProperty: string): void => {
-  const message = `Selector "${displayProperty}": 'attribute' attribute can't hold an empty string as a value. Consider either removing it or supplying non empty string as a custom attribute.`;
+  const message = `Selector "${displayProperty}": 'attribute' attribute can't be an empty string. Consider either removing it or supplying non empty string as a custom attribute.`;
   Logger.log(message, 'error');
 };
 
@@ -200,4 +195,4 @@ const warnAboutTypeMismatch = (
   Logger.log(message, 'error');
 };
 
-export { throwIfNotRunningInCypressEnv, validate };
+export { throwIfNotRunningInCypressEnv, validate, shouldHaveType };

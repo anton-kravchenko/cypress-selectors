@@ -17,10 +17,10 @@ into that:
 
 ```TypeScript
 class HomePage {
-  @ByType('input') searchInput: Cypress.Chainable;
-  @ByAttribute('submit-search') submitSearch: Cypress.Chainable;
-  @ByClass('search-result') searchResults: Cypress.Chainable;
-  @ByXPath(`//div[@cypress-id='main']`) main: Cypress.Chainable;
+  @ByType('input') searchInput: Selector;
+  @ByAttribute('submit-search') submitSearch: Selector;
+  @ByClass('search-result') searchResults: Selector;
+  @ByXPath(`//div[@cypress-id='main']`) main: Selector;
 }
 ```
 
@@ -35,26 +35,27 @@ npm i -D cypress-selectors
 1. Searching elements by `attribute`, `class`, `id`, `type`, `selector` and `xpath`:
 
    ```TypeScript
+    import type { Selector } from 'cypress-selectors';
     import { ByAttribute, ByClass, ById, BySelector, ByType, ByXPath } from 'cypress-selectors';
 
     class HomePageSelectors {
       @ById('main')
-      static main: Cypress.Chainable; // equivalent of - cy.get('#main')
+      static main: Selector; // equivalent of - cy.get('#main')
 
       @ByType('input')
-      static input: Cypress.Chainable; // equivalent of - cy.get('input')
+      static input: Selector; // equivalent of - cy.get('input')
 
       @ByClass('button')
-      static button: Cypress.Chainable; // equivalent of - cy.get('.button')
+      static button: Selector; // equivalent of - cy.get('.button')
 
       @ByAttribute('header')
-      static header: Cypress.Chainable; // equivalent of - cy.get('[cypress-id=header')
+      static header: Selector; // equivalent of - cy.get('[cypress-id=header')
 
       @BySelector('ul > li .focus')
-      static listItem: Cypress.Chainable; // equivalent of - cy.get('ul > li .focus')
+      static listItem: Selector; // equivalent of - cy.get('ul > li .focus')
 
       @ByXPath(`//input`)
-      static input: Cypress.Chainable; // equivalent of - cy.xpath('//input')
+      static input: Selector; // equivalent of - cy.xpath('//input')
     }
    ```
 
@@ -63,10 +64,10 @@ npm i -D cypress-selectors
    ```TypeScript
     class Selectors {
       @ById('main', { alias: 'root' })
-      static parent: Cypress.Chainable;
+      static parent: Selector;
 
       @ByClass('button', { parentAlias: 'root' })
-      static children: Cypress.Chainable; // equivalent of - cy.get('#root .button')
+      static children: Selector; // equivalent of - cy.get('#root .button')
     }
    ```
 
@@ -74,8 +75,8 @@ npm i -D cypress-selectors
 
    ```TypeScript
     class SearchPagePO {
-      @ById('input') searchInput!: Cypress.Chainable;
-      @ByAttribute('submit-search') submitSearch!: Cypress.Chainable;
+      @ById('input') searchInput!: Selector;
+      @ByAttribute('submit-search') submitSearch!: Selector;
 
       searchFor(term: string): SearchPagePO {
         this.searchInput.type(term);
@@ -90,7 +91,7 @@ npm i -D cypress-selectors
    ```TypeScript
     class Selector {
       @ByAttribute('submit', { attribute: 'cy-data' })
-      customAttribute!: Cypress.Chainable;
+      customAttribute!: Selector;
     }
    ```
 
@@ -98,8 +99,8 @@ npm i -D cypress-selectors
 
    ```TypeScript
     class Selector {
-      @ByAttribute('row', { eq: 0 }) firstRow!: Cypress.Chainable;
-      @ByAttribute('row', { eq: 1 }) secondRow!: Cypress.Chainable;
+      @ByAttribute('row', { eq: 0 }) firstRow!: Selector;
+      @ByAttribute('row', { eq: 1 }) secondRow!: Selector;
     }
    ```
 
@@ -107,19 +108,19 @@ npm i -D cypress-selectors
 
    ```TypeScript
     class Selector {
-      @ByXPath(`//div[@cypress-id='app']/div[@cypress-id='children']`) static app: Cypress.Chainable;
-      @ByXPath(`count(//div)`) static numberOfDivElements: Cypress.Chainable;
+      @ByXPath(`//div[@cypress-id='app']/div[@cypress-id='children']`) static app: Selector;
+      @ByXPath(`count(//div)`) static numberOfDivElements: Selector;
     }
    ```
 
 7. Specifying custom timeout for selectors
 
    ```TypeScript
-    class Selector {
+    class Selectors {
       /* Will try to find an element for up to 10 seconds */
-      @ById('main', { timeout: 10 * 1000 }) static parent: Cypress.Chainable;
+      @ById('main', { timeout: 10 * 1000 }) static parent: Selector;
       /* By default, timeout for any selector is inherited from "defaultCommandTimeout" value of Cypress configuration */
-      @ById('app') static parent: Cypress.Chainable;
+      @ById('app') static parent: Selector;
     }
    ```
 

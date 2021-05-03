@@ -28,7 +28,7 @@ context('ById selector', () => {
 
   class Case2_2 {
     @ById('parent-a', { alias: 'parentA' }) static parentA: Selector;
-    @ById('children', { alias: 'children', parentAlias: 'parentA' }) static children: Selector;
+    @ById('children', { parentAlias: 'parentA' }) static children: Selector;
     @ById('parent-b') static parentB: Selector;
   }
   it('should find proper child by id inside proper parent found by id', () => {

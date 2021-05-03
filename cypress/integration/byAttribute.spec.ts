@@ -143,8 +143,7 @@ context('ByAttribute selector', () => {
 
   class Case1_9_children {
     @ByAttribute('children', { parent: Case1_9_parent.root }) static childrenOfRoot: Selector;
-    @ByAttribute('children', { parent: Case1_9_parent.parent, parentAlias: '123' }) // TODO: must ignored
-    static childrenOfParent: Selector;
+    @ByAttribute('children', { parent: Case1_9_parent.parent }) static childrenOfParent: Selector;
   }
 
   it('should allow using selectors from external classes as parents', () => {

@@ -150,3 +150,4 @@ ResetSelectorsConfiguration();
 <!-- TODO: think about "typing" parentAliases -->
 <!-- TODO: Add supported Cypress versions -->
 <!-- TODO: install linter for ts -->
+<!-- TODO: add migration guide -->

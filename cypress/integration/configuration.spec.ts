@@ -80,7 +80,3 @@ context('Configuration', () => {
     Case6_4.bySelector.should('have.text', 'Div inside div inside span');
   });
 });
-
-// TODO: introduce and "brand" "selector" type
-// TODO: throw when supplying both parent and parentAlias?
-// TODO warn about empty alias and parentAlias

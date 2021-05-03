@@ -77,5 +77,3 @@ const By = {
 
 export { By, ByAttribute, ByType, ByClass, ById, BySelector, ByXPath };
 export type { Selector };
-
-// Совершенство утомляет тех у кого нет вкуса

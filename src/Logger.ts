@@ -10,9 +10,11 @@ const Logger = {
 
   log: (message: string, level: LogLevel): void => {
     const formattedMsg = `${Logger.LOG_PREFIX} ${message}`;
-    if (level === 'info') return console.log(formattedMsg);
+
+    if (level === 'info') return console.info(formattedMsg);
     else if (level === 'warning') return console.warn(formattedMsg);
-    else if (level === 'error') return console.error(message);
+    else if (level === 'error') return console.error(formattedMsg);
+    else console.log(formattedMsg);
 
     const _: never = level; // eslint-disable-line @typescript-eslint/no-unused-vars
   },

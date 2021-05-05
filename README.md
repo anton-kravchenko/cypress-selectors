@@ -2,7 +2,7 @@
 
 ![](https://github.com/anton-kravchenko/cypress-selectors/workflows/CI/badge.svg)
 
-`cypress-selectors` is a library that provides bunch of convenient declarative selectors for Cypress.
+`cypress-selectors` is a library that provides a bunch of convenient declarative selectors for Cypress.
 
 It helps to organize and re-use selectors and turns this:
 
@@ -195,7 +195,7 @@ ResetSelectorsConfiguration();
    }
    ```
 
-4. The documentation doesn't go into details on how to setup Cypress and transpiling via `ts-loader`. However, the set up of this project could be used as a good reference. The whole setup is done in 2 files: `webpack.config.js` and `tsconfig.json`. If you need another reference on setting up a project like this - check out [this](https://glebbahmutov.com/blog/use-typescript-with-cypress/) article.
+4. The documentation doesn't go into details on how to set up Cypress and transpiling via `ts-loader`. However, the setup of this project could be used as a good reference. The whole setup is done in 2 files: `webpack.config.js` and `tsconfig.json`. If you need another reference on setting up a project like this - check out [this](https://glebbahmutov.com/blog/use-typescript-with-cypress/) article.
 
 5. All of the examples are declaring selectors as `static` class fields. This is not a requirement - the functionality could be achieved with non `static` class fields. However please note, that `child-parent` relationship is not going to work without `parent` being declared as `static` class field.
 

@@ -2,7 +2,14 @@ import { Logger } from './Logger';
 import { hostIDKey } from './InternalSymbols';
 import type { Host, EnvWithSelectorsStorage } from './SelectorBuilder';
 
-const buildException = (message: string, kind = 'INTERNAL ERROR'): Error =>
+type ExceptionKind =
+  | 'INTERNAL ERROR'
+  | 'CONFIGURATION ERROR'
+  | 'NON CONFIGURABLE FIELD'
+  | 'DUPLICATE ALIAS'
+  | 'NO SUCH ALIAS';
+
+const buildException = (message: string, kind: ExceptionKind = 'INTERNAL ERROR'): Error =>
   new Error(Logger.appendLogPrefix(`Error type: ${kind}, message: ${message}`));
 
 const isConfigurableProperty = (host: Host, name: string): boolean => {

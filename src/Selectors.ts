@@ -22,6 +22,7 @@ import type {
 interface Selector extends Cypress.Chainable {
   [internalAliasKey]: string;
 }
+type Chainable = Cypress.Chainable;
 
 export type ExternalSelectorConfig = {
   alias?: string;
@@ -76,4 +77,4 @@ const By = {
 };
 
 export { By, ByAttribute, ByType, ByClass, ById, BySelector, ByXPath };
-export type { Selector };
+export type { Selector, Chainable };

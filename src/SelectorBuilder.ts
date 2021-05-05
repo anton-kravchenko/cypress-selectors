@@ -56,7 +56,7 @@ const buildSelector = (selector: Selector, env: Env): any => {
   const elementGetter = generateElementGetter(selectorsByInternalAlias, selector);
 
   if (isConfigurableProperty(host, property)) {
-    const selectorProxy = generateSelectorProxy(selector, elementGetter);
+    const selectorProxy = generateSelectorProxy(elementGetter);
     assignInternalAliasToProxy(selectorProxy, selector.config.internalAlias);
 
     delete host[property];
@@ -71,7 +71,7 @@ const buildSelector = (selector: Selector, env: Env): any => {
   );
 };
 
-const generateSelectorProxy = (selector: Selector, getChainer: () => Cypress.Chainable<any>) => {
+const generateSelectorProxy = (getChainer: () => Cypress.Chainable<any>) => {
   const proxyAccessHandler = (proxy: SelectorProxy, field: string | symbol) => {
     if (typeof field === 'symbol' && internalAliasKey === field) return proxy[internalAliasKey];
 
@@ -181,7 +181,7 @@ const getSelectorByAliasOrThrow = (storage: SelectorsStorage, alias: string) => 
   else
     throw buildException(
       `Failed to retrieve parent selector by "${alias}" alias.`,
-      'NO_SUCH_ALIAS',
+      'NO SUCH ALIAS',
     );
 };
 

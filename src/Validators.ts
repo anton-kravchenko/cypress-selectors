@@ -2,6 +2,7 @@ import { flow } from 'lodash';
 import { Logger } from './Logger';
 import { internalAliasKey } from './InternalSymbols';
 import type { ExternalSelectorConfig } from './Selectors';
+import { buildException } from 'utils';
 
 const throwIfNotRunningInCypressEnv = (): void | never => {
   if (!cy || typeof cy.get !== 'function')
@@ -139,6 +140,22 @@ const shouldProvideParentDefinedOnlyViaCypressSelectors = ({
   externalConfig,
   displayProperty,
 }: ExtConfigWithDisplayProp): ExtConfigWithDisplayProp => {
+  if ('parent' in externalConfig) {
+    const { parent } = externalConfig;
+    if (typeof parent === 'undefined' || parent === null) {
+      const typeOfParent = parent === null ? 'null' : 'undefined';
+      throw buildException(
+        [
+          `The "parent" attribute is "${typeOfParent}" whish is not allowed - there could be 2 reasons why you see this error:`,
+          `1) You've passed "${typeOfParent}" to "parent" attribute - in that case just remove "parent" attribute or assign a proper selector to it`,
+          `2) You've declared parent selector after children selector - due to the way how TypeScript transpiles static class properties, it is not allowed to use static class properties before their declaration.`,
+          `To make this error go away just define "parent" before its children.`,
+        ].join('\n'),
+        'CONFIGURATION ERROR',
+      );
+    }
+  }
+
   if (externalConfig.parent && typeof externalConfig.parent[internalAliasKey] !== 'string') {
     warnAboutInvalidParent(displayProperty);
     delete externalConfig['parent'];

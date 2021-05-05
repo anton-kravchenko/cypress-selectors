@@ -32,7 +32,7 @@ npm i -D cypress-selectors
 
 ## Usage
 
-1. Searching elements by `attribute`, `class`, `id`, `type`, `selector` and `xpath`:
+1. Searching elements by **`attribute`**, **`class`**, **`id`**, **`type`**, **`selector`** and **`xpath`**:
 
    ```TypeScript
     import { ByAttribute, ByClass, ById, BySelector, ByType, ByXPath } from 'cypress-selectors';
@@ -59,9 +59,9 @@ npm i -D cypress-selectors
     }
    ```
 
-2. Searching child elements
+2. Searching **child** elements
 
-   _2.1_ By linking parent selector via reference
+   _2.1_ By linking parent selector via **reference**
 
    ```TypeScript
    class Selectors {
@@ -72,7 +72,7 @@ npm i -D cypress-selectors
    }
    ```
 
-   _2.2_ By linking parent selector via `alias` and `parentAlias` attributes
+   _2.2_ By linking parent selector via **`alias`** and **`parentAlias`** attributes
 
    ```TypeScript
    class Selectors {
@@ -84,7 +84,7 @@ npm i -D cypress-selectors
    }
    ```
 
-3. Implementing Page Objects ([PageObject is considered to be an anti-pattern](https://www.cypress.io/blog/2019/01/03/stop-using-page-objects-and-start-using-app-actions/) although)
+3. Implementing **Page Objects** ([PageObject is considered to be an anti-pattern](https://www.cypress.io/blog/2019/01/03/stop-using-page-objects-and-start-using-app-actions/) although)
 
    ```TypeScript
     class SearchPagePO {
@@ -99,7 +99,7 @@ npm i -D cypress-selectors
     }
    ```
 
-4. Searching by non-default attribute (by default `ByAttribute` uses `cypress-id`)
+4. Searching by non-default **attribute** (by default `ByAttribute` uses `cypress-id`)
 
    ```TypeScript
     class Selector {
@@ -108,7 +108,7 @@ npm i -D cypress-selectors
     }
    ```
 
-5. Selecting elements by index
+5. Selecting elements by **index**
 
    ```TypeScript
     class Selector {
@@ -117,7 +117,7 @@ npm i -D cypress-selectors
     }
    ```
 
-6. Selecting elements by XPath
+6. Selecting elements by **XPath**
 
    ```TypeScript
     class Selector {
@@ -126,7 +126,7 @@ npm i -D cypress-selectors
     }
    ```
 
-7. Specifying custom timeout for selectors
+7. Specifying custom **timeout** for selectors
 
    ```TypeScript
     class Selectors {

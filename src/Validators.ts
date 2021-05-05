@@ -145,10 +145,10 @@ const shouldProvideParentDefinedOnlyViaCypressSelectors = ({
       const typeOfParent = parent === null ? 'null' : 'undefined';
       throw buildException(
         [
-          `The "parent" attribute is "${typeOfParent}" whish is not allowed - there could be 2 reasons why you see this error:`,
+          `Selector \`${displayProperty}\` defines "${typeOfParent}" "parent" attribute which is not allowed - there could be 2 reasons why you see this error:`,
           `1) You've passed "${typeOfParent}" to "parent" attribute - in that case just remove "parent" attribute or assign a proper selector to it`,
           `2) You've declared parent selector after children selector - due to the way how TypeScript transpiles static class properties, it is not allowed to use static class properties before their declaration.`,
-          `To make this error go away just define "parent" before its children.`,
+          `To make this error go away just define "parent" before its "children".`,
         ].join('\n'),
         'CONFIGURATION ERROR',
       );

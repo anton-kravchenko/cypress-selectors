@@ -137,7 +137,7 @@ context('ByXPath selector', () => {
   }
   it('should throw error if parent is not a single element', (done) => {
     cy.visit('/TestPage.html#8.2');
-    const expectedErrorMessage = `Failed to find an element by XPath("./p") - the parent is not an element but a collection of 4 elements.`;
+    const expectedErrorMessage = `[cypress-selectors] Error type: INTERNAL ERROR, message: Failed to find an element by XPath("./p") - the parent is not an element but a collection of 4 elements.`;
 
     cy.on('fail', (e) => {
       if (e.message === expectedErrorMessage) done();

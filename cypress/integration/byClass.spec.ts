@@ -43,7 +43,7 @@ context('ByClass selector', () => {
     @ByClass('parent-a') static parentA: Selector;
     @ByClass('children', { parent: Case3_2_1.parentA }) static childrenA: Selector;
 
-    @ByClass('parent-b', { parent: Case3_2_1.parentB }) static parentB: Selector;
+    @ByClass('parent-b') static parentB: Selector;
     @ByClass('children', { parent: Case3_2_1.parentB }) static childrenB: Selector;
   }
   it('should locate elements with the same class inside parents with different classes (parent-child relation is defined by link)', () => {

@@ -2,12 +2,12 @@ import { flow } from 'lodash';
 import { Logger } from './Logger';
 import { internalAliasKey } from './InternalSymbols';
 import type { ExternalSelectorConfig } from './Selectors';
-import { buildException } from 'utils';
+import { buildException } from './utils';
 
 const throwIfNotRunningInCypressEnv = (): void | never => {
   if (!cy || typeof cy.get !== 'function')
     throw buildException(
-      `Can't find \`cy.get\` function. Probably you're running outside of Cypress context. Please make sure, that you're querying elements inside Cypress tests.`,
+      `Can't find \`cy.get\` function. Probably you're defining selectors outside of Cypress context. Please make sure, that you're querying elements inside Cypress tests.`,
       'ENVIRONMENT ERROR',
     );
 };

@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { fromPairs } from 'lodash';
-import { buildException } from 'utils';
+import { buildException } from './utils';
 
 type XPathQueryResult = boolean | string | number | Element;
 

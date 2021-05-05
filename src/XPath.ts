@@ -2,12 +2,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { fromPairs } from 'lodash';
+import { buildException } from './utils';
 
 type XPathQueryResult = boolean | string | number | Element;
 
 const xpath = (subject: any, selector: string, options: Map<string, string | number>) => {
   if (Cypress.dom.isElement(subject) && subject.length > 1) {
-    throw Error(
+    throw buildException(
       `Failed to find an element by XPath("${selector}") - the parent is not an element but a collection of ${subject.length} elements.`,
     );
   }

@@ -61,14 +61,27 @@ npm i -D cypress-selectors
 
 2. Searching child elements
 
-   ```TypeScript
-    class Selectors {
-      @ById('main', { alias: 'root' })
-      static parent: Selector;
+   By linking parent selector via reference
 
-      @ByClass('button', { parentAlias: 'root' })
-      static children: Selector; // equivalent of - cy.get('#root .button')
-    }
+   ```TypeScript
+   class Selectors {
+     @ById('main') static parent: Selector;
+
+     @ByClass('button', { parent: Selectors.parent })
+     static children: Selector; // equivalent of - cy.get('#root .button')
+   }
+   ```
+
+   By linking parent selector via `alias` and `parentAlias` attributes
+
+   ```TypeScript
+   class Selectors {
+     @ById('main', { alias: 'root' })
+     static parent: Selector;
+
+     @ByClass('button', { parentAlias: 'root' })
+     static children: Selector; // equivalent of - cy.get('#root .button')
+   }
    ```
 
 3. Implementing Page Objects ([PageObject is considered to be an anti-pattern](https://www.cypress.io/blog/2019/01/03/stop-using-page-objects-and-start-using-app-actions/) although)
@@ -151,4 +164,4 @@ ResetSelectorsConfiguration();
 <!-- TODO: think about "typing" parentAliases -->
 <!-- TODO: Add supported Cypress versions -->
 <!-- TODO: install linter for ts -->
-<!-- TODO: add migration guide -->
+<!-- TODO: migrate to https://tsdx.io/ -->

@@ -6,7 +6,12 @@ import { pick } from 'lodash';
 import { buildSelector } from './SelectorBuilder';
 import { internalAliasKey } from './InternalSymbols';
 import { throwIfNotRunningInCypressEnv, validate } from './Validators';
-import { getHostIdFromHost, registerAndAssignNewHostId, makeInternalAlias } from './utils';
+import {
+  getHostIdFromHost,
+  registerAndAssignNewHostId,
+  makeInternalAlias,
+  makeDisplayPropName,
+} from './utils';
 
 import { registerInternalXPathCommand } from './XPath';
 registerInternalXPathCommand();
@@ -22,6 +27,7 @@ import type {
 interface Selector extends Cypress.Chainable {
   [internalAliasKey]: string;
 }
+type Chainable = Cypress.Chainable;
 
 export type ExternalSelectorConfig = {
   alias?: string;
@@ -42,7 +48,8 @@ const BuildSelectorBy = (type: SelectorType) => (
   const safeConfig: ExternalSelectorConfig = pick(externalConfig, configAttributes);
 
   return (host: Host, property: string) => {
-    const selectorConfig = { ...validate(safeConfig, property), value, type };
+    const displayPropName = makeDisplayPropName(host, property);
+    const selectorConfig = { ...validate(safeConfig, displayPropName), value, type };
     const hostID =
       getHostIdFromHost(host) ??
       registerAndAssignNewHostId((cy as unknown) as EnvWithSelectorsStorage, host);
@@ -76,4 +83,4 @@ const By = {
 };
 
 export { By, ByAttribute, ByType, ByClass, ById, BySelector, ByXPath };
-export type { Selector };
+export type { Selector, Chainable };

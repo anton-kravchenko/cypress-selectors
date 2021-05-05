@@ -7,7 +7,8 @@ type ExceptionKind =
   | 'CONFIGURATION ERROR'
   | 'NON CONFIGURABLE FIELD'
   | 'DUPLICATE ALIAS'
-  | 'NO SUCH ALIAS';
+  | 'NO SUCH ALIAS'
+  | 'ENVIRONMENT ERROR';
 
 const buildException = (message: string, kind: ExceptionKind = 'INTERNAL ERROR'): Error =>
   new Error(Logger.appendLogPrefix(`Error type: ${kind}, message: ${message}`));

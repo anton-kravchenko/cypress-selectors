@@ -165,4 +165,9 @@ ResetSelectorsConfiguration();
 <!-- TODO: Add supported Cypress versions -->
 <!-- TODO: install linter for ts -->
 <!-- TODO: add migration guide -->
-<!-- TODO: migrate to https://tsdx.io/ -->
+
+<<<<<<< HEAD
+
+# <!-- TODO: migrate to https://tsdx.io/ -->
+
+> > > > > > > 9ddd74a7ffb2d1933939473f72f4407edd04bad9

@@ -6,10 +6,9 @@ import { buildException } from 'utils';
 
 const throwIfNotRunningInCypressEnv = (): void | never => {
   if (!cy || typeof cy.get !== 'function')
-    throw Error(
-      Logger.appendLogPrefix(
-        `Can't find \`cy.get\` function. Probably you're running outside of Cypress context. Please make sure, that you're querying elements inside Cypress tests.`,
-      ),
+    throw buildException(
+      `Can't find \`cy.get\` function. Probably you're running outside of Cypress context. Please make sure, that you're querying elements inside Cypress tests.`,
+      'ENVIRONMENT ERROR',
     );
 };
 type ExtConfigWithDisplayProp = {

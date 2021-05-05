@@ -61,7 +61,7 @@ npm i -D cypress-selectors
 
 2. Searching child elements
 
-   By linking parent selector via reference
+   _2.1_ By linking parent selector via reference
 
    ```TypeScript
    class Selectors {
@@ -72,7 +72,7 @@ npm i -D cypress-selectors
    }
    ```
 
-   By linking parent selector via `alias` and `parentAlias` attributes
+   _2.2_ By linking parent selector via `alias` and `parentAlias` attributes
 
    ```TypeScript
    class Selectors {
@@ -154,6 +154,50 @@ ConfigureSelectors({
 /* Re-setting configuration to defaults */
 ResetSelectorsConfiguration();
 ```
+
+## Caveats
+
+1. The library is built around [decorators](https://www.typescriptlang.org/docs/handbook/decorators.html) which are still a [stage-2 proposal](https://tc39.es/proposal-decorators/).
+
+2. `children-parent` linking via `alias` and `parentAlias` works **only** within a single class - if you need to link selectors from different classes use `children-parent` linking via reference as shown in `2.2`.
+
+3. `children-parent` linking via reference uses [static class fields stage-3 proposal](https://tc39.es/proposal-static-class-features/). For some reason, `babel-loader` and `ts-loader` transpile code that defines static class fields differently.
+
+   For example, if you transpile the following code with `babel-loader` `@babel/preset-typescript` preset and `@babel/plugin-proposal-decorators, @babel/plugin-proposal-class-properties` plugins:
+
+   ```Typescript
+   class Bar {
+     static foo = 1
+     static bar = Bar.foo + 1;
+   }
+   ```
+
+   you will get `Cannot access 'AllOrdersPage' before initialization` error, **while if being transpiled via `ts-loader` it works as expected**.
+
+   Practically, it means that the following page object will not work if you're using `babel-loader` for transpiling:
+
+   ```Typescript
+   class Selectors {
+     @ById('main') static parent: Selector;
+     @ByClass('button', { parent: Selectors.parent }) static children: Selector;
+   }
+   ```
+
+   However, this example could be fixed by just extracting `parent` selector to a separate class as following:
+
+   ```Typescript
+   class ParentSelectors {
+     @ById('main') static parent: Selector;
+   }
+
+   class ChildrenSelectors {
+     @ByClass('button', { parent: ParentSelectors.parent }) static children: Selector;
+   }
+   ```
+
+4. The documentation doesn't go into details on how to setup Cypress and transpiling via `ts-loader`. However, the set up of this project could be used as a good reference. The whole setup is done in 2 files: `webpack.config.js` and `tsconfig.json`. If you need another reference on setting up a project like this - check out [this](https://glebbahmutov.com/blog/use-typescript-with-cypress/) article.
+
+5. All of the examples are declaring selectors as `static` class fields. This is not a requirement - the functionality could be achieved with non `static` class fields. However please note, that `child-parent` relationship is not going to work without `parent` being declared as `static` class field.
 
 <!-- TODO: add "Motivation" section -->
 <!-- TODO: add note about TS and decorators -->

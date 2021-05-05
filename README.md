@@ -164,10 +164,4 @@ ResetSelectorsConfiguration();
 <!-- TODO: think about "typing" parentAliases -->
 <!-- TODO: Add supported Cypress versions -->
 <!-- TODO: install linter for ts -->
-<!-- TODO: add migration guide -->
-
-<<<<<<< HEAD
-
-# <!-- TODO: migrate to https://tsdx.io/ -->
-
-> > > > > > > 9ddd74a7ffb2d1933939473f72f4407edd04bad9
+<!-- TODO: migrate to https://tsdx.io/ -->

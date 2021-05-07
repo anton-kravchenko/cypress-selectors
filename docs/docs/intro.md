@@ -1,6 +1,9 @@
-# Intro
+---
+id: intro
+slug: /
+---
 
-<img src="../img/logo/logo_wide.png" width="300" />
+# Cypress Selectors
 
 `cypress-selectors` is a library that provides a bunch of convenient declarative selectors for Cypress.
 

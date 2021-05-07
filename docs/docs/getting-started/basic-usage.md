@@ -1,6 +1,6 @@
 # Basic usage
 
-Searching elements by **`attribute`**, **`class`**, **`id`**, **`type`**, **`selector`** and **`xpath`**
+The library provides declarative selectors for querying elements by **`attribute`**, **`class`**, **`id`**, **`type`**, **`selector`** and **`xpath`**
 
 ```typescript
 import { ByAttribute, ByClass, ById, BySelector, ByType, ByXPath } from 'cypress-selectors';

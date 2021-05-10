@@ -8,7 +8,7 @@ module.exports = {
     {
       type: 'category',
       label: 'Getting Started',
-      items: ['getting-started/basic-usage', 'getting-started/installation'],
+      items: ['getting-started/basic-usage', 'getting-started/set-up'],
       collapsed: false,
     },
     {

@@ -9,20 +9,18 @@ class Selector {
 }
 ```
 
-### Searching **child** elements
-
-- By linking parent selector via **reference**:
+### Linking parent element via _reference_
 
 ```typescript
 class Selectors {
   @ById('main') static parent: Selector;
 
   @ByClass('button', { parent: Selectors.parent })
-  static children: Selector; // equivalent of - cy.get('#root .button')
+  static children: Selector; // equivalent of - cy.get('#main .button')
 }
 ```
 
-- By linking parent selector via **`alias`** and **`parentAlias`** attributes:
+### Linking parent element via `parentAlias` attribute
 
 ```typescript
 class Selectors {
@@ -30,7 +28,7 @@ class Selectors {
   static parent: Selector;
 
   @ByClass('button', { parentAlias: 'root' })
-  static children: Selector; // equivalent of - cy.get('#root .button')
+  static children: Selector; // equivalent of - cy.get('#main .button')
 }
 ```
 

@@ -1,6 +1,6 @@
 # Basic usage
 
-The library provides declarative selectors for querying elements by **`attribute`**, **`class`**, **`id`**, **`type`**, **`selector`** and **`xpath`**
+The library provides declarative selectors for querying elements by **`attribute`**, **`class`**, **`id`**, **`type`**, **`selector`** and **`xpath`**:
 
 ```typescript
 import { ByAttribute, ByClass, ById, BySelector, ByType, ByXPath } from 'cypress-selectors';
@@ -24,5 +24,14 @@ class HomePageSelectors {
 
   @ByXPath(`//input`)
   static input: Selector; // equivalent of - cy.xpath('//input')
+}
+```
+
+Each selector can be used by reference like the following:
+
+```typescript
+it('should submit feedback form', () => {
+  HomePageSelectors.input.type(FEEDBACK);
+  HomePageSelectors.button.click();
 }
 ```

@@ -1,0 +1,1 @@
+(self.webpackChunkdocs=self.webpackChunkdocs||[]).push([[53],{9054:function(e){"use strict";e.exports=JSON.parse('{"pluginId":"default","version":"current","label":"Next","isLast":true,"docsSidebars":{"docs":[{"type":"link","label":"Intro","href":"cypress-selectors/"}]},"permalinkToSidebar":{"cypress-selectors/":"docs"}}')}}]);

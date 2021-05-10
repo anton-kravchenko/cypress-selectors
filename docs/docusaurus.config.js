@@ -10,6 +10,16 @@ module.exports = {
   url: 'https://anton-kravchenko.github.io/cypress-selectors/',
   baseUrl: '/cypress-selectors/',
   themeConfig: {
+    prism: {
+      theme: require('prism-react-renderer/themes/github'),
+      darkTheme: require('prism-react-renderer/themes/oceanicNext'),
+    },
+    // dracula.js
+    // oceanicNext.js
+    // palenight.js
+    // vsDark.js
+    // vsLight.js
+
     navbar: {
       title: 'cypress-selectors',
       logo: {

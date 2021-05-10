@@ -5,6 +5,10 @@ slug: /
 
 # Cypress Selectors
 
+![](https://github.com/anton-kravchenko/cypress-selectors/workflows/CI/badge.svg)
+![npm](https://img.shields.io/npm/v/cypress-selectors)
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/facebook/react/blob/master/LICENSE)
+
 `cypress-selectors` is a library that provides a bunch of convenient declarative selectors for Cypress.
 
 It helps to organize and re-use selectors and turns this:

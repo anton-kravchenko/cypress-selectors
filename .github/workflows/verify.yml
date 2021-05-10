@@ -1,13 +1,9 @@
 name: Verify
 
 on:
-  push:
-    branches:
-      - master
-      - release/*
   pull_request:
     branches:
-      - master
+      - main
 
 jobs:
   verify-and-build:

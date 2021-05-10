@@ -2,9 +2,9 @@ name: documentation
 
 on:
   push:
-    branches: [docs, master]
+    branches: [docs, main]
   pull_request:
-    branches: [docs, master]
+    branches: [docs, main]
   release:
     types: [created]
 

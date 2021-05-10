@@ -4,11 +4,11 @@
 
 The library is built around [decorators](https://www.typescriptlang.org/docs/handbook/decorators.html) which are still a [stage-2 proposal](https://tc39.es/proposal-decorators/).
 
-### `children-parent` linking via `alias`
+### _children-parent_ linking via `alias`
 
 `children-parent` linking via `alias` and `parentAlias` works **only** within a single class - if you need to link selectors from different classes use `children-parent` linking via reference as shown in `2.2`.
 
-### `children-parent` linking via reference
+### _children-parent_ linking via reference
 
 `children-parent` linking via reference uses [static class fields stage-3 proposal](https://tc39.es/proposal-static-class-features/). For some reason, `babel-loader` and `ts-loader` transpile code that defines static class fields differently.
 

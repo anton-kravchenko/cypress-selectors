@@ -42,7 +42,7 @@ module.exports = {
       {
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
-          editUrl: 'https://github.com/anton-kravchenko/cypress-selectors/edit/master/docs/',
+          editUrl: 'https://github.com/anton-kravchenko/cypress-selectors/edit/main/docs/',
           routeBasePath: '/',
         },
         theme: {

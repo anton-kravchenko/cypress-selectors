@@ -3,11 +3,11 @@ name: Verify
 on:
   push:
     branches:
-      - master
+      - main
       - release/*
   pull_request:
     branches:
-      - master
+      - main
 
 jobs:
   verify-and-build:

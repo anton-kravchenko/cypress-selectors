@@ -18,13 +18,10 @@ module.exports = {
       },
       items: [
         {
-          href: 'https://github.com/anton-kravchenko/cypress-selectors#readme',
+          href: 'https://github.com/anton-kravchenko/cypress-selectors',
           label: 'GitHub',
           position: 'right',
         },
-        // {
-        //   type: 'docsVersionDropdown',
-        // },
       ],
     },
 
@@ -33,7 +30,7 @@ module.exports = {
       logo: {
         alt: 'cypress-selectors',
         src: 'img/logo/logo_wide.png',
-        href: 'https://github.com/anton-kravchenko/cypress-selectors#readme',
+        href: 'https://github.com/anton-kravchenko/cypress-selectors',
       },
 
       copyright: `Copyright © ${new Date().getFullYear()} cypress-selectors. Built with Docusaurus.`,

@@ -2,13 +2,13 @@
 module.exports = {
   title: 'cypress-selectors',
   tagline: 'Declarative selectors for Cypress',
-  url: 'https://your-docusaurus-test-site.com',
-  baseUrl: '/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/logo/logo_square.png',
   organizationName: 'anton-kravchenko',
   projectName: 'cypress-selectors',
+  url: 'https://anton-kravchenko.github.io/cypress-selectors/',
+  baseUrl: 'cypress-selectors/',
   themeConfig: {
     navbar: {
       title: 'cypress-selectors',

@@ -8,7 +8,7 @@ module.exports = {
   organizationName: 'anton-kravchenko',
   projectName: 'cypress-selectors',
   url: 'https://anton-kravchenko.github.io/cypress-selectors/',
-  baseUrl: 'cypress-selectors/',
+  baseUrl: '/cypress-selectors/',
   themeConfig: {
     navbar: {
       title: 'cypress-selectors',

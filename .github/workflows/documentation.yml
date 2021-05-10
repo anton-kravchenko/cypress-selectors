@@ -1,6 +1,8 @@
 name: documentation
 
 on:
+  push:
+    branches: [docs, master]
   pull_request:
     branches: [docs, master]
   release:

@@ -1,6 +1,8 @@
-# cypress-selectors
+# [cypress-selectors](https://anton-kravchenko.github.io/cypress-selectors/)
 
 ![](https://github.com/anton-kravchenko/cypress-selectors/workflows/CI/badge.svg)
+![npm](https://img.shields.io/npm/v/cypress-selectors)
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/facebook/react/blob/master/LICENSE)
 
 `cypress-selectors` is a library that provides a bunch of convenient declarative selectors for Cypress.
 
@@ -29,6 +31,15 @@ class HomePage {
 ```sh
 npm i -D cypress-selectors
 ```
+
+## Documentation
+
+The docs are located at [https://anton-kravchenko.github.io/cypress-selectors](https://anton-kravchenko.github.io/cypress-selectors/)
+
+- [Introduction](https://anton-kravchenko.github.io/cypress-selectors/)
+- [Getting started](https://anton-kravchenko.github.io/cypress-selectors/getting-started/basic-usage)
+- [API reference](https://anton-kravchenko.github.io/cypress-selectors/api-reference/selectors)
+- [Recipes](https://anton-kravchenko.github.io/cypress-selectors/recipes)
 
 ## Usage
 

@@ -1,0 +1,1 @@
+(self.webpackChunkdocs=self.webpackChunkdocs||[]).push([[905],{1340:function(s){"use strict";s.exports=JSON.parse('{"allTagsPath":"cypress-selectors/blog/tags","slug":"facebook","name":"facebook","count":1,"permalink":"cypress-selectors/blog/tags/facebook"}')}}]);

@@ -61,7 +61,7 @@ it('should submit feedback form', () => {
 
 Even better since it unifies the way of querying elements and hides some of the complexity.
 
-## Define selectors declaratively 🙀
+## Define selectors declaratively 😻
 
 ```typescript
 class Selectors {

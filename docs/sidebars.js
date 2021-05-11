@@ -6,6 +6,11 @@ module.exports = {
       id: 'intro',
     },
     {
+      type: 'doc',
+      label: 'Motivation',
+      id: 'motivation',
+    },
+    {
       type: 'category',
       label: 'Getting Started',
       items: ['getting-started/basic-usage', 'getting-started/set-up'],
@@ -28,11 +33,7 @@ module.exports = {
       label: 'Recipes',
       id: 'recipes',
     },
-    {
-      type: 'doc',
-      label: 'Motivation',
-      id: 'motivation',
-    },
+
     {
       type: 'doc',
       label: 'Caveats',

@@ -28,9 +28,9 @@ If `true` every selector will be logged into the console when being referenced, 
 
 #### `searchOnlyFirstLevelDescendants`
 
-It `true` the lib will be querying [first-level descendants (via '>')](https://api.jquery.com/child-selector/) when resolving _child-parent_ relationship.
+It `true` the lib will be using [Child Selector](https://api.jquery.com/child-selector/) when resolving _child-parent_ relationship.
 
-If `false` the lib will be querying [any-level descendants (via ' ')](https://api.jquery.com/descendant-selector/) when resolving _child-parent_ relationship.
+If `false` the lib will be using [Descendant Selector](https://api.jquery.com/descendant-selector/) when resolving _child-parent_ relationship.
 
 ### ResetSelectorsConfiguration
 

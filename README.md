@@ -158,8 +158,8 @@ ConfigureSelectors({
   defaultAttribute: 'cy-id', // Default: 'cypress-id' - sets default attribute to be used by @ByAttribute selector
   isLoggingEnabled: true, // Default: false - logs generated selectors before accessing elements
   searchOnlyFirstLevelDescendants: true, /* Default: false
-                                              => if true: searches ONLY for first-level descendants (via '>') - https://api.jquery.com/child-selector/
-                                              => if false: searches for any-level descendants (via ' ') - https://api.jquery.com/descendant-selector/ */
+                                              => if true: the lib will be using `Child Selector` for resolving `child-parent` relationship - https://api.jquery.com/child-selector/
+                                              => if false: the lib will be using `Descendant Selector` for resolving `child-parent` relationship - https://api.jquery.com/descendant-selector/ */
 });
 
 /* Re-setting configuration to defaults */

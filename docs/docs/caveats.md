@@ -6,7 +6,7 @@ The library is built around [decorators](https://www.typescriptlang.org/docs/han
 
 ### _children-parent_ linking via `alias`
 
-`children-parent` linking via `alias` and `parentAlias` works **only** within a single class - if you need to link selectors from different classes use `children-parent` linking via reference as shown in `2.2`.
+`children-parent` linking via `alias` and `parentAlias` works **only** within a single class - if you need to link selectors from different classes, use `children-parent` linking via reference as shown [below](/cypress-selectors/caveats#children-parent-linking-via-reference).
 
 ### _children-parent_ linking via reference
 
@@ -21,9 +21,9 @@ class Selectors {
 }
 ```
 
-you will get `Cannot access 'Bar' before initialization` error, **while if being transpiled via `ts-loader` it works as expected**.
+You will get the `Cannot access 'Bar' before initialization` error, **while being transpiled via `ts-loader` it works as expected**.
 
-However, this example could be fixed by just extracting `parent` selector to a separate class as following:
+However, extracting the `parent` selector could fix this example as following:
 
 ```typescript
 class ParentSelectors {
@@ -35,12 +35,12 @@ class ChildrenSelectors {
 }
 ```
 
-If `child-parent` linking is defined this way if will work with both `babel-loader` and `ts-loader`.
+If `child-parent` linking is defined this way, it will work with both `babel-loader` and `ts-loader`.
 
 ### Setup
 
-The documentation doesn't go into details on how to set up Cypress and transpiling via `ts-loader`. However, the setup of this project could be used as a good reference. The whole setup is done in 2 files: `webpack.config.js` and `tsconfig.json`. If you need another reference on setting up a project like this - check out [this](https://glebbahmutov.com/blog/use-typescript-with-cypress/) article.
+The documentation doesn't detail how to set up Cypress and transpiling via `ts-loader`. However, the setup of this project could be used as a good reference. The whole setup is done in 2 files: `webpack.config.js` and `tsconfig.json`. If you need another reference on setting up a project like this - check out [this](https://glebbahmutov.com/blog/use-typescript-with-cypress/) article.
 
 ### Static class members
 
-All of the examples are declaring selectors as `static` class fields. This is not a requirement - the same functionality could be achieved with non `static` class fields. However please note, that `child-parent` relationship is not going to work without `parent` being declared as `static` class field.
+All of the examples are declaring selectors as `static` class fields. This is not a requirement - the same functionality could be achieved with non `static` class fields. However, please note that the `child-parent` relationship is not going to work without `parent` being declared a `static` class field.

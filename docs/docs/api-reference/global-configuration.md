@@ -1,6 +1,6 @@
 # Global configuration
 
-There is also a _global_ configuration that allows to change default _attribute_, enable logging and specify the way how children elements are being queried.
+There is also a global configuration that allows changing default attributes, enabling logging, and specifying how children's elements are being queried.
 
 ### ConfigureSelectors
 

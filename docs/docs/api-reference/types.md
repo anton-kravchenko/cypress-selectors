@@ -10,7 +10,7 @@ class Selectors {
 }
 ```
 
-This is a utility type that should be used for typing selectors. It extends `Cypress.Chainable` (so it can be used as any other chainer) and adds some internal information to make it possible to specify _child-parent_ relationship by `reference` like the following:
+This is a utility type that you should use for typing selectors. It extends `Cypress.Chainable` (so it can be used as any other chainer) and adds some internal information to make it possible to specify _child-parent_ relationship by `reference` like the following:
 
 ```typescript
 class Selectors {

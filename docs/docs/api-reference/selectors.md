@@ -47,7 +47,9 @@ class Selectors {
 }
 ```
 
-By default, `ByAttribute` queries elements with `cypress-id` attribute (`Selectors.header` selector), but the attribute can be specified explicitly as for `Selectors.listing` selector
+By default, `ByAttribute` queries elements with `cypress-id` attribute (`Selectors.header` selector), but the attribute can be specified explicitly as for `Selectors.listing` selector.
+
+The default attribute can also be configured [globally](/cypress-selectors/api-reference/global-configuration#defaultattribute).
 
 ### @BySelector
 

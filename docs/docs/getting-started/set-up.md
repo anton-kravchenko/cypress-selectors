@@ -16,9 +16,7 @@ yarn add cypress-selectors
 
 ### Configuring `ts-loader`
 
-If you're using [TypeScript](https://www.typescriptlang.org/), you'll need to setup [ts-loader](https://github.com/TypeStrong/ts-loader).
-
-Setup [webpack](https://webpack.js.org/) to use [ts-loader](https://github.com/TypeStrong/ts-loader).
+If you're using [TypeScript](https://www.typescriptlang.org/), you'll need to configure [ts-loader](https://github.com/TypeStrong/ts-loader) as a loader for [webpack](https://webpack.js.org/):
 
 ```typescript
 const path = require('path');
@@ -44,6 +42,8 @@ This is the preferred way of setting up the project. `child-parent` linking does
 :::
 
 ### Configuring `babel-loader`
+
+If you're not using [TypeScript](https://www.typescriptlang.org/) or can't use [ts-loader](https://github.com/TypeStrong/ts-loader), you can also configure transpiling via [babel](https://babeljs.io/).
 
 Configure `.babelrc` to enable support of `decorators` and `class properties`:
 

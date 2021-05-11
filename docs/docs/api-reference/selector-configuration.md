@@ -15,15 +15,15 @@ type ExternalSelectorConfig = {
 
 ### `alias`
 
-Assign an `alias` to a selector. This `alias` can be used to reference that element as a parent of another selector.
+Assigns an `alias` to a selector. This `alias` can be used to reference that element as a parent of another selector.
 
 ### `parentAlias`
 
-Allows to reference parent of a selector via its `alias`. Please note, that _child-parent_ relationship works only within one class.
+Allows referencing parent of a selector via its `alias`. Please note, that _child-parent_ relationship _via alias_ works only within one class.
 
 ### `attribute`
 
-Custom attribute for `@ByAttribute` selector. Being ignored by all other selectors.
+Custom attribute to be used by `@ByAttribute` selector. Being ignored by all other selectors.
 
 ### `eq`
 
@@ -31,8 +31,8 @@ Index of a DOM element in an array of elements.
 
 ### `timeout`
 
-Selector timeout. By default, library inherits `timeout` configuration from Cypress.
+Selector timeout. By default, the library inherits `timeout` configuration from Cypress.
 
 ### `parent`
 
-Allows to reference parent of a selector via reference to another selector. This kind of _child-parent_ relationship doesn't have 'one-class' limitation and works across all classes with selectors.
+Allows referencing parent of a selector via reference to another selector. This kind of _child-parent_ relationship doesn't have 'one-class' limitation and works across all classes with selectors.

@@ -4,7 +4,7 @@ The idea behind the library is to provide a convenient way for defining Cypress 
 
 You can find the list of possible ways for dealing with selectors in Cypress in [the article](https://antosha-kravchenko.medium.com/dealing-with-selectors-in-cypress-8b9ac0dfe240) on Medium.
 
-Here is the brief breakdown of how you can work with selectors:
+Here is a brief breakdown of how you can work with selectors:
 
 ## Hardcode 'em all 🤪
 

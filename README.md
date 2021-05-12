@@ -1,7 +1,7 @@
 # [cypress-selectors](https://anton-kravchenko.github.io/cypress-selectors/)
 
-![](https://github.com/anton-kravchenko/cypress-selectors/workflows/Verify/badge.svg)
-![npm package](https://img.shields.io/npm/v/cypress-selectors?style=flat)
+[![Verify](https://github.com/anton-kravchenko/cypress-selectors/actions/workflows/verify.yml/badge.svg?branch=main&event=push)](https://github.com/anton-kravchenko/cypress-selectors/actions/workflows/verify.yml)
+[![npm package](https://img.shields.io/npm/v/cypress-selectors?style=flat)](https://www.npmjs.com/package/cypress-selectors)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/anton-kravchenko/cypress-selectors/blob/main/LICENSE)
 [![Cypress.io](https://img.shields.io/badge/tested%20with-Cypress-04C38E.svg)](https://www.cypress.io/)
 

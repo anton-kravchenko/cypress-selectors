@@ -12,7 +12,8 @@
   },
   "rules": {
     "@typescript-eslint/ban-ts-comment": "off",
-    "@typescript-eslint/ban-types": "off"
+    "@typescript-eslint/ban-types": "off",
+    "@typescript-eslint/import/first": "off"
   },
   "env": {
     "cypress/globals": true

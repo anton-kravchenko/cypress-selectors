@@ -32,6 +32,7 @@ Custom attribute to be used by `@ByAttribute` selector. Being ignored by all oth
 ### `eq`
 
 Index of a DOM element in an array of elements.
+
 :::note
 Doesn't work with `XPath` selector.
 :::

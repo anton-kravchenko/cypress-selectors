@@ -1,6 +1,6 @@
 {
   "parser": "@typescript-eslint/parser",
-  "plugins": ["fp"],
+  "plugins": ["fp", "@typescript-eslint", "cypress"],
   "extends": [
     "plugin:@typescript-eslint/recommended",
     "prettier/@typescript-eslint",
@@ -10,9 +10,11 @@
     "ecmaVersion": 2018,
     "sourceType": "module"
   },
-
   "rules": {
     "@typescript-eslint/ban-ts-comment": "off",
     "@typescript-eslint/ban-types": "off"
+  },
+  "env": {
+    "cypress/globals": true
   }
 }

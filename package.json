@@ -1,14 +1,15 @@
 {
   "name": "cypress-selectors",
-  "version": "0.5.8",
+  "version": "0.5.9",
   "description": "Set of convenient decorators for declarative querying DOM elements via Cypress.",
   "homepage": "https://github.com/anton-kravchenko/cypress-selectors#readme",
-  "main": "dist/main.js",
-  "types": "dist/main.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "prepare": "npm run ci",
     "prebuild": "npm run clean",
-    "build": "webpack",
+    "start": "tsdx watch",
+    "build": "tsdx build",
     "lint": "eslint '**/*.ts'",
     "type-check": "tsc --project tsconfig.json",
     "unit": "CI=true jest",
@@ -22,6 +23,14 @@
     "clean": "rimraf coverage dist",
     "test": "npm-run-all unit e2e:run:ci",
     "ci": "npm-run-all type-check lint test build"
+  },
+  "engines": {
+    "node": ">=10"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "tsdx lint"
+    }
   },
   "jest": {
     "modulePathIgnorePatterns": [
@@ -38,33 +47,37 @@
     "url": "https://github.com/anton-kravchenko/cypress-selectors/issues"
   },
   "devDependencies": {
+    "@types/cypress": "^1.1.3",
     "@types/jest": "^26.0.14",
+    "@types/lodash": "^4.14.161",
     "@typescript-eslint/eslint-plugin": "^3.6.0",
-    "@typescript-eslint/parser": "^3.6.0",
+    "@typescript-eslint/parser": "^3.10.1",
     "eslint": "^7.4.0",
     "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-cypress": "^2.11.3",
     "eslint-plugin-fp": "^2.3.0",
     "eslint-plugin-prettier": "^3.1.4",
     "husky": "^4.2.5",
     "jest": "^26.1.0",
     "lint-staged": "^10.2.11",
+    "lodash": "^4.17.20",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.0.5",
     "pretty-quick": "^2.0.1",
     "rimraf": "^3.0.2",
+    "serve": "^11.3.2",
+    "start-server-and-test": "^1.11.4",
     "ts-jest": "^26.1.1",
     "ts-loader": "^7.0.5",
-    "typescript": "^3.9.6",
+    "typescript": "^3.9.9",
     "webpack": "^4.43.0",
-    "webpack-cli": "^3.3.12",
-    "@types/cypress": "^1.1.3",
-    "@types/lodash": "^4.14.161",
-    "lodash": "^4.17.20",
-    "serve": "^11.3.2",
-    "start-server-and-test": "^1.11.4"
+    "webpack-cli": "^3.3.12"
   },
   "keywords": [
     "cypress",
     "cypress-selectors"
-  ]
+  ],
+  "dependencies": {
+    "tsdx": "^0.14.1"
+  }
 }

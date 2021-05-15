@@ -3,10 +3,11 @@
     "outDir": "./dist/",
     "target": "es5",
     "lib": ["esnext", "DOM"],
+    "importHelpers": true,
     "allowJs": false,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "module": "commonjs",
+    "module": "ESNext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
@@ -14,7 +15,9 @@
     "esModuleInterop": true,
     "declaration": true,
     "experimentalDecorators": true,
-    "skipLibCheck": true
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedParameters": true
   },
   "include": ["src", "cypress"]
 }

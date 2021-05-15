@@ -29,7 +29,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-push": "lint"
+      "pre-push": "npm run lint"
     }
   },
   "jest": {

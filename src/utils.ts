@@ -31,6 +31,7 @@ const registerAndAssignNewHostId = (env: EnvWithSelectorsStorage, host: Host): n
 };
 
 const getHostIdFromHost = (host: Host): number | undefined => host[hostIDKey];
+const TRANSLATE_TO_LOWER_CASE_XPATH_FN = `translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')`;
 
 export {
   buildException,
@@ -39,4 +40,5 @@ export {
   makeInternalAlias,
   registerAndAssignNewHostId,
   getHostIdFromHost,
+  TRANSLATE_TO_LOWER_CASE_XPATH_FN,
 };

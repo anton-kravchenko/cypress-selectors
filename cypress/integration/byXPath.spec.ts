@@ -1,6 +1,6 @@
 import { ByAttribute, ByType, ByXPath, Selector } from '../../src/Selectors';
 import { generateLogEntryForXPathResult } from '../../src/XPath';
-import { groupSelectorsByTypeSequentially } from '../../src/SelectorBuilder';
+import { groupSelectorsByEngineSequentially } from '../../src/SelectorBuilder';
 import { ResetSelectorsConfiguration } from '../../src/ConfigureSelectors';
 import type { Selector as SelectorType } from '../../src/SelectorBuilder';
 
@@ -190,6 +190,8 @@ context('ByXPath selector', () => {
     Case8_6.p.should('have.text', 'p inside span inside div');
   });
 
+  // TODO: add tests with `parent` parameter
+
   class Case8_6_1 {
     @ByAttribute('div', { alias: 'div', timeout: 10 }) static div: Cypress.Chainable;
     @ByType('span', { parentAlias: 'div', alias: 'span', timeout: 20 })
@@ -237,69 +239,73 @@ context('XPath utils', () => {
     });
   });
 
-  context('groupSelectorsByTypeSequentially function', () => {
+  context('groupSelectorsByEngineSequentially function', () => {
     it('should return a single array inside array for non XPath selectors', () => {
       const nonXPathSelectors: Array<SelectorType> = [
-        withMeta({ type: 'attribute', config: { value: 'a', internalAlias: 'a' } }),
-        withMeta({ type: 'class', config: { value: 'btn', internalAlias: 'btn' } }),
-        withMeta({ type: 'id', config: { value: 'app', internalAlias: 'app' } }),
+        withMeta({ type: 'attribute', engine: 'CSS', config: { value: 'a', internalAlias: 'a' } }),
+        withMeta({ type: 'class', engine: 'CSS', config: { value: 'btn', internalAlias: 'btn' } }),
+        withMeta({ type: 'id', engine: 'CSS', config: { value: 'app', internalAlias: 'app' } }),
       ];
 
-      expect(groupSelectorsByTypeSequentially(nonXPathSelectors)).to.deep.equal([
-        { type: 'CSS', selectors: nonXPathSelectors },
+      expect(groupSelectorsByEngineSequentially(nonXPathSelectors)).to.deep.equal([
+        { engine: 'CSS', selectors: nonXPathSelectors },
       ]);
     });
 
     it('should return 3 groups if XPath selector is in the middle of an array of selectors', () => {
       const selectorsWithXPathInTheMiddle: Array<SelectorType> = [
-        withMeta({ type: 'attribute', config: { value: 'a', internalAlias: 'a' } }),
-        withMeta({ type: 'class', config: { value: 'btn', internalAlias: 'btn' } }),
-        withMeta({ type: 'xpath', config: { value: '//h1', internalAlias: '//h1' } }),
-        withMeta({ type: 'id', config: { value: 'app', internalAlias: 'app' } }),
-        withMeta({ type: 'type', config: { value: 'button', internalAlias: 'button' } }),
+        withMeta({ type: 'attribute', engine: 'CSS', config: { value: 'a', internalAlias: 'a' } }),
+        withMeta({ type: 'class', engine: 'CSS', config: { value: 'btn', internalAlias: 'btn' } }),
+        withMeta({
+          type: 'xpath',
+          engine: 'XPath',
+          config: { value: '//h1', internalAlias: '//h1' },
+        }),
+        withMeta({ type: 'id', engine: 'CSS', config: { value: 'app', internalAlias: 'app' } }),
+        withMeta({
+          type: 'type',
+          engine: 'CSS',
+          config: { value: 'button', internalAlias: 'button' },
+        }),
       ];
 
-      expect(groupSelectorsByTypeSequentially(selectorsWithXPathInTheMiddle)).to.deep.equal([
+      expect(groupSelectorsByEngineSequentially(selectorsWithXPathInTheMiddle)).to.deep.equal([
         {
-          type: 'CSS',
-          selectors: [
-            withMeta({ type: 'attribute', config: { value: 'a', internalAlias: 'a' } }),
-            withMeta({ type: 'class', config: { value: 'btn', internalAlias: 'btn' } }),
-          ],
+          engine: 'CSS',
+          selectors: [selectorsWithXPathInTheMiddle[0], selectorsWithXPathInTheMiddle[1]],
         },
         {
-          type: 'XPath',
-          selector: withMeta({ type: 'xpath', config: { value: '//h1', internalAlias: '//h1' } }),
+          engine: 'XPath',
+          selector: selectorsWithXPathInTheMiddle[2],
         },
+
         {
-          type: 'CSS',
-          selectors: [
-            withMeta({ type: 'id', config: { value: 'app', internalAlias: 'app' } }),
-            withMeta({ type: 'type', config: { value: 'button', internalAlias: 'button' } }),
-          ],
+          engine: 'CSS',
+          selectors: [selectorsWithXPathInTheMiddle[3], selectorsWithXPathInTheMiddle[4]],
         },
       ]);
     });
 
     it('should return 2 chunks if XPath selector is the first one', () => {
       const selectorsWithXPathSelectorInTheBeginning: Array<SelectorType> = [
-        withMeta({ type: 'xpath', config: { value: '//h1', internalAlias: '//h1' } }),
-        withMeta({ type: 'attribute', config: { value: 'a', internalAlias: 'a' } }),
-        withMeta({ type: 'class', config: { value: 'btn', internalAlias: 'btn' } }),
+        withMeta({
+          type: 'xpath',
+          engine: 'XPath',
+          config: { value: '//h1', internalAlias: '//h1' },
+        }),
+        withMeta({ type: 'attribute', engine: 'CSS', config: { value: 'a', internalAlias: 'a' } }),
+        withMeta({ type: 'class', engine: 'CSS', config: { value: 'btn', internalAlias: 'btn' } }),
       ];
 
       expect(
-        groupSelectorsByTypeSequentially(selectorsWithXPathSelectorInTheBeginning),
+        groupSelectorsByEngineSequentially(selectorsWithXPathSelectorInTheBeginning),
       ).to.deep.equal([
+        { engine: 'XPath', selector: selectorsWithXPathSelectorInTheBeginning[0] },
         {
-          type: 'XPath',
-          selector: withMeta({ type: 'xpath', config: { value: '//h1', internalAlias: '//h1' } }),
-        },
-        {
-          type: 'CSS',
+          engine: 'CSS',
           selectors: [
-            withMeta({ type: 'attribute', config: { value: 'a', internalAlias: 'a' } }),
-            withMeta({ type: 'class', config: { value: 'btn', internalAlias: 'btn' } }),
+            selectorsWithXPathSelectorInTheBeginning[1],
+            selectorsWithXPathSelectorInTheBeginning[2],
           ],
         },
       ]);
@@ -307,67 +313,54 @@ context('XPath utils', () => {
 
     it('should return 2 chunks if XPath selector is in the end of list', () => {
       const selectorsWithXPathSelectorInTheEnd: Array<SelectorType> = [
-        withMeta({ type: 'attribute', config: { value: 'a', internalAlias: 'a' } }),
-        withMeta({ type: 'class', config: { value: 'btn', internalAlias: 'btn' } }),
-        withMeta({ type: 'xpath', config: { value: '//h1', internalAlias: '//h1' } }),
+        withMeta({ type: 'attribute', engine: 'CSS', config: { value: 'a', internalAlias: 'a' } }),
+        withMeta({ type: 'class', engine: 'CSS', config: { value: 'btn', internalAlias: 'btn' } }),
+        withMeta({
+          type: 'xpath',
+          engine: 'XPath',
+          config: { value: '//h1', internalAlias: '//h1' },
+        }),
       ];
-      expect(groupSelectorsByTypeSequentially(selectorsWithXPathSelectorInTheEnd)).to.deep.equal([
+
+      // TODO: just use references
+      expect(groupSelectorsByEngineSequentially(selectorsWithXPathSelectorInTheEnd)).to.deep.equal([
         {
-          type: 'CSS',
-          selectors: [
-            withMeta({ type: 'attribute', config: { value: 'a', internalAlias: 'a' } }),
-            withMeta({ type: 'class', config: { value: 'btn', internalAlias: 'btn' } }),
-          ],
+          engine: 'CSS',
+          selectors: [selectorsWithXPathSelectorInTheEnd[0], selectorsWithXPathSelectorInTheEnd[1]],
         },
         {
-          type: 'XPath',
-          selector: withMeta({ type: 'xpath', config: { value: '//h1', internalAlias: '//h1' } }),
+          engine: 'XPath',
+          selector: selectorsWithXPathSelectorInTheEnd[2],
         },
       ]);
     });
 
     it('should return 5 chunks with 2 XPath chunks', () => {
       const selectors: Array<SelectorType> = [
-        withMeta({ type: 'selector', config: { value: 'a', internalAlias: 'a' } }),
-        withMeta({ type: 'id', config: { value: 'abc', internalAlias: 'abc' } }),
-        withMeta({ type: 'xpath', config: { value: '//h1', internalAlias: '//h1' } }),
-        withMeta({ type: 'attribute', config: { value: 'a', internalAlias: 'a' } }),
-        withMeta({ type: 'class', config: { value: 'btn', internalAlias: 'btn' } }),
-        withMeta({ type: 'xpath', config: { value: '//div', internalAlias: '//div' } }),
-        withMeta({ type: 'attribute', config: { value: 'a', internalAlias: 'a' } }),
-        withMeta({ type: 'id', config: { value: 'def', internalAlias: 'def' } }),
+        withMeta({ type: 'selector', engine: 'CSS', config: { value: 'a', internalAlias: 'a' } }),
+        withMeta({ type: 'id', engine: 'CSS', config: { value: 'abc', internalAlias: 'abc' } }),
+        withMeta({
+          type: 'xpath',
+          engine: 'XPath',
+          config: { value: '//h1', internalAlias: '//h1' },
+        }),
+        withMeta({ type: 'attribute', engine: 'CSS', config: { value: 'a', internalAlias: 'a' } }),
+        withMeta({ type: 'class', engine: 'CSS', config: { value: 'btn', internalAlias: 'btn' } }),
+        withMeta({
+          type: 'xpath',
+          engine: 'XPath',
+          config: { value: '//div', internalAlias: '//div' },
+        }),
+        withMeta({ type: 'attribute', engine: 'CSS', config: { value: 'a', internalAlias: 'a' } }),
+        withMeta({ type: 'id', engine: 'CSS', config: { value: 'def', internalAlias: 'def' } }),
       ];
 
-      expect(groupSelectorsByTypeSequentially(selectors)).to.deep.equal([
-        {
-          type: 'CSS',
-          selectors: [
-            withMeta({ type: 'selector', config: { value: 'a', internalAlias: 'a' } }),
-            withMeta({ type: 'id', config: { value: 'abc', internalAlias: 'abc' } }),
-          ],
-        },
-        {
-          type: 'XPath',
-          selector: withMeta({ type: 'xpath', config: { value: '//h1', internalAlias: '//h1' } }),
-        },
-        {
-          type: 'CSS',
-          selectors: [
-            withMeta({ type: 'attribute', config: { value: 'a', internalAlias: 'a' } }),
-            withMeta({ type: 'class', config: { value: 'btn', internalAlias: 'btn' } }),
-          ],
-        },
-        {
-          type: 'XPath',
-          selector: withMeta({ type: 'xpath', config: { value: '//div', internalAlias: '//div' } }),
-        },
-        {
-          type: 'CSS',
-          selectors: [
-            withMeta({ type: 'attribute', config: { value: 'a', internalAlias: 'a' } }),
-            withMeta({ type: 'id', config: { value: 'def', internalAlias: 'def' } }),
-          ],
-        },
+      expect(groupSelectorsByEngineSequentially(selectors)).to.deep.equal([
+        { engine: 'CSS', selectors: [selectors[0], selectors[1]] },
+        { engine: 'XPath', selector: selectors[2] },
+        { engine: 'CSS', selectors: [selectors[3], selectors[4]] },
+        { engine: 'XPath', selector: selectors[5] },
+        { engine: 'CSS', selectors: [selectors[6], selectors[7]] },
       ]);
     });
   });

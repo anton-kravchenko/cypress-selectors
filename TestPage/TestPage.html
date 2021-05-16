@@ -516,6 +516,80 @@
             </span>
           </div>`,
       },
+      {
+        id: '9.0',
+        type: 'ByExactText',
+        case: '3 divs with different text',
+        html: `
+          <div>Saul Goodman</div>
+          <div>Walter White</div>
+          <div>Jessy Pinkman</div>
+          `,
+      },
+      {
+        id: '9.1',
+        type: 'ByExactText',
+        case: '3 divs with overlapping text',
+        html: `
+          <div>Walter White</div>
+          <div>Jessy Pinkman</div>
+          <div>Walter White and Jessy Pinkman</div>
+          `,
+      },
+      {
+        id: '9.2',
+        type: 'ByExactText',
+        case: '2 divs with text in different cases',
+        html: `
+        <div>Saul Goodman</div>
+        <div>saul goodman</div>
+          `,
+      },
+      {
+        id: '9.3',
+        type: 'ByExactText',
+        case: '2 divs with text in different cases wrapped with different parents',
+        html: `
+          <div id="parent-a">
+            <div>Saul Goodman</div>
+            <div>saul goodman</div>
+            <div>+saul goodman+</div>
+          </div>
+
+          <div id="parent-b">
+            <div>Saul Goodman</div>
+            <div>saul goodman</div>
+            <div>+saul goodman+</div>
+          </div>
+          `,
+      },
+
+      {
+        id: '9.4',
+        type: 'ByExactText',
+        case: '2 divs with text in different cases wrapped with different parents',
+        html: `
+          <div id="parent-a">
+            <div>Saul Goodman: 1</div>
+            <div>saul goodman: 2</div>
+          </div>
+
+          <div id="parent-b">
+            <div>Saul Goodman: 3</div>
+            <div>saul goodman: 4</div>
+          </div>
+          `,
+      },
+
+      {
+        id: '10.0',
+        type: 'ByName',
+        case: '',
+        html: `
+          <input type="email" placeholder="Work Email*" name="work-email" value="email@work.com" >
+          <input type="email" placeholder="Work Email*" name="home-email" value="email@home.com" >
+          `,
+      },
     ];
   </script>
   <style>

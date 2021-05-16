@@ -204,6 +204,7 @@ ResetSelectorsConfiguration();
 
 5. All of the examples are declaring selectors as `static` class fields. This is not a requirement - the same functionality could be achieved with non `static` class fields. However please note, that `child-parent` relationship is not going to work without `parent` being declared as `static` class field.
 
+<!-- TODO: add `eq` for XPath and update docs-->
 <!-- TODO: add note about TS and decorators -->
 <!-- TODO: add note about babel config -->
 <!-- TODO: improve configuration docs -->
@@ -212,4 +213,3 @@ ResetSelectorsConfiguration();
 <!-- TODO: think about "typing" parentAliases -->
 <!-- TODO: Add supported Cypress versions -->
 <!-- TODO: install linter for ts -->
-<!-- TODO: migrate to https://tsdx.io/ -->

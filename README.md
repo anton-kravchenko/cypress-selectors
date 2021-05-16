@@ -204,7 +204,6 @@ ResetSelectorsConfiguration();
 
 5. All of the examples are declaring selectors as `static` class fields. This is not a requirement - the same functionality could be achieved with non `static` class fields. However please note, that `child-parent` relationship is not going to work without `parent` being declared as `static` class field.
 
-<!-- TODO: add "Motivation" section -->
 <!-- TODO: add note about TS and decorators -->
 <!-- TODO: add note about babel config -->
 <!-- TODO: improve configuration docs -->

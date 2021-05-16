@@ -1,4 +1,4 @@
-import { ByAttribute, ByType, ByXPath, Selector } from '../../main';
+import { ByAttribute, ByType, ByXPath, Selector } from '../../src';
 import { generateLogEntryForXPathResult } from '../../src/XPath';
 import { groupSelectorsByEngineSequentially } from '../../src/SelectorBuilder';
 import { ResetSelectorsConfiguration } from '../../src/ConfigureSelectors';

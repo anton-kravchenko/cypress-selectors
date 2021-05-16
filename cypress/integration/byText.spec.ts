@@ -1,6 +1,6 @@
-import { By, ByExactText, ByPartialText, BySelector } from '../../main';
+import { By, ByExactText, ByPartialText, BySelector } from '../../src';
 import { ResetSelectorsConfiguration } from '../../src/ConfigureSelectors';
-import type { Selector, Chainable } from '../../main';
+import type { Selector, Chainable } from '../../src';
 import { Test } from 'mocha';
 
 beforeEach(ResetSelectorsConfiguration);

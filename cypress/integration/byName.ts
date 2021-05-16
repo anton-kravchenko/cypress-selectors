@@ -1,8 +1,9 @@
-import { By, ByName, Selector } from '../../src/Selectors';
+import { By, ByName, Selector } from '../../main';
 import { ResetSelectorsConfiguration } from '../../src/ConfigureSelectors';
 
 beforeEach(ResetSelectorsConfiguration);
 
+// TODO: write tests with ByName selector
 context('ByName selector', () => {
   class Case10_0 {
     @ByName('work-email') static workEmail: Selector;

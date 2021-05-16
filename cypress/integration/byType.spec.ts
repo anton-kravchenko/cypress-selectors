@@ -1,4 +1,4 @@
-import { ById, ByType, Selector } from '../../src/Selectors';
+import { ById, ByType, Selector } from '../../main';
 import { ResetSelectorsConfiguration } from '../../src/ConfigureSelectors';
 
 beforeEach(ResetSelectorsConfiguration);

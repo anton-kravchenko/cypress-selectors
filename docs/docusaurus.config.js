@@ -9,7 +9,13 @@ module.exports = {
   projectName: 'cypress-selectors',
   url: 'https://anton-kravchenko.github.io/cypress-selectors/',
   baseUrl: '/cypress-selectors/',
+
   themeConfig: {
+    gtag: {
+      trackingID: 'G-15J36LGR3R',
+      anonymizeIP: true,
+    },
+
     prism: {
       theme: require('prism-react-renderer/themes/github'),
       darkTheme: require('prism-react-renderer/themes/oceanicNext'),

@@ -584,6 +584,17 @@
           <div>😀</div>
           `,
       },
+      {
+        id: '9.6',
+        type: 'ByExactText',
+        case: '2 divs with emojis and quotes',
+        html: `
+          <div id="parent">
+            <div>🤔'🙈"🦊</div>
+            <div>😀"🙉\`🐱</div>
+          </div>
+          `,
+      },
 
       {
         id: '10.1',
@@ -647,7 +658,7 @@
       },
       {
         id: '10.5',
-        type: 'ByExactText',
+        type: 'ByPartialText',
         case: '2 divs with emojis',
         html: `
           <div id="parent">
@@ -656,6 +667,18 @@
           </div>
           `,
       },
+      {
+        id: '10.6',
+        type: 'ByPartialText',
+        case: '2 divs with emojis and quotes',
+        html: `
+          <div id="parent">
+            <div>🤔'🙈"🦊</div>
+            <div>😀"🙉\`🐱</div>
+          </div>
+          `,
+      },
+
       {
         id: '11.0',
         type: 'ByName',

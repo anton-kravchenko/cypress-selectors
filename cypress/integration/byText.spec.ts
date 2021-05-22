@@ -109,6 +109,17 @@ context('ByText selectors', () => {
       Case9_5.thinking.should('have.text', '🤔');
       Case9_5.happy.should('have.text', '😀');
     });
+
+    class Case9_6 {
+      @By.Text.Exact(`🤔'🙈"🦊`) static with2Quotes: Chainable;
+      @By.Text.Exact(`😀"🙉\`🐱`) static with3Quotes: Chainable;
+    }
+    it('should find elements by exact text with emojis and quotes', () => {
+      cy.visit('/TestPage.html#9.6');
+
+      Case9_6.with2Quotes.should('have.text', `🤔'🙈"🦊`);
+      Case9_6.with3Quotes.should('have.text', `😀"🙉\`🐱`);
+    });
   });
 
   context(`ByPartialText`, () => {
@@ -222,6 +233,18 @@ context('ByText selectors', () => {
 
       Case10_5.thinking.should('have.text', '🤔🙈');
       Case10_5.happy.should('have.text', '😀🙉');
+    });
+
+    class Case10_6 {
+      @By.XPath(`//div[@id='parent']`) static parent: Selector;
+      @By.Text.Partial(`🤔'🙈`, { parent: Case10_6.parent }) static with2Quotes: Chainable;
+      @By.Text.Partial(`😀"🙉`, { parent: Case10_6.parent }) static with3Quotes: Chainable;
+    }
+    it('should find elements by partial text with emojis and quotes', () => {
+      cy.visit('/TestPage.html#10.6');
+
+      Case10_6.with2Quotes.should('have.text', `🤔'🙈"🦊`);
+      Case10_6.with3Quotes.should('have.text', `😀"🙉\`🐱`);
     });
   });
 });

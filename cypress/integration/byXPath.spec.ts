@@ -156,10 +156,10 @@ context('ByXPath selector', () => {
   });
 
   class Case8_4 {
-    @ByAttribute('div', { timeout: 3000 }) static div: Selector;
+    @ByAttribute('div', { timeout: 5500 }) static div: Selector;
   }
   it('should use custom `timeout` per non XPath selector', () => {
-    cy.visit('/TestPage.html#8.4?timeout=2000');
+    cy.visit('/TestPage.html#8.4?timeout=5000');
     Case8_4.div.should('have.text', 'renders in 2 seconds');
   });
 
@@ -189,8 +189,6 @@ context('ByXPath selector', () => {
     cy.visit('/TestPage.html#8.6?timeout=1500');
     Case8_6.p.should('have.text', 'p inside span inside div');
   });
-
-  // TODO: add tests with `parent` parameter
 
   class Case8_6_1 {
     @ByAttribute('div', { alias: 'div', timeout: 10 }) static div: Cypress.Chainable;

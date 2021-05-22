@@ -38,11 +38,11 @@ context('ById selector', () => {
 
   class Case2_2_1 {
     @ById('parent-a') static parentA: Selector;
-    @ById('children', { parent: Case2_2_1.parentA }) static children: Selector;
+    @ById('children', { parent: Case2_2_1.parentA, timeout: 5500 }) static children: Selector;
     @ById('parent-b') static parentB: Selector;
   }
-  it('should find proper child by id inside proper parent found by id (parent-child relation is defined by link)', () => {
-    cy.visit('/TestPage.html#2.2');
+  it('should find proper element after 5 seconds (should set proper custom timeout for get)', () => {
+    cy.visit('/TestPage.html#2.2?timeout=5000');
     Case2_2_1.children.should('have.text', `children of 'parent-a'`);
   });
 });

@@ -33,10 +33,6 @@ const registerAndAssignNewHostId = (env: EnvWithSelectorsStorage, host: Host): n
 const getHostIdFromHost = (host: Host): number | undefined => host[hostIDKey];
 const TRANSLATE_TO_LOWER_CASE_XPATH_FN = `translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')`;
 
-// TODO: write docs about translate (for searching ignoring case)
-// TODO: write docs about concat (for escaping)
-// TODO: mention emojis in the docs somehow
-
 const inclusiveSplitBySingleQuote = (w: string) => w.split(/(?=[',])|(?<=['])/g);
 const inclusiveSplitByDoubleQuote = (w: string) => w.split(/(?=[",])|(?<=["])/g);
 const inclusiveSplitByBackTick = (w: string) => w.split(/(?=[`,])|(?<=[`])/g);

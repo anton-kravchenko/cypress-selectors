@@ -1,8 +1,9 @@
 import { flow } from 'lodash';
 import { Logger } from './Logger';
 import { internalAliasKey } from './InternalSymbols';
-import type { ExternalSelectorConfig } from './Selectors';
 import { buildException } from './utils';
+import type { ExternalSelectorConfig } from './Selectors';
+import type { SelectorType } from 'SelectorBuilder';
 
 const throwIfNotRunningInCypressEnv = (): void | never => {
   if (!cy || typeof cy.get !== 'function')
@@ -14,6 +15,7 @@ const throwIfNotRunningInCypressEnv = (): void | never => {
 type ExtConfigWithDisplayProp = {
   externalConfig: ExternalSelectorConfig;
   displayProperty: string;
+  type: SelectorType;
 };
 
 type Validator = (input: ExtConfigWithDisplayProp) => ExtConfigWithDisplayProp;
@@ -21,6 +23,7 @@ type Validator = (input: ExtConfigWithDisplayProp) => ExtConfigWithDisplayProp;
 const validate = (
   externalConfig: ExternalSelectorConfig,
   displayProperty: string,
+  type: SelectorType,
 ): ExternalSelectorConfig => {
   const validate: Validator = flow(
     shouldNotProvideBothParentAndParentAlias,
@@ -30,9 +33,10 @@ const validate = (
     shouldNotProvideNegativeEqAttribute,
     shouldNotProvideNegativeTimeout,
     shouldProvideParentDefinedOnlyViaCypressSelectors,
+    shouldNotProvideIgnoreCaseForNonTextSelectors,
   );
 
-  const { externalConfig: sanitizedConfig } = validate({ externalConfig, displayProperty });
+  const { externalConfig: sanitizedConfig } = validate({ externalConfig, displayProperty, type });
   return sanitizedConfig;
 };
 
@@ -53,9 +57,14 @@ const shouldHaveType = (
 
 const shouldNotProvideBothParentAndParentAlias = ({
   externalConfig,
+  type,
   displayProperty,
 }: ExtConfigWithDisplayProp): ExtConfigWithDisplayProp => {
-  externalConfig = shouldHaveType('parentAlias', { externalConfig, displayProperty }, 'string');
+  externalConfig = shouldHaveType(
+    'parentAlias',
+    { externalConfig, displayProperty, type },
+    'string',
+  );
 
   if (
     typeof externalConfig.parent !== 'undefined' &&
@@ -65,79 +74,89 @@ const shouldNotProvideBothParentAndParentAlias = ({
 
     delete externalConfig['parentAlias'];
   }
-  return { externalConfig, displayProperty };
+  return { externalConfig, displayProperty, type };
 };
 
 const shouldNotProvideEmptyAlias = ({
   externalConfig,
+  type,
   displayProperty,
 }: ExtConfigWithDisplayProp): ExtConfigWithDisplayProp => {
-  externalConfig = shouldHaveType('alias', { externalConfig, displayProperty }, 'string');
+  externalConfig = shouldHaveType('alias', { externalConfig, displayProperty, type }, 'string');
 
   if (typeof externalConfig.alias === 'string' && externalConfig.alias.length === 0) {
     warnAboutEmptyAlias(displayProperty);
     delete externalConfig['alias'];
   }
 
-  return { externalConfig, displayProperty };
+  return { externalConfig, displayProperty, type };
 };
 
 const shouldNotProvideEmptyParentAlias = ({
   externalConfig,
+  type,
   displayProperty,
 }: ExtConfigWithDisplayProp): ExtConfigWithDisplayProp => {
-  externalConfig = shouldHaveType('parentAlias', { externalConfig, displayProperty }, 'string');
+  externalConfig = shouldHaveType(
+    'parentAlias',
+    { externalConfig, displayProperty, type },
+    'string',
+  );
 
   if (typeof externalConfig.parentAlias === 'string' && externalConfig.parentAlias.length === 0) {
     warnAboutEmptyParentAlias(displayProperty);
     delete externalConfig['parentAlias'];
   }
 
-  return { externalConfig, displayProperty };
+  return { externalConfig, displayProperty, type };
 };
 
 const shouldNotProvideEmptyCustomAttribute = ({
   externalConfig,
+  type,
   displayProperty,
 }: ExtConfigWithDisplayProp): ExtConfigWithDisplayProp => {
-  externalConfig = shouldHaveType('attribute', { externalConfig, displayProperty }, 'string');
+  externalConfig = shouldHaveType('attribute', { externalConfig, displayProperty, type }, 'string');
 
   if (typeof externalConfig.attribute === 'string' && externalConfig.attribute.length === 0) {
     warnAboutEmptyCustomAttribute(displayProperty);
     delete externalConfig['attribute'];
   }
-  return { externalConfig, displayProperty };
+  return { externalConfig, displayProperty, type };
 };
 
 const shouldNotProvideNegativeEqAttribute = ({
   externalConfig,
+  type,
   displayProperty,
 }: ExtConfigWithDisplayProp): ExtConfigWithDisplayProp => {
-  externalConfig = shouldHaveType('eq', { externalConfig, displayProperty }, 'number');
+  externalConfig = shouldHaveType('eq', { externalConfig, displayProperty, type }, 'number');
 
   if (typeof externalConfig.eq === 'number' && externalConfig.eq < 0) {
     warnAboutNegativeEqAttribute(displayProperty);
     delete externalConfig['eq'];
   }
-  return { externalConfig, displayProperty };
+  return { externalConfig, displayProperty, type };
 };
 
 const shouldNotProvideNegativeTimeout = ({
   externalConfig,
+  type,
   displayProperty,
 }: ExtConfigWithDisplayProp): ExtConfigWithDisplayProp => {
-  externalConfig = shouldHaveType('timeout', { externalConfig, displayProperty }, 'number');
+  externalConfig = shouldHaveType('timeout', { externalConfig, displayProperty, type }, 'number');
 
   if (typeof externalConfig.timeout === 'number' && externalConfig.timeout < 0) {
     warnAboutNegativeTimeout(displayProperty);
     delete externalConfig['timeout'];
   }
-  return { externalConfig, displayProperty };
+  return { externalConfig, displayProperty, type };
 };
 
 const shouldProvideParentDefinedOnlyViaCypressSelectors = ({
   externalConfig,
   displayProperty,
+  type,
 }: ExtConfigWithDisplayProp): ExtConfigWithDisplayProp => {
   if ('parent' in externalConfig) {
     const { parent } = externalConfig;
@@ -159,7 +178,28 @@ const shouldProvideParentDefinedOnlyViaCypressSelectors = ({
     warnAboutInvalidParent(displayProperty);
     delete externalConfig['parent'];
   }
-  return { externalConfig, displayProperty };
+  return { externalConfig, displayProperty, type };
+};
+
+const shouldNotProvideIgnoreCaseForNonTextSelectors = ({
+  externalConfig,
+  displayProperty,
+  type,
+}: ExtConfigWithDisplayProp): ExtConfigWithDisplayProp => {
+  externalConfig = shouldHaveType(
+    'ignoreCase',
+    { externalConfig, displayProperty, type },
+    'boolean',
+  );
+
+  const selectorsThatAcceptIgnoreCaseParam: Array<SelectorType> = ['partial-text', 'exact-text'];
+  if (
+    typeof externalConfig.ignoreCase === 'boolean' &&
+    selectorsThatAcceptIgnoreCaseParam.includes(type) === false
+  )
+    warnAboutRedundantIgnoreCaseParam(displayProperty, type);
+
+  return { externalConfig, displayProperty, type };
 };
 
 const warnAboutSupplyingParentAndParentAlias = (displayProperty: string): void => {
@@ -199,6 +239,11 @@ const warnAboutNegativeTimeout = (displayProperty: string): void => {
 const warnAboutInvalidParent = (displayProperty: string): void => {
   const message = `Selector "${displayProperty}": the value set as 'parent' is not a valid Selector.`;
   Logger.log(message, 'error');
+};
+
+const warnAboutRedundantIgnoreCaseParam = (displayProperty: string, type: SelectorType): void => {
+  const message = `Selector "${displayProperty}": \`ignoreCase\` attribute is not supported by \`${type}\` selectors.`;
+  Logger.log(message, 'warning');
 };
 
 const warnAboutTypeMismatch = (

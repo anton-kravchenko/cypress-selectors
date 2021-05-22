@@ -230,9 +230,6 @@ const mapSelectorConfigsToSelectorsChain = (
     configuration,
   );
 
-  // TODO: fix timeout: undefined
-  // TODO: re-check timeouts and integrate them to more tests
-
   return mappedSelectors.reduce((chain, { engine, selector, timeout }) => {
     const options = { timeout };
 
@@ -243,9 +240,6 @@ const mapSelectorConfigsToSelectorsChain = (
   }, cy as Cypress.Chainable);
 };
 
-// TODO: group by engine
-// TODO: parent/parentAlias doesn't work for CSS parents
-// TODO: write docs about XPath children defined via // and ./
 // TODO: log Text selectors not as XPath but as XPath(By.TextExact)
 // TODO: document ignoreCase (make note, that it works only for Text)
 // TODO: ignoreCase - add validation
@@ -271,7 +265,6 @@ const mapSelectorsByType = (
 };
 
 const getMaxTimeout = (selectors: Array<Selector>): number => {
-  debugger;
   const { defaultCommandTimeout } = Cypress.config();
   return max(selectors.map(({ config }) => config.timeout ?? defaultCommandTimeout)) as number;
 };
@@ -295,7 +288,7 @@ const groupSelectorsByEngineSequentially = (
 
   return result.map((selectors) =>
     selectors[0].engine === 'XPath'
-      ? { engine: 'XPath', selector: selectors[0] } // <-- TODO: why unwrap?
+      ? { engine: 'XPath', selector: selectors[0] }
       : { engine: 'CSS', selectors },
   );
 };
@@ -311,7 +304,6 @@ const mapSelectorByType = (selector: Selector, configuration: Configuration) => 
   const { type, config } = selector;
   const { value, attribute } = config;
 
-  // TODO: escape everything
   if (type === 'attribute') return `[${attribute ?? configuration.defaultAttribute}="${value}"]`;
   else if (type === 'class') return `.${value}`;
   else if (type === 'id') return `#${value}`;

@@ -204,12 +204,28 @@ ResetSelectorsConfiguration();
 
 5. All of the examples are declaring selectors as `static` class fields. This is not a requirement - the same functionality could be achieved with non `static` class fields. However please note, that `child-parent` relationship is not going to work without `parent` being declared as `static` class field.
 
-<!-- TODO: add `eq` for XPath and update docs-->
 <!-- TODO: add note about TS and decorators -->
 <!-- TODO: add note about babel config -->
 <!-- TODO: improve configuration docs -->
 <!-- TODO: `eq` can't be used for XPath-->
-<!-- TODO: add link to the article in the "Motivation" section -->
-<!-- TODO: think about "typing" parentAliases -->
 <!-- TODO: Add supported Cypress versions -->
-<!-- TODO: install linter for ts -->
+
+<!-- TODO: check if parents for XPath selectors work, check that XPath parents work to, check the same for aliases -->
+<!-- TODO: add more selectors to configuration.spec Case6_4 -->
+<!-- TODO: parent/parentAlias doesn't work for CSS parents (XPath) -->
+<!-- TODO: add escaping for CSS selectors in mapSelectorByType -->
+
+<!-- Research:
+  - join XPath as text (eliminate chains of XPath commands)
+  - add support for eq for XPath and text
+  - think about `trim` flag for ByText selector - https://developer.mozilla.org/en-US/docs/Web/XPath/Functions/normalize-space
+ -->
+
+<!--
+  Documentation updates:
+    - docs about concat (for escaping)
+    - mention emojis in the docs somehow
+    - leave a note about `eq` - it doesn't work for XPath based selectors
+    - write docs about translate (for searching ignoring case)
+    - write docs about XPath children defined via // and ./
+ -->

@@ -59,7 +59,7 @@ const BuildSelectorBy = (type: SelectorType, engine: SelectorsEngine) => (
 
   return (host: Host, property: string) => {
     const displayPropName = makeDisplayPropName(host, property);
-    const selectorConfig = { ...validate(safeConfig, displayPropName), value, type };
+    const selectorConfig = { ...validate(safeConfig, displayPropName, type), value, type };
     const hostID =
       getHostIdFromHost(host) ??
       registerAndAssignNewHostId((cy as unknown) as EnvWithSelectorsStorage, host);

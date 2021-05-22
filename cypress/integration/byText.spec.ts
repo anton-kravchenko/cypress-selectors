@@ -4,11 +4,6 @@ import type { Selector, Chainable } from '../../src';
 
 beforeEach(ResetSelectorsConfiguration);
 
-// TODO: what about trim? https://developer.mozilla.org/en-US/docs/Web/XPath/Functions/normalize-space
-// TODO: add support for eq for XPath and text
-// TODO: refactor to make underlyingEngine field?
-// TODO: leave a note about `eq` - it doesn't work for XPath based selectors
-
 context('ByText selectors', () => {
   context(`ByExactText`, () => {
     class Case9_0 {

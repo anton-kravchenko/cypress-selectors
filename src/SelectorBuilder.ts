@@ -240,11 +240,6 @@ const mapSelectorConfigsToSelectorsChain = (
   }, cy as Cypress.Chainable);
 };
 
-// TODO: log Text selectors not as XPath but as XPath(By.TextExact)
-// TODO: document ignoreCase (make note, that it works only for Text)
-// TODO: ignoreCase - add validation
-// TODO: check aliases end exports
-
 const mapSelectorsByType = (
   groupedByEngine: Array<SelectorsByEngine>,
   configuration: Configuration,

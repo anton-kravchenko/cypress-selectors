@@ -68,8 +68,6 @@ describe('external config validation', () => {
     expect(validated).toEqual({});
   });
 
-  // TODO: fix validator test
-  // TODO: check validation message for `ignoreCase`
   it('should remove all attributes with invalid type', () => {
     const externalConfig: ExternalSelectorConfig = {
       // @ts-expect-error

@@ -204,22 +204,26 @@ ResetSelectorsConfiguration();
 
 5. All of the examples are declaring selectors as `static` class fields. This is not a requirement - the same functionality could be achieved with non `static` class fields. However please note, that `child-parent` relationship is not going to work without `parent` being declared as `static` class field.
 
-<!-- TODO: add note about TS and decorators -->
-<!-- TODO: add note about babel config -->
-<!-- TODO: improve configuration docs -->
-<!-- TODO: `eq` can't be used for XPath-->
-<!-- TODO: Add supported Cypress versions -->
+<!-- Before v0.7.0
+  - log Text selectors not as XPath but as XPath(By.TextExact)
+  - check aliases end exports in configuration.spec
+  - fix validator test
+  - ignoreCase - add validation (check that it works and validation message)
+-->
 
-<!-- TODO: check if parents for XPath selectors work, check that XPath parents work to, check the same for aliases -->
-<!-- TODO: add more selectors to configuration.spec Case6_4 -->
-<!-- TODO: parent/parentAlias doesn't work for CSS parents (XPath) -->
-<!-- TODO: add escaping for CSS selectors in mapSelectorByType -->
+ <!-- After v0.7.0
+  - check if parents for XPath selectors work, check that XPath parents work to, check the same for aliases
+  - add more selectors to configuration.spec Case6_4
+  - parent/parentAlias doesn't work for CSS parents (XPath)
+  - add escaping for CSS selectors in mapSelectorByType
+-->
 
 <!-- Research:
   - join XPath as text (eliminate chains of XPath commands)
-  - add support for eq for XPath and text
+  - add support for `eq` for XPath and text
   - think about `trim` flag for ByText selector - https://developer.mozilla.org/en-US/docs/Web/XPath/Functions/normalize-space
- -->
+  - validate XPath before evaluating it - log that to UI
+-->
 
 <!--
   Documentation updates:
@@ -228,4 +232,6 @@ ResetSelectorsConfiguration();
     - leave a note about `eq` - it doesn't work for XPath based selectors
     - write docs about translate (for searching ignoring case)
     - write docs about XPath children defined via // and ./
+    - document ignoreCase (make note, that it works only for Text)
+    - Add supported Cypress versions
  -->

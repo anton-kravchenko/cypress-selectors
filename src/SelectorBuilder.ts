@@ -5,7 +5,7 @@ import { buildException, isConfigurableProperty, makeDisplayPropName } from './u
 import { getConfiguration } from './ConfigureSelectors';
 import { internalAliasKey, hostIDKey, byExternalAlias, byInternalAlias } from './InternalSymbols';
 import { Logger } from './Logger';
-import { TRANSLATE_TO_LOWER_CASE_XPATH_FN } from './utils';
+import { TRANSLATE_TO_LOWER_CASE_XPATH_FN, escapeQuoteSymbols } from './utils';
 
 import type { Configuration } from './ConfigureSelectors';
 
@@ -311,6 +311,7 @@ const mapSelectorByType = (selector: Selector, configuration: Configuration) => 
   const { type, config } = selector;
   const { value, attribute } = config;
 
+  // TODO: escape everything
   if (type === 'attribute') return `[${attribute ?? configuration.defaultAttribute}="${value}"]`;
   else if (type === 'class') return `.${value}`;
   else if (type === 'id') return `#${value}`;
@@ -329,47 +330,26 @@ const mapSelectorByType = (selector: Selector, configuration: Configuration) => 
 const mapPartialTextSelector = (selector: Selector): string => {
   const prefix = hasParent(selector) ? './*' : '//*';
   const { value, ignoreCase } = selector.config;
-  const escaped = value.replaceAll(`'`, `\\'`);
+  const escaped = escapeQuoteSymbols(ignoreCase === true ? value.toLowerCase() : value);
 
   return ignoreCase === true
-    ? `${prefix}[contains(${TRANSLATE_TO_LOWER_CASE_XPATH_FN}, '${escaped.toLowerCase()}')]`
-    : `${prefix}[contains(text(), '${escaped}')]`; // TODO: <- injection alarm
+    ? `${prefix}[contains(${TRANSLATE_TO_LOWER_CASE_XPATH_FN}, ${escaped.toLowerCase()})]`
+    : `${prefix}[contains(text(), ${escaped})]`;
 };
 
 const mapExactTextSelector = (selector: Selector): string => {
   const prefix = hasParent(selector) ? './*' : '//*';
   const { value, ignoreCase } = selector.config;
 
-  const query = escapeSingleQuoteIfAny(ignoreCase === true ? value.toLowerCase() : value);
+  const escaped = escapeQuoteSymbols(ignoreCase === true ? value.toLowerCase() : value);
 
   return ignoreCase === true
-    ? `${prefix}[${TRANSLATE_TO_LOWER_CASE_XPATH_FN}=${query}]`
-    : `${prefix}[text()=${query}]`; // TODO: <- injection alarm
+    ? `${prefix}[${TRANSLATE_TO_LOWER_CASE_XPATH_FN}=${escaped}]`
+    : `${prefix}[text()=${escaped}]`;
 };
 
 const hasParent = ({ config: { parentAlias, internalParentAlias } }: Selector): boolean =>
   parentAlias !== undefined || internalParentAlias !== undefined;
-
-const escapeSingleQuoteIfAny = (query: string) =>
-  query.includes(`'`)
-    ? `concat(${query
-        .split(/(?=[',])|(?<=['])/g)
-        .map((v) =>
-          v.includes('`')
-            ? `concat(${v
-                .split(/(?=[`,])|(?<=[`])/g)
-                .map((v) => `"${v}"`)
-                .join(',')})`
-            : v,
-        )
-        .map((v) => `"${v}"`)
-        .join(',')})`
-    : query.includes('`')
-    ? `concat(${query
-        .split(/(?=[`,])|(?<=[`])/g)
-        .map((v) => `"${v}"`)
-        .join(',')})`
-    : `'${query}'`;
 
 export { buildSelector, collectSelectorsChain, groupSelectorsByEngineSequentially };
 export type {

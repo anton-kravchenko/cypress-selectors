@@ -86,14 +86,18 @@ context('ByText selectors', () => {
     class Case9_4 {
       @By.Text.Exact('double"quote') static doubleQuote: Chainable;
       @By.Text.Exact("single'quote") static singleQuote: Chainable;
-      @By.Text.Exact('tilda`quote') static tildaQuote: Chainable;
+      @By.Text.Exact('backtick`quote') static backtickQuote: Chainable;
+      @By.Text.Exact("single' backtick`") static singleAndBacktick: Chainable;
+      @By.Text.Exact('double" single\' backtick`') static doubleSingleAndBacktick: Chainable;
     }
-    it.only('should find elements by exact text with quotes in text', () => {
+    it('should find elements by exact text with quotes in text', () => {
       cy.visit('/TestPage.html#9.4');
 
       Case9_4.doubleQuote.should('have.text', 'double"quote');
       Case9_4.singleQuote.should('have.text', "single'quote");
-      Case9_4.tildaQuote.should('have.text', 'tilda`quote');
+      Case9_4.backtickQuote.should('have.text', 'backtick`quote');
+      Case9_4.singleAndBacktick.should('have.text', `single' backtick\``);
+      Case9_4.doubleSingleAndBacktick.should('have.text', `double" single' backtick\``);
     });
   });
 
@@ -173,6 +177,28 @@ context('ByText selectors', () => {
       Case10_3.saulGoodmanB.should('have.length', 2);
       Case10_3.saulGoodmanB.eq(0).should('have.text', '-Saul+Goodman: 3');
       Case10_3.saulGoodmanB.eq(1).should('have.text', '-saul+goodman: 4');
+    });
+
+    class Case10_4 {
+      @By.XPath(`//div[@id='parent-a']`) static parentA: Selector;
+      @By.XPath(`//div[@id='parent-b']`) static parentB: Selector;
+
+      @By.Text.Partial(`SaUl'g`, { parent: Case10_4.parentA, ignoreCase: true })
+      static saulGoodmanA: Chainable;
+
+      @By.Text.Partial(`sAU'l+G"`, { parent: Case10_4.parentB, ignoreCase: true })
+      static saulGoodmanB: Chainable;
+    }
+    it('should find elements by partial text with special characters ignoring case if `ignoreCase` is set', () => {
+      cy.visit('/TestPage.html#10.4');
+
+      Case10_4.saulGoodmanA.should('have.length', 2);
+      Case10_4.saulGoodmanA.eq(0).should('have.text', `++SauL'Goodman: 1`);
+      Case10_4.saulGoodmanA.eq(1).should('have.text', `+sAuL'Goodman: 2`);
+
+      Case10_4.saulGoodmanB.should('have.length', 2);
+      Case10_4.saulGoodmanB.eq(0).should('have.text', `-Sau'l+G"oodman: 3`);
+      Case10_4.saulGoodmanB.eq(1).should('have.text', `--sAu'l+g"oo\`dman: 4`);
     });
   });
 });

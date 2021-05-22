@@ -565,18 +565,20 @@
       },
       {
         id: '9.4',
-        type: 'ByExactText',
+        type: 'ByPartialText',
         case: '3 divs with quotes in text',
         html: `
         <div>double"quote</div>
         <div>single'quote</div>
-        <div>tilda\`quote</div>
+        <div>backtick\`quote</div>
+        <div>double" single' backtick\`</div>
+        <div>single' backtick\`</div>
           `,
       },
 
       {
         id: '10.1',
-        type: 'ByExactText',
+        type: 'ByPartialText',
         case: '3 divs with overlapping text',
         html: `
           <div>Walter White</div>
@@ -586,7 +588,7 @@
       },
       {
         id: '10.2',
-        type: 'ByExactText',
+        type: 'ByPartialText',
         case: '2 divs with text in different cases wrapped with different parents',
         html: `
           <div id="parent-a">
@@ -602,7 +604,7 @@
       },
       {
         id: '10.3',
-        type: 'ByExactText',
+        type: 'ByPartialText',
         case:
           '2 divs with text in different cases wrapped with different parents with special characters in text',
         html: `
@@ -614,6 +616,23 @@
           <div id="parent-b">
             <div>-Saul+Goodman: 3</div>
             <div>-saul+goodman: 4</div>
+          </div>
+          `,
+      },
+      {
+        id: '10.4',
+        type: 'ByPartialText',
+        case:
+          '2 divs with text in different cases wrapped with different parents with quotes in text',
+        html: `
+          <div id="parent-a">
+            <div>++SauL'Goodman: 1</div>
+            <div>+sAuL'Goodman: 2</div>
+          </div>
+
+          <div id="parent-b">
+            <div>-Sau'l+G"oodman: 3</div>
+            <div>--sAu'l+g"oo\`dman: 4</div>
           </div>
           `,
       },

@@ -33,6 +33,30 @@ const registerAndAssignNewHostId = (env: EnvWithSelectorsStorage, host: Host): n
 const getHostIdFromHost = (host: Host): number | undefined => host[hostIDKey];
 const TRANSLATE_TO_LOWER_CASE_XPATH_FN = `translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')`;
 
+// TODO: write docs about translate (for searching ignoring case)
+// TODO: write docs about concat (for escaping)
+
+const inclusiveSplitBySingleQuote = (w: string) => w.split(/(?=[',])|(?<=['])/g);
+const inclusiveSplitByDoubleQuote = (w: string) => w.split(/(?=[",])|(?<=["])/g);
+const inclusiveSplitByBackTick = (w: string) => w.split(/(?=[`,])|(?<=[`])/g);
+
+const wrapQuoteSymbol = (symbol: string): string => {
+  if (symbol === `'`) return `"'"`;
+  if (symbol === '"') return `'"'`;
+  if (symbol === '`') return '"`"';
+  else return `'${symbol}'`;
+};
+
+const escapeQuoteSymbols = (query: string): string => {
+  const escaped = [query]
+    .flatMap(inclusiveSplitByDoubleQuote)
+    .flatMap(inclusiveSplitBySingleQuote)
+    .flatMap(inclusiveSplitByBackTick)
+    .map(wrapQuoteSymbol);
+
+  return escaped.length === 1 ? escaped[0] : `concat(${escaped.join(', ')})`;
+};
+
 export {
   buildException,
   isConfigurableProperty,
@@ -40,5 +64,6 @@ export {
   makeInternalAlias,
   registerAndAssignNewHostId,
   getHostIdFromHost,
+  escapeQuoteSymbols,
   TRANSLATE_TO_LOWER_CASE_XPATH_FN,
 };

@@ -1,4 +1,5 @@
-import { buildException } from './utils';
+import { buildException, escapeQuoteSymbols } from './utils';
+import { flow } from 'lodash';
 
 declare const expect: jest.Expect;
 declare const it: jest.It;
@@ -10,5 +11,14 @@ describe('test utils', () => {
       const message = `[cypress-selectors] Error type: INTERNAL ERROR, message: something went wrong`;
       expect(buildException('something went wrong', 'INTERNAL ERROR').message).toBe(message);
     });
+  });
+
+  it('should properly escape quote symbols', () => {
+    const variants = [
+      [`double"quote`, `concat('double', '"', 'quote')`],
+      [`double"single'`, `concat('double', '"', 'single', "'")`],
+      [`double"single'backtick\``, `concat('double', '"', 'single', "'", 'backtick', "\`")`],
+    ];
+    variants.forEach(([query, expected]) => expect(escapeQuoteSymbols(query)).toEqual(expected));
   });
 });

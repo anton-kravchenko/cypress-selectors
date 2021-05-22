@@ -99,6 +99,17 @@ context('ByText selectors', () => {
       Case9_4.singleAndBacktick.should('have.text', `single' backtick\``);
       Case9_4.doubleSingleAndBacktick.should('have.text', `double" single' backtick\``);
     });
+
+    class Case9_5 {
+      @By.Text.Exact('🤔') static thinking: Chainable;
+      @By.Text.Exact('😀') static happy: Chainable;
+    }
+    it('should find elements by exact text with emojis', () => {
+      cy.visit('/TestPage.html#9.5');
+
+      Case9_5.thinking.should('have.text', '🤔');
+      Case9_5.happy.should('have.text', '😀');
+    });
   });
 
   context(`ByPartialText`, () => {
@@ -199,6 +210,19 @@ context('ByText selectors', () => {
       Case10_4.saulGoodmanB.should('have.length', 2);
       Case10_4.saulGoodmanB.eq(0).should('have.text', `-Sau'l+G"oodman: 3`);
       Case10_4.saulGoodmanB.eq(1).should('have.text', `--sAu'l+g"oo\`dman: 4`);
+    });
+
+    class Case10_5 {
+      @By.XPath(`//div[@id='parent']`) static parent: Selector;
+      @By.Text.Partial('🤔', { parent: Case10_5.parent })
+      static thinking: Chainable;
+      @By.Text.Partial('😀', { parent: Case10_5.parent }) static happy: Chainable;
+    }
+    it('should find elements by partial text with emojis', () => {
+      cy.visit('/TestPage.html#10.5');
+
+      Case10_5.thinking.should('have.text', '🤔🙈');
+      Case10_5.happy.should('have.text', '😀🙉');
     });
   });
 });

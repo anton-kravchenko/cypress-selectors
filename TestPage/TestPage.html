@@ -565,7 +565,7 @@
       },
       {
         id: '9.4',
-        type: 'ByPartialText',
+        type: 'ByExactText',
         case: '3 divs with quotes in text',
         html: `
         <div>double"quote</div>
@@ -573,6 +573,15 @@
         <div>backtick\`quote</div>
         <div>double" single' backtick\`</div>
         <div>single' backtick\`</div>
+          `,
+      },
+      {
+        id: '9.5',
+        type: 'ByExactText',
+        case: '2 divs with emojis',
+        html: `
+          <div>🤔</div>
+          <div>😀</div>
           `,
       },
 
@@ -633,6 +642,17 @@
           <div id="parent-b">
             <div>-Sau'l+G"oodman: 3</div>
             <div>--sAu'l+g"oo\`dman: 4</div>
+          </div>
+          `,
+      },
+      {
+        id: '10.5',
+        type: 'ByExactText',
+        case: '2 divs with emojis',
+        html: `
+          <div id="parent">
+            <div>🤔🙈</div>
+            <div>😀🙉</div>
           </div>
           `,
       },

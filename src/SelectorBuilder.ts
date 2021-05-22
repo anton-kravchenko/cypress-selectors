@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { lowerCase, max } from 'lodash';
+import { escapeRegExp, max } from 'lodash';
 import { buildException, isConfigurableProperty, makeDisplayPropName } from './utils';
 import { getConfiguration } from './ConfigureSelectors';
 import { internalAliasKey, hostIDKey, byExternalAlias, byInternalAlias } from './InternalSymbols';
@@ -329,23 +329,47 @@ const mapSelectorByType = (selector: Selector, configuration: Configuration) => 
 const mapPartialTextSelector = (selector: Selector): string => {
   const prefix = hasParent(selector) ? './*' : '//*';
   const { value, ignoreCase } = selector.config;
+  const escaped = value.replaceAll(`'`, `\\'`);
 
   return ignoreCase === true
-    ? `${prefix}[contains(${TRANSLATE_TO_LOWER_CASE_XPATH_FN}, '${value.toLowerCase()}')]`
-    : `${prefix}[contains(text(), '${value}')]`; // TODO: <- injection alarm
+    ? `${prefix}[contains(${TRANSLATE_TO_LOWER_CASE_XPATH_FN}, '${escaped.toLowerCase()}')]`
+    : `${prefix}[contains(text(), '${escaped}')]`; // TODO: <- injection alarm
 };
 
 const mapExactTextSelector = (selector: Selector): string => {
   const prefix = hasParent(selector) ? './*' : '//*';
   const { value, ignoreCase } = selector.config;
 
+  const query = escapeSingleQuoteIfAny(ignoreCase === true ? value.toLowerCase() : value);
+
   return ignoreCase === true
-    ? `${prefix}[${TRANSLATE_TO_LOWER_CASE_XPATH_FN}='${value.toLowerCase()}']`
-    : `${prefix}[text()='${value}']`; // TODO: <- injection alarm
+    ? `${prefix}[${TRANSLATE_TO_LOWER_CASE_XPATH_FN}=${query}]`
+    : `${prefix}[text()=${query}]`; // TODO: <- injection alarm
 };
 
 const hasParent = ({ config: { parentAlias, internalParentAlias } }: Selector): boolean =>
   parentAlias !== undefined || internalParentAlias !== undefined;
+
+const escapeSingleQuoteIfAny = (query: string) =>
+  query.includes(`'`)
+    ? `concat(${query
+        .split(/(?=[',])|(?<=['])/g)
+        .map((v) =>
+          v.includes('`')
+            ? `concat(${v
+                .split(/(?=[`,])|(?<=[`])/g)
+                .map((v) => `"${v}"`)
+                .join(',')})`
+            : v,
+        )
+        .map((v) => `"${v}"`)
+        .join(',')})`
+    : query.includes('`')
+    ? `concat(${query
+        .split(/(?=[`,])|(?<=[`])/g)
+        .map((v) => `"${v}"`)
+        .join(',')})`
+    : `'${query}'`;
 
 export { buildSelector, collectSelectorsChain, groupSelectorsByEngineSequentially };
 export type {

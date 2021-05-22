@@ -526,18 +526,9 @@
           <div>Jessy Pinkman</div>
           `,
       },
+
       {
         id: '9.1',
-        type: 'ByExactText',
-        case: '3 divs with overlapping text',
-        html: `
-          <div>Walter White</div>
-          <div>Jessy Pinkman</div>
-          <div>Walter White and Jessy Pinkman</div>
-          `,
-      },
-      {
-        id: '9.2',
         type: 'ByExactText',
         case: '2 divs with text in different cases',
         html: `
@@ -546,7 +537,7 @@
           `,
       },
       {
-        id: '9.3',
+        id: '9.2',
         type: 'ByExactText',
         case: '2 divs with text in different cases wrapped with different parents',
         html: `
@@ -564,7 +555,37 @@
           `,
       },
       {
+        id: '9.3',
+        type: 'ByExactText',
+        case: '2 divs with text in different cases and special characters',
+        html: `
+        <div>+S-a!u@l#/Go%o^d&m$a%n^%&*^&</div>
+        <div>!s^a@u#l$ %g^o&odm&a^%n$</div>
+          `,
+      },
+      {
         id: '9.4',
+        type: 'ByExactText',
+        case: '3 divs with quotes in text',
+        html: `
+        <div>double"quote</div>
+        <div>single'quote</div>
+        <div>tilda\`quote</div>
+          `,
+      },
+
+      {
+        id: '10.1',
+        type: 'ByExactText',
+        case: '3 divs with overlapping text',
+        html: `
+          <div>Walter White</div>
+          <div>Jessy Pinkman</div>
+          <div>Walter White and Jessy Pinkman</div>
+          `,
+      },
+      {
+        id: '10.2',
         type: 'ByExactText',
         case: '2 divs with text in different cases wrapped with different parents',
         html: `
@@ -580,7 +601,7 @@
           `,
       },
       {
-        id: '9.5',
+        id: '10.3',
         type: 'ByExactText',
         case:
           '2 divs with text in different cases wrapped with different parents with special characters in text',
@@ -597,16 +618,7 @@
           `,
       },
       {
-        id: '9.6',
-        type: 'ByExactText',
-        case: '2 divs with text in different cases and special characters',
-        html: `
-        <div>+S-a!u@l#/Go%o^d&m$a%n^%&*^&</div>
-        <div>!s^a@u#l$ %g^o&odm&a^%n$</div>
-          `,
-      },
-      {
-        id: '10.0',
+        id: '11.0',
         type: 'ByName',
         case: '',
         html: `

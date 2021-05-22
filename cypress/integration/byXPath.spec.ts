@@ -322,7 +322,6 @@ context('XPath utils', () => {
         }),
       ];
 
-      // TODO: just use references
       expect(groupSelectorsByEngineSequentially(selectorsWithXPathSelectorInTheEnd)).to.deep.equal([
         {
           engine: 'CSS',

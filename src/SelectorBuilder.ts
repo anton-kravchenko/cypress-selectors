@@ -331,8 +331,8 @@ const mapPartialTextSelector = (selector: Selector): string => {
   const { value, ignoreCase } = selector.config;
 
   return ignoreCase === true
-    ? `${prefix}[contains(${TRANSLATE_TO_LOWER_CASE_XPATH_FN}, '${lowerCase(value)}')]`
-    : `${prefix}[contains(text(), '${value}')]`;
+    ? `${prefix}[contains(${TRANSLATE_TO_LOWER_CASE_XPATH_FN}, '${value.toLowerCase()}')]`
+    : `${prefix}[contains(text(), '${value}')]`; // TODO: <- injection alarm
 };
 
 const mapExactTextSelector = (selector: Selector): string => {
@@ -340,8 +340,8 @@ const mapExactTextSelector = (selector: Selector): string => {
   const { value, ignoreCase } = selector.config;
 
   return ignoreCase === true
-    ? `${prefix}[${TRANSLATE_TO_LOWER_CASE_XPATH_FN}='${lowerCase(value)}']`
-    : `${prefix}[text()='${value}']`;
+    ? `${prefix}[${TRANSLATE_TO_LOWER_CASE_XPATH_FN}='${value.toLowerCase()}']`
+    : `${prefix}[text()='${value}']`; // TODO: <- injection alarm
 };
 
 const hasParent = ({ config: { parentAlias, internalParentAlias } }: Selector): boolean =>

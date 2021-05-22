@@ -551,19 +551,18 @@
         case: '2 divs with text in different cases wrapped with different parents',
         html: `
           <div id="parent-a">
-            <div>Saul Goodman</div>
-            <div>saul goodman</div>
-            <div>+saul goodman+</div>
+            <div>A-Saul Goodman</div>
+            <div>A-saul goodman</div>
+            <div>A-+saul goodman+</div>
           </div>
 
           <div id="parent-b">
-            <div>Saul Goodman</div>
-            <div>saul goodman</div>
-            <div>+saul goodman+</div>
+            <div>B-Saul Goodman</div>
+            <div>B-saul goodman</div>
+            <div>B-+saul goodman+</div>
           </div>
           `,
       },
-
       {
         id: '9.4',
         type: 'ByExactText',
@@ -580,7 +579,32 @@
           </div>
           `,
       },
+      {
+        id: '9.5',
+        type: 'ByExactText',
+        case:
+          '2 divs with text in different cases wrapped with different parents with special characters in text',
+        html: `
+          <div id="parent-a">
+            <div>+Saul-Goodman: 1</div>
+            <div>+saul-goodman: 2</div>
+          </div>
 
+          <div id="parent-b">
+            <div>-Saul+Goodman: 3</div>
+            <div>-saul+goodman: 4</div>
+          </div>
+          `,
+      },
+      {
+        id: '9.6',
+        type: 'ByExactText',
+        case: '2 divs with text in different cases and special characters',
+        html: `
+        <div>+S-a!u@l#/Go%o^d&m$a%n^%&*^&</div>
+        <div>!s^a@u#l$ %g^o&odm&a^%n$</div>
+          `,
+      },
       {
         id: '10.0',
         type: 'ByName',

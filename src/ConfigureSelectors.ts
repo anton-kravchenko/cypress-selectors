@@ -32,10 +32,7 @@ const CONFIG_HANDLER = {
 };
 
 const ConfigureSelectors = CONFIG_HANDLER.configure;
-const ResetSelectorsConfiguration = () => {
-  CONFIG_HANDLER.reset();
-  ConfigureSelectors({ isLoggingEnabled: true });
-};
+const ResetSelectorsConfiguration = CONFIG_HANDLER.reset;
 
 const getConfiguration = (): typeof CONFIG_HANDLER['config'] => ({ ...CONFIG_HANDLER.config });
 

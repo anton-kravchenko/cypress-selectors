@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { escapeRegExp, max } from 'lodash';
+import { max } from 'lodash';
 import { buildException, isConfigurableProperty, makeDisplayPropName } from './utils';
 import { getConfiguration } from './ConfigureSelectors';
 import { internalAliasKey, hostIDKey, byExternalAlias, byInternalAlias } from './InternalSymbols';

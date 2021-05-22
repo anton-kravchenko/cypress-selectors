@@ -1,5 +1,4 @@
 import { buildException, escapeQuoteSymbols } from './utils';
-import { flow } from 'lodash';
 
 declare const expect: jest.Expect;
 declare const it: jest.It;

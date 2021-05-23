@@ -85,6 +85,7 @@ const ByName = BuildSelectorBy('name', 'CSS');
 const ByXPath = BuildSelectorBy('xpath', 'XPath');
 const ByExactText = BuildSelectorBy('exact-text', 'XPath');
 const ByPartialText = BuildSelectorBy('partial-text', 'XPath');
+const ByExactLinkText = BuildSelectorBy('exact-link-text', 'XPath');
 
 const By = {
   Attribute: ByAttribute,
@@ -97,6 +98,9 @@ const By = {
   Text: {
     Exact: ByExactText,
     Partial: ByPartialText,
+  },
+  Link: {
+    ExactText: ByExactLinkText,
   },
 };
 
@@ -111,5 +115,6 @@ export {
   ByExactText,
   ByPartialText,
   ByName,
+  ByExactLinkText,
 };
 export type { Selector, Chainable };

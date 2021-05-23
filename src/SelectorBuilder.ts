@@ -29,7 +29,8 @@ type SelectorType =
   | 'xpath'
   | 'exact-text'
   | 'partial-text'
-  | 'name';
+  | 'name'
+  | 'exact-link-text';
 
 type SelectorMeta = { host: Host; property: string; hostID: number };
 
@@ -313,6 +314,7 @@ const mapSelectorByType = (selector: Selector, configuration: Configuration) => 
   else if (type === 'name') return `[name="${value}"]`;
   else if (type === 'exact-text') return mapExactTextSelector(selector);
   else if (type === 'partial-text') return mapPartialTextSelector(selector);
+  else if (type === 'exact-link-text') return mapExactLinkTextSelector(selector);
   else {
     const _: never = type; // eslint-disable-line @typescript-eslint/no-unused-vars
     throw buildException(`Unsupported selector type: ${type}`, 'INTERNAL ERROR');
@@ -332,6 +334,17 @@ const mapExactTextSelector = (selector: Selector): string => {
 
 const mapPartialTextSelector = (selector: Selector): string => {
   const prefix = hasParent(selector) ? './*' : '//*';
+  const { value, ignoreCase } = selector.config;
+  const escaped = escapeQuoteSymbols(ignoreCase === true ? value.toLowerCase() : value);
+
+  return ignoreCase === true
+    ? `${prefix}[contains(${TRANSLATE_TO_LOWER_CASE_XPATH_FN}, ${escaped.toLowerCase()})]`
+    : `${prefix}[contains(text(), ${escaped})]`;
+};
+
+// TODO: `ignoreCase` is also valid for ByLinkText and ByPartialLinkText selectors
+const mapExactLinkTextSelector = (selector: Selector): string => {
+  const prefix = hasParent(selector) ? './a' : '//a';
   const { value, ignoreCase } = selector.config;
   const escaped = escapeQuoteSymbols(ignoreCase === true ? value.toLowerCase() : value);
 

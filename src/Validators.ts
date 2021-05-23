@@ -5,6 +5,12 @@ import { buildException, mapSelectorTypeToDisplaySelectorName } from './utils';
 import type { ExternalSelectorConfig } from './Selectors';
 import type { SelectorType } from 'SelectorBuilder';
 
+const SUPPORT_IGNORE_CASE_CONFIGURATION: Array<SelectorType> = [
+  'partial-text',
+  'exact-text',
+  'exact-link-text',
+];
+
 const throwIfNotRunningInCypressEnv = (): void | never => {
   if (!cy || typeof cy.get !== 'function')
     throw buildException(
@@ -192,12 +198,13 @@ const shouldNotProvideIgnoreCaseForNonTextSelectors = ({
     'boolean',
   );
 
-  const selectorsThatAcceptIgnoreCaseParam: Array<SelectorType> = ['partial-text', 'exact-text'];
   if (
     typeof externalConfig.ignoreCase === 'boolean' &&
-    selectorsThatAcceptIgnoreCaseParam.includes(type) === false
-  )
+    SUPPORT_IGNORE_CASE_CONFIGURATION.includes(type) === false
+  ) {
     warnAboutRedundantIgnoreCaseParam(displayProperty, type);
+    delete externalConfig['ignoreCase'];
+  }
 
   return { externalConfig, displayProperty, type };
 };

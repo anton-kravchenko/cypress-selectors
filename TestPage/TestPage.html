@@ -685,10 +685,30 @@
       {
         id: '11.0',
         type: 'ByName',
-        case: '',
+        case: '2 inputs with name attribute',
         html: `
           <input type="email" placeholder="Work Email*" name="work-email" value="email@work.com" >
           <input type="email" placeholder="Work Email*" name="home-email" value="email@home.com" >
+          `,
+      },
+
+      {
+        id: '12.0',
+        type: 'ByExactLinkText',
+        case: '2 links with different text',
+        html: `
+          <a href="https://github.com/">Link A</a>
+          <a href="https://github.com/anton-kravchenko">Link B</a>
+          `,
+      },
+
+      {
+        id: '12.1',
+        type: 'ByExactLinkText',
+        case: '2 links with different text',
+        html: `
+          <a href="https://github.com/">LINK A</a>
+          <a href="https://github.com/anton-kravchenko">LINK B</a>
           `,
       },
     ];

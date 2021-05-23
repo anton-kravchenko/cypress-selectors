@@ -54,6 +54,8 @@ const wrapQuoteSymbol = (symbol: string): string => {
   else return `'${symbol}'`;
 };
 
+// TODO: add to configuration.spec.ts
+
 const mapSelectorTypeToDisplaySelectorName = (type: SelectorType): string => {
   if (type === 'attribute') return 'ByAttribute';
   else if (type === 'class') return 'ByClass';
@@ -64,6 +66,7 @@ const mapSelectorTypeToDisplaySelectorName = (type: SelectorType): string => {
   else if (type === 'name') return 'ByName';
   else if (type === 'exact-text') return 'ByExactText';
   else if (type === 'partial-text') return 'ByPartialText';
+  else if (type === 'exact-link-text') return `ByExactLinkText`;
   else {
     const _: never = type; // eslint-disable-line @typescript-eslint/no-unused-vars
     throw buildException(`Unsupported selector type: ${type}`, 'INTERNAL ERROR');

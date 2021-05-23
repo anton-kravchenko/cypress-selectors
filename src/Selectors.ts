@@ -22,6 +22,7 @@ import type {
   SelectorMeta,
   EnvWithSelectorsStorage,
   InternalSelectorConfig,
+  SelectorsEngine,
 } from './SelectorBuilder';
 
 interface Selector extends Cypress.Chainable {
@@ -36,20 +37,29 @@ export type ExternalSelectorConfig = {
   eq?: number;
   timeout?: number;
   parent?: Selector;
+  ignoreCase?: boolean;
 };
 
-const BuildSelectorBy = (type: SelectorType) => (
+const BuildSelectorBy = (type: SelectorType, engine: SelectorsEngine) => (
   value: string,
   externalConfig: ExternalSelectorConfig = {},
 ) => {
   throwIfNotRunningInCypressEnv();
 
-  const configAttributes = ['alias', 'parentAlias', 'attribute', 'eq', 'timeout', 'parent'];
+  const configAttributes = [
+    'alias',
+    'parentAlias',
+    'attribute',
+    'eq',
+    'timeout',
+    'parent',
+    'ignoreCase',
+  ];
   const safeConfig: ExternalSelectorConfig = pick(externalConfig, configAttributes);
 
   return (host: Host, property: string) => {
     const displayPropName = makeDisplayPropName(host, property);
-    const selectorConfig = { ...validate(safeConfig, displayPropName), value, type };
+    const selectorConfig = { ...validate(safeConfig, displayPropName, type), value, type };
     const hostID =
       getHostIdFromHost(host) ??
       registerAndAssignNewHostId((cy as unknown) as EnvWithSelectorsStorage, host);
@@ -62,16 +72,19 @@ const BuildSelectorBy = (type: SelectorType) => (
 
     const meta: SelectorMeta = { host, property, hostID };
 
-    return buildSelector({ type, config, meta }, cy);
+    return buildSelector({ type, config, meta, engine }, cy);
   };
 };
 
-const ByAttribute = BuildSelectorBy('attribute');
-const ByType = BuildSelectorBy('type');
-const ByClass = BuildSelectorBy('class');
-const ById = BuildSelectorBy('id');
-const BySelector = BuildSelectorBy('selector');
-const ByXPath = BuildSelectorBy('xpath');
+const ByAttribute = BuildSelectorBy('attribute', 'CSS');
+const ByType = BuildSelectorBy('type', 'CSS');
+const ByClass = BuildSelectorBy('class', 'CSS');
+const ById = BuildSelectorBy('id', 'CSS');
+const BySelector = BuildSelectorBy('selector', 'CSS');
+const ByName = BuildSelectorBy('name', 'CSS');
+const ByXPath = BuildSelectorBy('xpath', 'XPath');
+const ByExactText = BuildSelectorBy('exact-text', 'XPath');
+const ByPartialText = BuildSelectorBy('partial-text', 'XPath');
 
 const By = {
   Attribute: ByAttribute,
@@ -80,7 +93,23 @@ const By = {
   Id: ById,
   Selector: BySelector,
   XPath: ByXPath,
+  Name: ByName,
+  Text: {
+    Exact: ByExactText,
+    Partial: ByPartialText,
+  },
 };
 
-export { By, ByAttribute, ByType, ByClass, ById, BySelector, ByXPath };
+export {
+  By,
+  ByAttribute,
+  ByType,
+  ByClass,
+  ById,
+  BySelector,
+  ByXPath,
+  ByExactText,
+  ByPartialText,
+  ByName,
+};
 export type { Selector, Chainable };

@@ -336,7 +336,10 @@
               <div>Div inside div inside span</div>
             </span>
           </div>
-          <div></div>
+          <div attr='for-xpath'>Unique attr value</div>
+          <div>Exact text inside div</div>
+          <div>Partial text inside div</div>
+          <div name='the-div'>div with name attribute</div>
         `,
       },
       {
@@ -515,6 +518,178 @@
               <p>p inside span inside div</p>
             </span>
           </div>`,
+      },
+      {
+        id: '9.0',
+        type: 'ByExactText',
+        case: '3 divs with different text',
+        html: `
+          <div>Saul Goodman</div>
+          <div>Walter White</div>
+          <div>Jessy Pinkman</div>
+          `,
+      },
+
+      {
+        id: '9.1',
+        type: 'ByExactText',
+        case: '2 divs with text in different cases',
+        html: `
+        <div>Saul Goodman</div>
+        <div>saul goodman</div>
+          `,
+      },
+      {
+        id: '9.2',
+        type: 'ByExactText',
+        case: '2 divs with text in different cases wrapped with different parents',
+        html: `
+          <div id="parent-a">
+            <div>A-Saul Goodman</div>
+            <div>A-saul goodman</div>
+            <div>A-+saul goodman+</div>
+          </div>
+
+          <div id="parent-b">
+            <div>B-Saul Goodman</div>
+            <div>B-saul goodman</div>
+            <div>B-+saul goodman+</div>
+          </div>
+          `,
+      },
+      {
+        id: '9.3',
+        type: 'ByExactText',
+        case: '2 divs with text in different cases and special characters',
+        html: `
+        <div>+S-a!u@l#/Go%o^d&m$a%n^%&*^&</div>
+        <div>!s^a@u#l$ %g^o&odm&a^%n$</div>
+          `,
+      },
+      {
+        id: '9.4',
+        type: 'ByExactText',
+        case: '3 divs with quotes in text',
+        html: `
+        <div>double"quote</div>
+        <div>single'quote</div>
+        <div>backtick\`quote</div>
+        <div>double" single' backtick\`</div>
+        <div>single' backtick\`</div>
+          `,
+      },
+      {
+        id: '9.5',
+        type: 'ByExactText',
+        case: '2 divs with emojis',
+        html: `
+          <div>🤔</div>
+          <div>😀</div>
+          `,
+      },
+      {
+        id: '9.6',
+        type: 'ByExactText',
+        case: '2 divs with emojis and quotes',
+        html: `
+          <div id="parent">
+            <div>🤔'🙈"🦊</div>
+            <div>😀"🙉\`🐱</div>
+          </div>
+          `,
+      },
+
+      {
+        id: '10.1',
+        type: 'ByPartialText',
+        case: '3 divs with overlapping text',
+        html: `
+          <div>Walter White</div>
+          <div>Jessy Pinkman</div>
+          <div>Walter White and Jessy Pinkman</div>
+          `,
+      },
+      {
+        id: '10.2',
+        type: 'ByPartialText',
+        case: '2 divs with text in different cases wrapped with different parents',
+        html: `
+          <div id="parent-a">
+            <div>Saul Goodman: 1</div>
+            <div>saul goodman: 2</div>
+          </div>
+
+          <div id="parent-b">
+            <div>Saul Goodman: 3</div>
+            <div>saul goodman: 4</div>
+          </div>
+          `,
+      },
+      {
+        id: '10.3',
+        type: 'ByPartialText',
+        case:
+          '2 divs with text in different cases wrapped with different parents with special characters in text',
+        html: `
+          <div id="parent-a">
+            <div>+Saul-Goodman: 1</div>
+            <div>+saul-goodman: 2</div>
+          </div>
+
+          <div id="parent-b">
+            <div>-Saul+Goodman: 3</div>
+            <div>-saul+goodman: 4</div>
+          </div>
+          `,
+      },
+      {
+        id: '10.4',
+        type: 'ByPartialText',
+        case:
+          '2 divs with text in different cases wrapped with different parents with quotes in text',
+        html: `
+          <div id="parent-a">
+            <div>++SauL'Goodman: 1</div>
+            <div>+sAuL'Goodman: 2</div>
+          </div>
+
+          <div id="parent-b">
+            <div>-Sau'l+G"oodman: 3</div>
+            <div>--sAu'l+g"oo\`dman: 4</div>
+          </div>
+          `,
+      },
+      {
+        id: '10.5',
+        type: 'ByPartialText',
+        case: '2 divs with emojis',
+        html: `
+          <div id="parent">
+            <div>🤔🙈</div>
+            <div>😀🙉</div>
+          </div>
+          `,
+      },
+      {
+        id: '10.6',
+        type: 'ByPartialText',
+        case: '2 divs with emojis and quotes',
+        html: `
+          <div id="parent">
+            <div>🤔'🙈"🦊</div>
+            <div>😀"🙉\`🐱</div>
+          </div>
+          `,
+      },
+
+      {
+        id: '11.0',
+        type: 'ByName',
+        case: '',
+        html: `
+          <input type="email" placeholder="Work Email*" name="work-email" value="email@work.com" >
+          <input type="email" placeholder="Work Email*" name="home-email" value="email@home.com" >
+          `,
       },
     ];
   </script>

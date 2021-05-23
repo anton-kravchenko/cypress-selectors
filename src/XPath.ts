@@ -1,12 +1,18 @@
 /// <reference types="cypress" />
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { fromPairs } from 'lodash';
-import { buildException } from './utils';
+import { fromPairs, toArray } from 'lodash';
+import { buildException, mapSelectorTypeToDisplaySelectorName } from './utils';
+import type { SelectorType } from './SelectorBuilder';
 
 type XPathQueryResult = boolean | string | number | Element;
 
-const xpath = (subject: any, selector: string, options: Map<string, string | number>) => {
+const xpath = (
+  subject: any,
+  selector: string,
+  options: Map<string, string | number>,
+  type: SelectorType,
+) => {
   if (Cypress.dom.isElement(subject) && subject.length > 1) {
     throw buildException(
       `Failed to find an element by XPath("${selector}") - the parent is not an element but a collection of ${subject.length} elements.`,
@@ -15,13 +21,13 @@ const xpath = (subject: any, selector: string, options: Map<string, string | num
 
   const resolveResult = () =>
     Cypress.Promise.try(() => evaluateXPath(selector, subject)).then((rawValue) => {
-      const isElement = Array.isArray(rawValue);
+      const isElements = Array.isArray(rawValue);
 
       const value = Array.isArray(rawValue)
         ? Cypress.$(rawValue.values.length === 1 ? rawValue[0] : rawValue)
         : rawValue;
 
-      if (isElement)
+      if (isElements)
         value.selector = selector; /* This is to log query in error message in case of failure */
 
       // @ts-ignore
@@ -29,7 +35,7 @@ const xpath = (subject: any, selector: string, options: Map<string, string | num
     });
 
   return resolveResult().then((result: XPathQueryResult) => {
-    Cypress.log(generateLogEntryForXPathResult(result, selector));
+    Cypress.log(generateLogEntryForXPathResult(result, selector, type));
     return result;
   });
 };
@@ -42,17 +48,33 @@ type LogEntry = {
     'XPath Result': XPathQueryResult;
   };
 };
-const generateLogEntryForXPathResult = (result: XPathQueryResult, selector: string): LogEntry => {
+const generateLogEntryForXPathResult = (
+  result: XPathQueryResult,
+  selector: string,
+  type: SelectorType,
+): LogEntry => {
   const BASE = { 'XPath Selector': selector, 'XPath Result': result };
+  const name = type === 'xpath' ? `XPath` : `XPath(${mapSelectorTypeToDisplaySelectorName(type)})`;
+
   if (typeof result !== 'object')
     return {
-      name: 'XPath',
+      name,
       consoleProps: () => ({ ...BASE, 'Node Type': typeof result }),
     };
   else {
+    if ('length' in result && 'nodeType' in result === false) {
+      const nodeTypes = toArray<Element>(result)
+        .map((r, id) => `${id}: ${NOTE_TYPE_TO_LABEL_MAPPING[r.nodeType]}`)
+        .join(', ');
+
+      if (result['length'] === 0) BASE['XPath Result'] = 'None';
+
+      return { name, consoleProps: () => ({ ...BASE, 'Node Type': nodeTypes }) };
+    }
+
     const { nodeType } = result;
     return {
-      name: 'XPath',
+      name,
       consoleProps: () => ({
         ...BASE,
         'Node Type': NOTE_TYPE_TO_LABEL_MAPPING[nodeType]

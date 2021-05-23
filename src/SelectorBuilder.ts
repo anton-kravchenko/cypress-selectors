@@ -5,6 +5,7 @@ import { buildException, isConfigurableProperty, makeDisplayPropName } from './u
 import { getConfiguration } from './ConfigureSelectors';
 import { internalAliasKey, hostIDKey, byExternalAlias, byInternalAlias } from './InternalSymbols';
 import { Logger } from './Logger';
+import { TRANSLATE_TO_LOWER_CASE_XPATH_FN, escapeQuoteSymbols } from './utils';
 
 import type { Configuration } from './ConfigureSelectors';
 
@@ -17,11 +18,27 @@ type InternalSelectorConfig = {
   attribute?: string;
   eq?: number;
   timeout?: number;
+  ignoreCase?: boolean;
 };
-type SelectorType = 'attribute' | 'id' | 'class' | 'type' | 'selector' | 'xpath';
+type SelectorType =
+  | 'attribute'
+  | 'id'
+  | 'class'
+  | 'type'
+  | 'selector'
+  | 'xpath'
+  | 'exact-text'
+  | 'partial-text'
+  | 'name';
+
 type SelectorMeta = { host: Host; property: string; hostID: number };
 
-type Selector = { config: InternalSelectorConfig; type: SelectorType; meta: SelectorMeta };
+type Selector = {
+  config: InternalSelectorConfig;
+  type: SelectorType;
+  meta: SelectorMeta;
+  engine: SelectorsEngine;
+};
 
 type SelectorsStorage = Map<string, Selector>;
 
@@ -46,8 +63,9 @@ type EnvWithSelectorsStorage = Env & {
   [hostIDKey]: number;
 };
 type SelectorsByEngine =
-  | { type: 'CSS'; selectors: Array<Selector> }
-  | { type: 'XPath'; selector: Selector };
+  | { engine: 'CSS'; selectors: Array<Selector> }
+  | { engine: 'XPath'; selector: Selector };
+type SelectorsEngine = SelectorsByEngine['engine'];
 
 const buildSelector = (selector: Selector, env: Env): any => {
   const { host, property } = selector.meta;
@@ -208,48 +226,57 @@ const mapSelectorConfigsToSelectorsChain = (
   configuration: Configuration,
 ): Cypress.Chainable => {
   const mappedSelectors = mapSelectorsByType(
-    groupSelectorsByTypeSequentially(selectors),
+    groupSelectorsByEngineSequentially(selectors),
     configuration,
   );
 
-  return mappedSelectors.reduce((chain, { type, selector, timeout }) => {
-    const options = { timeout };
-    if (type === 'XPath') chain = (chain as any).__cypress_selectors_xpath(selector, options);
-    else chain = chain.get(selector, options);
+  return mappedSelectors.reduce((chain, selector) => {
+    const options = { timeout: selector.timeout };
+
+    if (selector.engine === 'XPath')
+      chain = (chain as any).__cypress_selectors_xpath(selector.selector, options, selector.type);
+    else chain = chain.get(selector.selector, options);
 
     return chain;
   }, cy as Cypress.Chainable);
 };
 
 const mapSelectorsByType = (
-  groupedByType: Array<SelectorsByEngine>,
+  groupedByEngine: Array<SelectorsByEngine>,
   configuration: Configuration,
-): Array<{ type: 'XPath' | 'CSS'; selector: string; timeout?: number }> =>
-  groupedByType.map((group) =>
-    group.type === 'XPath'
+): Array<
+  | { engine: 'CSS'; selector: string; timeout?: number }
+  | { engine: 'XPath' | 'CSS'; selector: string; timeout?: number; type: SelectorType }
+> => {
+  return groupedByEngine.map((group) =>
+    group.engine === 'XPath'
       ? {
-          type: 'XPath' as const,
-          selector: group.selector.config.value,
-          timeout: group.selector.config.timeout,
+          engine: 'XPath' as const,
+          selector: mapSelectorConfigsToSelectorString([group.selector], configuration),
+          timeout: group.selector.config.timeout ?? Cypress.config().defaultCommandTimeout,
+          type: group.selector.type,
         }
       : {
-          type: 'CSS' as const,
+          engine: 'CSS' as const,
           selector: mapSelectorConfigsToSelectorString(group.selectors, configuration),
           timeout: getMaxTimeout(group.selectors),
         },
   );
+};
 
 const getMaxTimeout = (selectors: Array<Selector>): number => {
   const { defaultCommandTimeout } = Cypress.config();
   return max(selectors.map(({ config }) => config.timeout ?? defaultCommandTimeout)) as number;
 };
 
-const groupSelectorsByTypeSequentially = (selectors: Array<Selector>): Array<SelectorsByEngine> => {
+const groupSelectorsByEngineSequentially = (
+  selectors: Array<Selector>,
+): Array<SelectorsByEngine> => {
   const result = [];
   let chunk = [];
 
   for (const selector of selectors) {
-    if (selector.type === 'xpath') {
+    if (selector.engine === 'XPath') {
       if (chunk.length === 0) result.push([selector]);
       else {
         result.push(chunk, [selector]);
@@ -260,9 +287,9 @@ const groupSelectorsByTypeSequentially = (selectors: Array<Selector>): Array<Sel
   if (chunk.length) result.push(chunk);
 
   return result.map((selectors) =>
-    selectors[0].type === 'xpath'
-      ? { type: 'XPath', selector: selectors[0] }
-      : { type: 'CSS', selectors },
+    selectors[0].engine === 'XPath'
+      ? { engine: 'XPath', selector: selectors[0] }
+      : { engine: 'CSS', selectors },
   );
 };
 
@@ -283,10 +310,40 @@ const mapSelectorByType = (selector: Selector, configuration: Configuration) => 
   else if (type === 'type') return `${value}`;
   else if (type === 'selector') return value;
   else if (type === 'xpath') return value;
-  else throw buildException(`Unsupported selector type: ${type}`, 'INTERNAL ERROR');
+  else if (type === 'name') return `[name="${value}"]`;
+  else if (type === 'exact-text') return mapExactTextSelector(selector);
+  else if (type === 'partial-text') return mapPartialTextSelector(selector);
+  else {
+    const _: never = type; // eslint-disable-line @typescript-eslint/no-unused-vars
+    throw buildException(`Unsupported selector type: ${type}`, 'INTERNAL ERROR');
+  }
 };
 
-export { buildSelector, collectSelectorsChain, groupSelectorsByTypeSequentially };
+const mapExactTextSelector = (selector: Selector): string => {
+  const prefix = hasParent(selector) ? './*' : '//*';
+  const { value, ignoreCase } = selector.config;
+
+  const escaped = escapeQuoteSymbols(ignoreCase === true ? value.toLowerCase() : value);
+
+  return ignoreCase === true
+    ? `${prefix}[${TRANSLATE_TO_LOWER_CASE_XPATH_FN}=${escaped}]`
+    : `${prefix}[text()=${escaped}]`;
+};
+
+const mapPartialTextSelector = (selector: Selector): string => {
+  const prefix = hasParent(selector) ? './*' : '//*';
+  const { value, ignoreCase } = selector.config;
+  const escaped = escapeQuoteSymbols(ignoreCase === true ? value.toLowerCase() : value);
+
+  return ignoreCase === true
+    ? `${prefix}[contains(${TRANSLATE_TO_LOWER_CASE_XPATH_FN}, ${escaped.toLowerCase()})]`
+    : `${prefix}[contains(text(), ${escaped})]`;
+};
+
+const hasParent = ({ config: { parentAlias, internalParentAlias } }: Selector): boolean =>
+  parentAlias !== undefined || internalParentAlias !== undefined;
+
+export { buildSelector, collectSelectorsChain, groupSelectorsByEngineSequentially };
 export type {
   Host,
   Selector,
@@ -294,4 +351,5 @@ export type {
   SelectorMeta,
   EnvWithSelectorsStorage,
   InternalSelectorConfig,
+  SelectorsEngine,
 };

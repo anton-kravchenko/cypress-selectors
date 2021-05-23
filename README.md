@@ -203,13 +203,3 @@ ResetSelectorsConfiguration();
 4. The documentation doesn't go into details on how to set up Cypress and transpiling via `ts-loader`. However, the setup of this project could be used as a good reference. The whole setup is done in 2 files: `webpack.config.js` and `tsconfig.json`. If you need another reference on setting up a project like this - check out [this](https://glebbahmutov.com/blog/use-typescript-with-cypress/) article.
 
 5. All of the examples are declaring selectors as `static` class fields. This is not a requirement - the same functionality could be achieved with non `static` class fields. However please note, that `child-parent` relationship is not going to work without `parent` being declared as `static` class field.
-
-<!-- TODO: add `eq` for XPath and update docs-->
-<!-- TODO: add note about TS and decorators -->
-<!-- TODO: add note about babel config -->
-<!-- TODO: improve configuration docs -->
-<!-- TODO: `eq` can't be used for XPath-->
-<!-- TODO: add link to the article in the "Motivation" section -->
-<!-- TODO: think about "typing" parentAliases -->
-<!-- TODO: Add supported Cypress versions -->
-<!-- TODO: install linter for ts -->

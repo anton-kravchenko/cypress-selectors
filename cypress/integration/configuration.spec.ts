@@ -64,11 +64,16 @@ context('Configuration', () => {
   });
 
   class Case6_4 {
+    @By.XPath(`//div[@id='TEST_CASE_rendered-html']`) static root: Selector;
     @By.Attribute('cypress-id') static byAttr: Selector;
     @By.Type('code-element') static byType: Selector;
     @By.Class('class-a') static byClass: Selector;
     @By.Id('unique-id') static byId: Selector;
     @By.Selector('div > span > div') static bySelector: Selector;
+    @By.XPath(`//div[@attr='for-xpath']`) static byXPath: Selector;
+    @By.Text.Exact('Exact text inside div') static byExactText: Selector;
+    @By.Text.Partial('Partial', { parent: Case6_4.root }) static byPartialText: Selector;
+    @By.Name('the-div') static byName: Selector;
   }
   it('"By" namespace should just point to other selectors', () => {
     cy.visit('/TestPage.html#6.4');
@@ -78,5 +83,9 @@ context('Configuration', () => {
     Case6_4.byClass.should('have.text', 'Class A');
     Case6_4.byId.should('have.text', 'Unique id');
     Case6_4.bySelector.should('have.text', 'Div inside div inside span');
+    Case6_4.byXPath.should('have.text', 'Unique attr value');
+    Case6_4.byExactText.should('have.text', 'Exact text inside div');
+    Case6_4.byPartialText.should('have.text', 'Partial text inside div');
+    Case6_4.byName.should('have.text', 'div with name attribute');
   });
 });

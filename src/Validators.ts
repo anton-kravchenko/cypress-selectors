@@ -1,7 +1,7 @@
 import { flow } from 'lodash';
 import { Logger } from './Logger';
 import { internalAliasKey } from './InternalSymbols';
-import { buildException } from './utils';
+import { buildException, mapSelectorTypeToDisplaySelectorName } from './utils';
 import type { ExternalSelectorConfig } from './Selectors';
 import type { SelectorType } from 'SelectorBuilder';
 
@@ -242,7 +242,8 @@ const warnAboutInvalidParent = (displayProperty: string): void => {
 };
 
 const warnAboutRedundantIgnoreCaseParam = (displayProperty: string, type: SelectorType): void => {
-  const message = `Selector "${displayProperty}": \`ignoreCase\` attribute is not supported by \`${type}\` selectors.`;
+  const displaySelectorName = mapSelectorTypeToDisplaySelectorName(type);
+  const message = `Selector "${displayProperty}": \`ignoreCase\` attribute is not supported by \`${displaySelectorName}\` selector.`;
   Logger.log(message, 'warning');
 };
 

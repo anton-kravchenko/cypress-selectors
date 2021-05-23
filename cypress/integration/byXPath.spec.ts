@@ -204,15 +204,14 @@ context('ByXPath selector', () => {
 
 context('XPath utils', () => {
   context('logger', () => {
-    const selector = `//h1`;
     ['string result', 123, false].forEach((value) => {
       it(`should return proper log entry for "${typeof value}" value as XPathResult`, () => {
-        const logEntry = generateLogEntryForXPathResult(value, `//h1`);
+        const logEntry = generateLogEntryForXPathResult(value, `//h1`, 'xpath');
         const consoleProps = logEntry.consoleProps();
 
         expect(logEntry.name).to.eq('XPath');
         expect(consoleProps).to.be.deep.equal({
-          'XPath Selector': selector,
+          'XPath Selector': `//h1`,
           'XPath Result': value,
           'Node Type': typeof value,
         });
@@ -224,12 +223,16 @@ context('XPath utils', () => {
       [{ nodeType: 13 }, 'invalid', '13 - UNKNOWN_NODE_TYPE'],
     ].forEach(([element, isValidLabel, nodeType]) => {
       it(`should return proper log entry for \`Element\` as ${isValidLabel} XPathResult`, () => {
-        const logEntry = generateLogEntryForXPathResult(element as Element, `//h1`);
+        const logEntry = generateLogEntryForXPathResult(
+          element as Element,
+          `//*[text()='Saul Goodman']`,
+          'partial-text',
+        );
         const consoleProps = logEntry.consoleProps();
 
-        expect(logEntry.name).to.eq('XPath');
+        expect(logEntry.name).to.eq('XPath(ByPartialText)');
         expect(consoleProps).to.be.deep.equal({
-          'XPath Selector': selector,
+          'XPath Selector': `//*[text()='Saul Goodman']`,
           'XPath Result': element,
           'Node Type': nodeType,
         });

@@ -71,9 +71,11 @@ context('Configuration', () => {
     @By.Id('unique-id') static byId: Selector;
     @By.Selector('div > span > div') static bySelector: Selector;
     @By.XPath(`//div[@attr='for-xpath']`) static byXPath: Selector;
-    @By.Text.Exact('Exact text inside div') static byExactText: Selector;
-    @By.Text.Partial('Partial', { parent: Case6_4.root }) static byPartialText: Selector;
+    @By.Text.Exact('exact text inside div') static byExactText: Selector;
+    @By.Text.Partial('partial', { parent: Case6_4.root }) static byPartialText: Selector;
     @By.Name('the-div') static byName: Selector;
+    @By.Link.ExactText('Exact Link Text') static byExactLinkText: Selector;
+    @By.Link.PartialText('Partial') static byPartialLinkText: Selector;
   }
   it('"By" namespace should just point to other selectors', () => {
     cy.visit('/TestPage.html#6.4');
@@ -84,8 +86,13 @@ context('Configuration', () => {
     Case6_4.byId.should('have.text', 'Unique id');
     Case6_4.bySelector.should('have.text', 'Div inside div inside span');
     Case6_4.byXPath.should('have.text', 'Unique attr value');
-    Case6_4.byExactText.should('have.text', 'Exact text inside div');
-    Case6_4.byPartialText.should('have.text', 'Partial text inside div');
+    Case6_4.byExactText.should('have.text', 'exact text inside div');
+    Case6_4.byPartialText.should('have.text', 'partial text inside div');
     Case6_4.byName.should('have.text', 'div with name attribute');
+    Case6_4.byExactLinkText.invoke('attr', 'href').should('eq', '/abc');
+    Case6_4.byPartialLinkText
+      .should('have.text', 'Partial Link Text')
+      .invoke('attr', 'href')
+      .should('eq', '/def');
   });
 });

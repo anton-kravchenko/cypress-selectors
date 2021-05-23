@@ -67,6 +67,7 @@ const mapSelectorTypeToDisplaySelectorName = (type: SelectorType): string => {
   else if (type === 'exact-text') return 'ByExactText';
   else if (type === 'partial-text') return 'ByPartialText';
   else if (type === 'exact-link-text') return `ByExactLinkText`;
+  else if (type === 'partial-link-text') return `ByPartialLinkText`;
   else {
     const _: never = type; // eslint-disable-line @typescript-eslint/no-unused-vars
     throw buildException(`Unsupported selector type: ${type}`, 'INTERNAL ERROR');

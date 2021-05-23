@@ -9,6 +9,7 @@ const SUPPORT_IGNORE_CASE_CONFIGURATION: Array<SelectorType> = [
   'partial-text',
   'exact-text',
   'exact-link-text',
+  'partial-link-text',
 ];
 
 const throwIfNotRunningInCypressEnv = (): void | never => {

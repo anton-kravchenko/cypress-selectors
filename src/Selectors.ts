@@ -75,6 +75,7 @@ const BuildSelectorBy = (type: SelectorType, engine: SelectorsEngine) => (
     return buildSelector({ type, config, meta, engine }, cy);
   };
 };
+// TODO: return undefined when no results instead of `{selector: "//a[contains(text(), 'Link A')]", Length: 0}` ?
 
 const ByAttribute = BuildSelectorBy('attribute', 'CSS');
 const ByType = BuildSelectorBy('type', 'CSS');
@@ -86,6 +87,7 @@ const ByXPath = BuildSelectorBy('xpath', 'XPath');
 const ByExactText = BuildSelectorBy('exact-text', 'XPath');
 const ByPartialText = BuildSelectorBy('partial-text', 'XPath');
 const ByExactLinkText = BuildSelectorBy('exact-link-text', 'XPath');
+const ByPartialLinkText = BuildSelectorBy('partial-link-text', 'XPath');
 
 const By = {
   Attribute: ByAttribute,
@@ -101,6 +103,7 @@ const By = {
   },
   Link: {
     ExactText: ByExactLinkText,
+    PartialText: ByPartialLinkText,
   },
 };
 
@@ -116,5 +119,6 @@ export {
   ByPartialText,
   ByName,
   ByExactLinkText,
+  ByPartialLinkText,
 };
 export type { Selector, Chainable };

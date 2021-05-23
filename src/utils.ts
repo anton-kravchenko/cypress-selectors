@@ -43,8 +43,8 @@ const escapeQuoteSymbols = (query: string): string => {
   return escaped.length === 1 ? escaped[0] : `concat(${escaped.join(', ')})`;
 };
 
-const inclusiveSplitBySingleQuote = (w: string) => w.split(/(?=[',])|(?<=['])/g);
 const inclusiveSplitByDoubleQuote = (w: string) => w.split(/(?=[",])|(?<=["])/g);
+const inclusiveSplitBySingleQuote = (w: string) => w.split(/(?=[',])|(?<=['])/g);
 const inclusiveSplitByBackTick = (w: string) => w.split(/(?=[`,])|(?<=[`])/g);
 
 const wrapQuoteSymbol = (symbol: string): string => {

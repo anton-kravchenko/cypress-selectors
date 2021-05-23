@@ -319,16 +319,6 @@ const mapSelectorByType = (selector: Selector, configuration: Configuration) => 
   }
 };
 
-const mapPartialTextSelector = (selector: Selector): string => {
-  const prefix = hasParent(selector) ? './*' : '//*';
-  const { value, ignoreCase } = selector.config;
-  const escaped = escapeQuoteSymbols(ignoreCase === true ? value.toLowerCase() : value);
-
-  return ignoreCase === true
-    ? `${prefix}[contains(${TRANSLATE_TO_LOWER_CASE_XPATH_FN}, ${escaped.toLowerCase()})]`
-    : `${prefix}[contains(text(), ${escaped})]`;
-};
-
 const mapExactTextSelector = (selector: Selector): string => {
   const prefix = hasParent(selector) ? './*' : '//*';
   const { value, ignoreCase } = selector.config;
@@ -338,6 +328,16 @@ const mapExactTextSelector = (selector: Selector): string => {
   return ignoreCase === true
     ? `${prefix}[${TRANSLATE_TO_LOWER_CASE_XPATH_FN}=${escaped}]`
     : `${prefix}[text()=${escaped}]`;
+};
+
+const mapPartialTextSelector = (selector: Selector): string => {
+  const prefix = hasParent(selector) ? './*' : '//*';
+  const { value, ignoreCase } = selector.config;
+  const escaped = escapeQuoteSymbols(ignoreCase === true ? value.toLowerCase() : value);
+
+  return ignoreCase === true
+    ? `${prefix}[contains(${TRANSLATE_TO_LOWER_CASE_XPATH_FN}, ${escaped.toLowerCase()})]`
+    : `${prefix}[contains(text(), ${escaped})]`;
 };
 
 const hasParent = ({ config: { parentAlias, internalParentAlias } }: Selector): boolean =>

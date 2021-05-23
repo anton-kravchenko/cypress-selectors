@@ -57,7 +57,10 @@ const generateLogEntryForXPathResult = (
   const name = type === 'xpath' ? `XPath` : `XPath(${mapSelectorTypeToDisplaySelectorName(type)})`;
 
   if (typeof result !== 'object')
-    return { name, consoleProps: () => ({ ...BASE, 'Node Type': typeof result }) };
+    return {
+      name,
+      consoleProps: () => ({ ...BASE, 'Node Type': typeof result }),
+    };
   else {
     if ('length' in result && 'nodeType' in result === false) {
       const nodeTypes = toArray<Element>(result)

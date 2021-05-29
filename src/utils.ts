@@ -54,8 +54,6 @@ const wrapQuoteSymbol = (symbol: string): string => {
   else return `'${symbol}'`;
 };
 
-// TODO: add to configuration.spec.ts
-
 const mapSelectorTypeToDisplaySelectorName = (type: SelectorType): string => {
   if (type === 'attribute') return 'ByAttribute';
   else if (type === 'class') return 'ByClass';

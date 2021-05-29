@@ -12,6 +12,8 @@ const SUPPORT_IGNORE_CASE_CONFIGURATION: Array<SelectorType> = [
   'partial-link-text',
 ];
 
+const SUPPORT_ATTRIBUTE_CONFIGURATION: Array<SelectorType> = ['attribute'];
+
 const throwIfNotRunningInCypressEnv = (): void | never => {
   if (!cy || typeof cy.get !== 'function')
     throw buildException(
@@ -41,6 +43,7 @@ const validate = (
     shouldNotProvideNegativeTimeout,
     shouldProvideParentDefinedOnlyViaCypressSelectors,
     shouldNotProvideIgnoreCaseForNonTextSelectors,
+    shouldNotProvideAttributeConfigForNSelectorsThatDoNotSupportIt,
   );
 
   const { externalConfig: sanitizedConfig } = validate({ externalConfig, displayProperty, type });
@@ -210,6 +213,22 @@ const shouldNotProvideIgnoreCaseForNonTextSelectors = ({
   return { externalConfig, displayProperty, type };
 };
 
+const shouldNotProvideAttributeConfigForNSelectorsThatDoNotSupportIt = ({
+  externalConfig,
+  displayProperty,
+  type,
+}: ExtConfigWithDisplayProp): ExtConfigWithDisplayProp => {
+  if (
+    typeof externalConfig.attribute !== 'undefined' &&
+    SUPPORT_ATTRIBUTE_CONFIGURATION.includes(type) === false
+  ) {
+    warnAboutRedundantAttributeParam(displayProperty, type);
+    delete externalConfig['attribute'];
+  }
+
+  return { externalConfig, displayProperty, type };
+};
+
 const warnAboutSupplyingParentAndParentAlias = (displayProperty: string): void => {
   const message = [
     `Selector "${displayProperty}": 'parent' and 'parentAlias' attributes can't be used together in one configuration - 'parent' has precedence over 'parentAlias' so 'parentAlias' is going to be ignored.`,
@@ -252,6 +271,12 @@ const warnAboutInvalidParent = (displayProperty: string): void => {
 const warnAboutRedundantIgnoreCaseParam = (displayProperty: string, type: SelectorType): void => {
   const displaySelectorName = mapSelectorTypeToDisplaySelectorName(type);
   const message = `Selector "${displayProperty}": \`ignoreCase\` attribute is not supported by \`${displaySelectorName}\` selector.`;
+  Logger.log(message, 'warning');
+};
+
+const warnAboutRedundantAttributeParam = (displayProperty: string, type: SelectorType): void => {
+  const displaySelectorName = mapSelectorTypeToDisplaySelectorName(type);
+  const message = `Selector "${displayProperty}": \`attribute\` attribute is not supported by \`${displaySelectorName}\` selector.`;
   Logger.log(message, 'warning');
 };
 

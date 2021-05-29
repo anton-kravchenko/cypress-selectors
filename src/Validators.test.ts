@@ -108,4 +108,18 @@ describe('external config validation', () => {
     const validated = validate(externalConfig, displayProperty, 'id');
     expect(validated).toEqual({});
   });
+
+  it('should not remove `attribute` config for attribute selector', () => {
+    const externalConfig = { attribute: 'cypress-id' };
+
+    const validated = validate(externalConfig, displayProperty, 'attribute');
+    expect(validated).toEqual(externalConfig);
+  });
+
+  it('should remove `attribute` config from non attribute selector', () => {
+    const externalConfig = { attribute: 'cypress-id' };
+
+    const validated = validate(externalConfig, displayProperty, 'id');
+    expect(validated).toEqual({});
+  });
 });

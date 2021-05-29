@@ -29,7 +29,9 @@ type SelectorType =
   | 'xpath'
   | 'exact-text'
   | 'partial-text'
-  | 'name';
+  | 'name'
+  | 'exact-link-text'
+  | 'partial-link-text';
 
 type SelectorMeta = { host: Host; property: string; hostID: number };
 
@@ -313,27 +315,29 @@ const mapSelectorByType = (selector: Selector, configuration: Configuration) => 
   else if (type === 'name') return `[name="${value}"]`;
   else if (type === 'exact-text') return mapExactTextSelector(selector);
   else if (type === 'partial-text') return mapPartialTextSelector(selector);
+  else if (type === 'exact-link-text') return mapExactTextSelector(selector, 'a');
+  else if (type === 'partial-link-text') return mapPartialTextSelector(selector, 'a');
   else {
     const _: never = type; // eslint-disable-line @typescript-eslint/no-unused-vars
     throw buildException(`Unsupported selector type: ${type}`, 'INTERNAL ERROR');
   }
 };
 
-const mapExactTextSelector = (selector: Selector): string => {
-  const prefix = hasParent(selector) ? './*' : '//*';
+const mapExactTextSelector = (selector: Selector, forTag = '*'): string => {
+  const prefix = hasParent(selector) ? `./${forTag}` : `//${forTag}`;
   const { value, ignoreCase } = selector.config;
 
-  const escaped = escapeQuoteSymbols(ignoreCase === true ? value.toLowerCase() : value);
+  const escaped = escapeQuoteSymbols(value);
 
   return ignoreCase === true
-    ? `${prefix}[${TRANSLATE_TO_LOWER_CASE_XPATH_FN}=${escaped}]`
+    ? `${prefix}[${TRANSLATE_TO_LOWER_CASE_XPATH_FN}=${escaped.toLowerCase()}]`
     : `${prefix}[text()=${escaped}]`;
 };
 
-const mapPartialTextSelector = (selector: Selector): string => {
-  const prefix = hasParent(selector) ? './*' : '//*';
+const mapPartialTextSelector = (selector: Selector, forTag = '*'): string => {
+  const prefix = hasParent(selector) ? `./${forTag}` : `//${forTag}`;
   const { value, ignoreCase } = selector.config;
-  const escaped = escapeQuoteSymbols(ignoreCase === true ? value.toLowerCase() : value);
+  const escaped = escapeQuoteSymbols(value);
 
   return ignoreCase === true
     ? `${prefix}[contains(${TRANSLATE_TO_LOWER_CASE_XPATH_FN}, ${escaped.toLowerCase()})]`

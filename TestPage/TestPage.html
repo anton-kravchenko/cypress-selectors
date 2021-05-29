@@ -311,7 +311,7 @@
       {
         id: '6.3',
         type: 'Configuration',
-        case: '2 exactly the same trees with different text',
+        case: '2 exactly the same trees with different texts',
         html: `
           <div cypress-id="parent">
             <div cypress-id="children">children a</div>
@@ -337,9 +337,11 @@
             </span>
           </div>
           <div attr='for-xpath'>Unique attr value</div>
-          <div>Exact text inside div</div>
-          <div>Partial text inside div</div>
+          <div>exact text inside div</div>
+          <div>partial text inside div</div>
           <div name='the-div'>div with name attribute</div>
+          <a href="/abc">Exact Link Text</a>
+          <a href="/def">Partial Link Text</a>
         `,
       },
       {
@@ -522,7 +524,7 @@
       {
         id: '9.0',
         type: 'ByExactText',
-        case: '3 divs with different text',
+        case: '3 divs with different texts',
         html: `
           <div>Saul Goodman</div>
           <div>Walter White</div>
@@ -685,10 +687,64 @@
       {
         id: '11.0',
         type: 'ByName',
-        case: '',
+        case: '2 inputs with name attribute',
         html: `
           <input type="email" placeholder="Work Email*" name="work-email" value="email@work.com" >
           <input type="email" placeholder="Work Email*" name="home-email" value="email@home.com" >
+          `,
+      },
+
+      {
+        id: '12.0',
+        type: 'ByExactLinkText',
+        case: '2 links with different texts',
+        html: `
+          <a href="https://github.com/">Link A</a>
+          <a href="https://github.com/anton-kravchenko">Link B</a>
+          `,
+      },
+
+      {
+        id: '12.1',
+        type: 'ByExactLinkText',
+        case: '2 links with different texts',
+        html: `
+          <a href="https://github.com/">LINK A</a>
+          <a href="https://github.com/anton-kravchenko">LINK B</a>
+          `,
+      },
+
+      {
+        id: '13.0',
+        type: 'ByPartialLinkText',
+        case: '2 links with different texts',
+        html: `
+          <a href="https://github.com/">1-Link A</a>
+          <a href="https://github.com/anton-kravchenko">2-Link B</a>
+          `,
+      },
+      {
+        id: '13.1',
+        type: 'ByPartialLinkText',
+        case: '2 links with different texts in uppercase',
+        html: `
+          <a href="https://github.com/">1-LINK A</a>
+          <a href="https://github.com/anton-kravchenko">2-LINK B</a>
+        `,
+      },
+      {
+        id: '13.2',
+        type: 'ByPartialLinkText',
+        case: '2 groups of 2 links with different texts in uppercase inside different parents',
+        html: `
+          <div id="root-a">
+            <a href="https://github.com/">A-LINK 1</a>
+            <a href="https://github.com/anton-kravchenko">A-LINK 2</a>
+          </div>
+          <div id="root-b">
+            <a href="/#a">B-LINK 1</a>
+            <a href="/#b">B-LINK 2</a>
+          </div>
           `,
       },
     ];

@@ -75,7 +75,6 @@ const BuildSelectorBy = (type: SelectorType, engine: SelectorsEngine) => (
     return buildSelector({ type, config, meta, engine }, cy);
   };
 };
-// TODO: return undefined when no results instead of `{selector: "//a[contains(text(), 'Link A')]", Length: 0}` ?
 
 const ByAttribute = BuildSelectorBy('attribute', 'CSS');
 const ByType = BuildSelectorBy('type', 'CSS');

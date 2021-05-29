@@ -43,7 +43,7 @@ const validate = (
     shouldNotProvideNegativeTimeout,
     shouldProvideParentDefinedOnlyViaCypressSelectors,
     shouldNotProvideIgnoreCaseForNonTextSelectors,
-    shouldNotProvideAttributeConfigForNSelectorsThatDoNotSupportIt,
+    shouldNotProvideAttributeConfigForSelectorsThatDoNotSupportIt,
   );
 
   const { externalConfig: sanitizedConfig } = validate({ externalConfig, displayProperty, type });
@@ -213,7 +213,7 @@ const shouldNotProvideIgnoreCaseForNonTextSelectors = ({
   return { externalConfig, displayProperty, type };
 };
 
-const shouldNotProvideAttributeConfigForNSelectorsThatDoNotSupportIt = ({
+const shouldNotProvideAttributeConfigForSelectorsThatDoNotSupportIt = ({
   externalConfig,
   displayProperty,
   type,

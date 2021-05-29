@@ -344,8 +344,6 @@ const mapPartialTextSelector = (selector: Selector, forTag = '*'): string => {
     : `${prefix}[contains(text(), ${escaped})]`;
 };
 
-// TODO: `ignoreCase` is also valid for ByLinkText and ByPartialLinkText selectors
-
 const hasParent = ({ config: { parentAlias, internalParentAlias } }: Selector): boolean =>
   parentAlias !== undefined || internalParentAlias !== undefined;
 

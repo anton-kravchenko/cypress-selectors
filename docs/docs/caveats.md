@@ -44,3 +44,19 @@ The documentation doesn't detail how to set up Cypress and transpiling via `ts-l
 ### Static class members
 
 All of the examples are declaring selectors as `static` class fields. This is not a requirement - the same functionality could be achieved with non `static` class fields. However, please note that the `child-parent` relationship is not going to work without `parent` being declared a `static` class field.
+
+### `ignoreCase`
+
+`ignoreCase` configuration works only for text in English. It uses the following `XPath` function to transform text into lowercase and compare it with the specified text (which also gets transformed into lower case):
+
+```typescript
+translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz');
+```
+
+### XPath based text selectors
+
+`XPath` based text selectors (`@ByExactText`, `@ByPartialText`, `@ByPartialLinkText` and `@ByExactLinkText`) are using `concat` function to escape quotes in `XPath` selectors. Due to that, generated XPath selector might look like the following (given that your text is `double"single'quote`):
+
+```text
+//*[text()=concat('double', '"', ' single', "'", 'quote')]
+```

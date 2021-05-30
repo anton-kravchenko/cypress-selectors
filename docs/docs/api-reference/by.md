@@ -6,7 +6,7 @@ All of the selectors are accessible via `By` namespace like the following:
 import { By } from 'cypress-selectors';
 import type { Selector } from 'cypress-selectors';
 
-class HomePageSelectors {
+class Selectors {
   @By.Id('main')
   static main: Selector; // equivalent of - cy.get('#main')
 
@@ -23,6 +23,21 @@ class HomePageSelectors {
   static listItem: Selector; // equivalent of - cy.get('ul > li .focus')
 
   @By.XPath(`//input`)
-  static input: Selector; // equivalent of - cy.xpath('//input')
+  static xInput: Selector; // equivalent of - cy.xpath('//input')
+
+  @By.Name('email')
+  static email: Selector; // equivalent of - cy.get(`[name="email"]`)
+
+  @By.Text.Exact('Foo')
+  static bar: Selector; // equivalent of - cy.xpath(`//*[text()='Foo']`)
+
+  @By.Text.Partial('Foo')
+  static p: Selector; // equivalent of - cy.xpath(`/*[contains(text(), 'Foo')]`)
+
+  @By.Link.ExactText('Link A')
+  static linkA: Selector; // equivalent of - cy.xpath(`//a[text()='Link A']`)
+
+  @By.Link.PartialText('Link B')
+  static linkB: Selector; // equivalent of - cy.xpath(`//a[contains(text(), 'Link B')]`)
 }
 ```

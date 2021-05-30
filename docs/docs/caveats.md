@@ -47,7 +47,7 @@ All of the examples are declaring selectors as `static` class fields. This is no
 
 ### `ignoreCase`
 
-`ignoreCase` configuration works only for English text. It uses the following `XPath` function to transform text into lowercase and compare it with the specified text (which also gets transformed into lower case):
+`ignoreCase` configuration works only for text in English. It uses the following `XPath` function to transform text into lowercase and compare it with the specified text (which also gets transformed into lower case):
 
 ```typescript
 translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz');

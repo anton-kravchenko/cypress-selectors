@@ -6,7 +6,7 @@ All of the selectors are accessible via `By` namespace like the following:
 import { By } from 'cypress-selectors';
 import type { Selector } from 'cypress-selectors';
 
-class HomePageSelectors {
+class Selectors {
   @By.Id('main')
   static main: Selector; // equivalent of - cy.get('#main')
 

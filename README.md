@@ -46,55 +46,70 @@ The docs are located at [https://anton-kravchenko.github.io/cypress-selectors](h
 
 1. Searching elements by **`attribute`**, **`class`**, **`id`**, **`type`**, **`selector`** and **`xpath`**:
 
-   ```TypeScript
-    import { ByAttribute, ByClass, ById, BySelector, ByType, ByXPath } from 'cypress-selectors';
-    import type { Selector } from 'cypress-selectors';
+```typescript
+import { By } from 'cypress-selectors';
+import type { Selector } from 'cypress-selectors';
 
-    class HomePageSelectors {
-      @ById('main')
-      static main: Selector; // equivalent of - cy.get('#main')
+class Selectors {
+  @By.Id('main')
+  static main: Selector; // equivalent of - cy.get('#main')
 
-      @ByType('input')
-      static input: Selector; // equivalent of - cy.get('input')
+  @By.Type('input')
+  static input: Selector; // equivalent of - cy.get('input')
 
-      @ByClass('button')
-      static button: Selector; // equivalent of - cy.get('.button')
+  @By.Class('button')
+  static button: Selector; // equivalent of - cy.get('.button')
 
-      @ByAttribute('header')
-      static header: Selector; // equivalent of - cy.get('[cypress-id=header')
+  @By.Attribute('header')
+  static header: Selector; // equivalent of - cy.get('[cypress-id=header')
 
-      @BySelector('ul > li .focus')
-      static listItem: Selector; // equivalent of - cy.get('ul > li .focus')
+  @By.Selector('ul > li .focus')
+  static listItem: Selector; // equivalent of - cy.get('ul > li .focus')
 
-      @ByXPath(`//input`)
-      static input: Selector; // equivalent of - cy.xpath('//input')
-    }
-   ```
+  @By.XPath(`//input`)
+  static xInput: Selector; // equivalent of - cy.xpath('//input')
+
+  @By.Name('email')
+  static email: Selector; // equivalent of - cy.get(`[name="email"]`)
+
+  @By.Text.Exact('Foo')
+  static bar: Selector; // equivalent of - cy.xpath(`//*[text()='Foo']`)
+
+  @By.Text.Partial('Foo')
+  static p: Selector; // equivalent of - cy.xpath(`/*[contains(text(), 'foo')]`)
+
+  @By.Link.ExactText('Link A')
+  static linkA: Selector; // equivalent of - cy.xpath(`//a[text()='Link A']`)
+
+  @By.Link.PartialText('Link B')
+  static linkB: Selector; // equivalent of - cy.xpath(`//a[contains(text(), 'Link B')]`)
+}
+```
 
 2. Searching **child** elements
 
-   _2.1_ By linking parent selector via **reference**
+_2.1_ By linking parent selector via **reference**
 
-   ```TypeScript
-   class Selectors {
-     @ById('main') static parent: Selector;
+```TypeScript
+class Selectors {
+  @ById('main') static parent: Selector;
 
-     @ByClass('button', { parent: Selectors.parent })
-     static children: Selector; // equivalent of - cy.get('#root .button')
-   }
-   ```
+  @ByClass('button', { parent: Selectors.parent })
+  static children: Selector; // equivalent of - cy.get('#root .button')
+}
+```
 
-   _2.2_ By linking parent selector via **`alias`** and **`parentAlias`** attributes
+_2.2_ By linking parent selector via **`alias`** and **`parentAlias`** attributes
 
-   ```TypeScript
-   class Selectors {
-     @ById('main', { alias: 'root' })
-     static parent: Selector;
+```TypeScript
+class Selectors {
+  @ById('main', { alias: 'root' })
+  static parent: Selector;
 
-     @ByClass('button', { parentAlias: 'root' })
-     static children: Selector; // equivalent of - cy.get('#root .button')
-   }
-   ```
+  @ByClass('button', { parentAlias: 'root' })
+  static children: Selector; // equivalent of - cy.get('#root .button')
+}
+```
 
 3. Implementing **Page Objects** ([PageObject is considered to be an anti-pattern](https://www.cypress.io/blog/2019/01/03/stop-using-page-objects-and-start-using-app-actions/) although)
 

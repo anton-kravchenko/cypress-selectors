@@ -101,7 +101,7 @@ Selects an element that contains specified text:
 
 ```typescript
 class Selectors {
-  @ByPartialText('Foo') static p: Selector; // equivalent of - cy.xpath(`/*[contains(text(), 'foo')]`)
+  @ByPartialText('Foo') static p: Selector; // equivalent of - cy.xpath(`/*[contains(text(), 'Foo')]`)
   @ByPartialText('bar', { ignoreCase: true }) static bar: Selector;
 }
 ```

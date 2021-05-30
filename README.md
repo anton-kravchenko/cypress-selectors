@@ -76,7 +76,7 @@ class Selectors {
   static bar: Selector; // equivalent of - cy.xpath(`//*[text()='Foo']`)
 
   @By.Text.Partial('Foo')
-  static p: Selector; // equivalent of - cy.xpath(`/*[contains(text(), 'foo')]`)
+  static p: Selector; // equivalent of - cy.xpath(`/*[contains(text(), 'Foo')]`)
 
   @By.Link.ExactText('Link A')
   static linkA: Selector; // equivalent of - cy.xpath(`//a[text()='Link A']`)

@@ -71,3 +71,65 @@ class Selectors {
   @ByXPath(`//input`) // equivalent of - cy.xpath('//input')
 }
 ```
+
+### @ByName
+
+Selects an element by `name` attribute:
+
+```typescript
+class Selectors {
+  @ByName('email') static workEmail: Selector; // equivalent of - cy.get(`[name="email"]`)
+}
+```
+
+### @ByExactText
+
+Selects an element that has specified text:
+
+```typescript
+class Selectors {
+  @ByExactText('Foo') static bar: Selector; // equivalent of - cy.xpath(`//*[text()='Foo']`)
+  @ByExactText('bar', { ignoreCase: true }) static bar: Selector;
+}
+```
+
+By default, `ByExactText` is case sensitive. To ignore case sensitivity, set `ignoreCase` to `true` as in the second example.
+
+### @ByPartialText
+
+Selects an element that contains specified text:
+
+```typescript
+class Selectors {
+  @ByPartialText('Foo') static p: Selector; // equivalent of - cy.xpath(`/*[contains(text(), 'foo')]`)
+  @ByPartialText('bar', { ignoreCase: true }) static bar: Selector;
+}
+```
+
+By default, `ByPartialText` is case sensitive. To ignore case sensitivity, set `ignoreCase` to `true` as in the second example.
+
+### @ByExactLinkText
+
+Selects a link that has specified text:
+
+```typescript
+class Selectors {
+  @ByExactLinkText('Link') static link: Selector; // equivalent of - cy.xpath(`//a[text()='Link']`)
+  @ByExactLinkText('link a', { ignoreCase: true }) static linkA: Selector;
+}
+```
+
+By default, `ByExactLinkText` is case sensitive. To ignore case sensitivity, set `ignoreCase` to `true` as in the second example.
+
+### @ByPartialLinkText
+
+Selects a link that contains specified text:
+
+```typescript
+class Selectors {
+  @ByPartialLinkText('Link') static link: Selector; // equivalent of - cy.xpath(`//a[contains(text(), 'Link')]`)
+  @ByPartialLinkText('link a', { ignoreCase: true }) static linkA: Selector;
+}
+```
+
+By default, `ByPartialLinkText` is case sensitive. To ignore case sensitivity, set `ignoreCase` to `true` as in the second example.

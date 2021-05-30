@@ -1,10 +1,12 @@
-# `By` namespace
-
-All of the selectors are accessible via `By` namespace like the following:
-
-```typescript
-import { By } from 'cypress-selectors';
-import type { Selector } from 'cypress-selectors';
+import {
+  By,
+  ByAttribute,
+  ByExactLinkText,
+  ByExactText,
+  ByPartialLinkText,
+  ByPartialText,
+  Selector,
+} from '../../src';
 
 class HomePageSelectors {
   @By.Id('main')
@@ -26,7 +28,7 @@ class HomePageSelectors {
   static xInput: Selector; // equivalent of - cy.xpath('//input')
 
   @By.Name('email')
-  static email: Selector; // equivalent of - cy.get(`[name="email"]`)
+  static workEmail: Selector; // equivalent of - cy.get(`[name="email"]`)
 
   @By.Text.Exact('Foo')
   static bar: Selector; // equivalent of - cy.xpath(`//*[text()='Foo']`)
@@ -40,4 +42,3 @@ class HomePageSelectors {
   @By.Link.PartialText('Link B')
   static linkB: Selector; // equivalent of - cy.xpath(`//a[contains(text(), 'Link B')]`)
 }
-```

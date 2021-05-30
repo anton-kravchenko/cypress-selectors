@@ -10,6 +10,7 @@ type ExternalSelectorConfig = {
   eq?: number;
   timeout?: number;
   parent?: Selector;
+  ignoreCase?: boolean;
 };
 ```
 
@@ -46,4 +47,11 @@ Selector timeout. By default, the library inherits `timeout` configuration from 
 Allows referencing parent of a selector via reference to another selector.
 :::note
 This kind of _child-parent_ relationship doesn't have 'one-class' limitation and works across all classes with selectors.
+:::
+
+### `ignoreCase`
+
+Makes text selector case insensitive.
+:::note
+Works only with `@ByExactText`, `@ByPartialText`, `@ByPartialLinkText` and `@ByExactLinkText` selectors.
 :::

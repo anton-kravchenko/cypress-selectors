@@ -44,7 +44,7 @@ The docs are located at [https://anton-kravchenko.github.io/cypress-selectors](h
 
 ## Usage
 
-1. Searching elements by **`attribute`**, **`class`**, **`id`**, **`type`**, **`selector`** and **`xpath`**:
+1. Searching elements by **`attribute`**, **`class`**, **`id`**, **`type`**, **`selector`**, **`text`**, **`link text`**, **`name`** and **`xpath`**:
 
 ```typescript
 import { By } from 'cypress-selectors';

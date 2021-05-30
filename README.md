@@ -88,28 +88,28 @@ class Selectors {
 
 2. Searching **child** elements
 
-_2.1_ By linking parent selector via **reference**
+   _2.1_ By linking parent selector via **reference**
 
-```TypeScript
-class Selectors {
-  @ById('main') static parent: Selector;
+   ```TypeScript
+   class Selectors {
+     @ById('main') static parent: Selector;
 
-  @ByClass('button', { parent: Selectors.parent })
-  static children: Selector; // equivalent of - cy.get('#root .button')
-}
-```
+     @ByClass('button', { parent: Selectors.parent })
+     static children: Selector; // equivalent of - cy.get('#root .button')
+   }
+   ```
 
-_2.2_ By linking parent selector via **`alias`** and **`parentAlias`** attributes
+   _2.2_ By linking parent selector via **`alias`** and **`parentAlias`** attributes
 
-```TypeScript
-class Selectors {
-  @ById('main', { alias: 'root' })
-  static parent: Selector;
+   ```TypeScript
+   class Selectors {
+     @ById('main', { alias: 'root' })
+     static parent: Selector;
 
-  @ByClass('button', { parentAlias: 'root' })
-  static children: Selector; // equivalent of - cy.get('#root .button')
-}
-```
+     @ByClass('button', { parentAlias: 'root' })
+     static children: Selector; // equivalent of - cy.get('#root .button')
+   }
+   ```
 
 3. Implementing **Page Objects** ([PageObject is considered to be an anti-pattern](https://www.cypress.io/blog/2019/01/03/stop-using-page-objects-and-start-using-app-actions/) although)
 

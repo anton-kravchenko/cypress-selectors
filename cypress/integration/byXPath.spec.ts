@@ -200,6 +200,8 @@ context('ByXPath selector', () => {
     cy.visit('/TestPage.html#8.6?timeout=1500');
     Case8_6_1.p.should('have.text', 'p inside span inside div');
   });
+
+  it.only('should use `eq` attribute', () => {});
 });
 
 context('XPath utils', () => {

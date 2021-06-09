@@ -232,12 +232,18 @@ const mapSelectorConfigsToSelectorsChain = (
     configuration,
   );
 
-  return mappedSelectors.reduce((chain, selector) => {
+  return mappedSelectors.reduce((chain, selector, index) => {
     const options = { timeout: selector.timeout };
 
     if (selector.engine === 'XPath')
       chain = (chain as any).__cypress_selectors_xpath(selector.selector, options, selector.type);
-    else chain = chain.get(selector.selector, options);
+    else {
+      const isFirstInChain = 0 === index;
+
+      chain = isFirstInChain
+        ? chain.get(selector.selector, options)
+        : chain.find(selector.selector, options);
+    }
 
     return chain;
   }, cy as Cypress.Chainable);
@@ -247,8 +253,8 @@ const mapSelectorsByType = (
   groupedByEngine: Array<SelectorsByEngine>,
   configuration: Configuration,
 ): Array<
-  | { engine: 'CSS'; selector: string; timeout?: number }
-  | { engine: 'XPath' | 'CSS'; selector: string; timeout?: number; type: SelectorType }
+  | { engine: 'CSS'; selector: string; timeout: number }
+  | { engine: 'XPath' | 'CSS'; selector: string; timeout: number; type: SelectorType }
 > => {
   return groupedByEngine.map((group) =>
     group.engine === 'XPath'

@@ -35,7 +35,7 @@ Custom attribute to be used by `@ByAttribute` selector. Being ignored by all oth
 Index of a DOM element in an array of elements.
 
 :::note
-Works with both `XPath` and `CSS` selectors. However, please note that it is not going to work if your `XPath` selector returns `string`, `number` of `boolean`.
+Works with both `XPath` and `CSS` selectors. However, please note that it is not going to work if your `XPath` selector returns `string`, `number` or `boolean`.
 :::
 
 ### `timeout`
@@ -48,16 +48,9 @@ Allows referencing parent of a selector via reference to another selector.
 :::note
 
 1. This kind of _child-parent_ relationship doesn't have 'one-class' limitation and works across all classes with selectors.
-2. It is possible use the `XPath` selector as a parent for the `CSS` selector and vise versa.
-3. `XPath` selectors that specify parents, should use relative location path (e.g. `./div` instead of `//div`). Otherwise, `parent` attribute for `XPath` selector that uses absolute location path is going to be ignored.
+2. It is possible to use the `XPath` selector as a parent for the `CSS` selector and vise versa.
+3. `XPath` selectors that specify parents, should use relative location path (e.g. `./div` instead or `//div`). Otherwise, `parent` attribute for `XPath` selector that uses absolute location path is going to be ignored.
 
-:::
-
-### `ignoreCase`
-
-Makes text selector case insensitive.
-:::note
-Works only with `@ByExactText`, `@ByPartialText`, `@ByPartialLinkText` and `@ByExactLinkText` selectors.
 :::
 
 ### `ignoreCase`

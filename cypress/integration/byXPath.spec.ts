@@ -201,7 +201,31 @@ context('ByXPath selector', () => {
     Case8_6_1.p.should('have.text', 'p inside span inside div');
   });
 
-  it.only('should use `eq` attribute', () => {});
+  class Case8_7 {
+    @ByXPath(`//div[contains(@class, 'button')]`, { eq: 0 })
+    static firstButton: Selector;
+    @ByXPath(`//div[contains(@class, 'button')]`, { eq: 1 })
+    static secondButton: Selector;
+    @ByXPath(`//div[contains(@class, 'button')]`, { eq: 2 })
+    static thirdButton: Selector;
+  }
+  it('should use `eq` attribute for list of elements', () => {
+    cy.visit('/TestPage.html#8.7');
+
+    Case8_7.firstButton.should('have.text', 'first button');
+    Case8_7.secondButton.should('have.text', 'second button');
+    Case8_7.thirdButton.should('have.text', 'third button');
+  });
+
+  class Case8_8 {
+    @ByXPath(`//div[contains(@class, 'button')]`, { eq: 0 })
+    static button: Selector;
+  }
+  it('should not fail if query returns only one element and `eq` is set to 0', () => {
+    cy.visit('/TestPage.html#8.8');
+
+    Case8_8.button.should('have.text', 'first button');
+  });
 });
 
 context('XPath utils', () => {

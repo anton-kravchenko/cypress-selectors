@@ -24,6 +24,23 @@ const runTest = (Selectors: ISelectors) => {
 };
 
 context('Using parent selectors', () => {
+  class Case15 {
+    @By.Id('parent') static root: Selector;
+
+    @By.XPath(`./div[contains(@class, 'child')]`, { parent: Case15.root })
+    static firstLevelChildren: Selector;
+
+    @By.Type('span', { parent: Case15.firstLevelChildren }) static secondLevelChildren: Selector;
+
+    @By.XPath(`./div[contains(@class, 'text')]`, { parent: Case15.secondLevelChildren })
+    static thirdLevelChildren: Selector;
+  }
+
+  it('should properly resolve deep chain of selectors', () => {
+    cy.visit('/TestPage.html#15.0');
+    Case15.thirdLevelChildren.should('have.text', 'the-children');
+  });
+
   context('Specifying parent via reference', () => {
     context('Using CSS selector as parent', () => {
       it('should use CSS parent selector when querying child element using CSS selector', () => {

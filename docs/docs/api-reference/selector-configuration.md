@@ -59,3 +59,10 @@ Makes text selector case insensitive.
 :::note
 Works only with `@ByExactText`, `@ByPartialText`, `@ByPartialLinkText` and `@ByExactLinkText` selectors.
 :::
+
+### `ignoreCase`
+
+Makes text selector case insensitive.
+:::note
+Works only with `@ByExactText`, `@ByPartialText`, `@ByPartialLinkText` and `@ByExactLinkText` selectors.
+:::

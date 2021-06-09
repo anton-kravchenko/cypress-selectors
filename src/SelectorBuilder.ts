@@ -234,7 +234,7 @@ const mapSelectorConfigsToSelectorsChain = (
 
   return mappedSelectors.reduce((chain, selector, index) => {
     const options = { timeout: selector.timeout };
-    // TODO :validate eq for XPath
+
     if (selector.engine === 'XPath') {
       const { eq } = selector;
 

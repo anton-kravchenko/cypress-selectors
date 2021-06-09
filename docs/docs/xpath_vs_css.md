@@ -1,8 +1,8 @@
 # XPath vs CSS
 
-The library supports two selector engines `XPath` and `CSS`. Below is the list of selectors powered by these engines.
+The library supports two selector engines: `XPath` and `CSS`. Below is the list of selectors powered by these engines:
 
-`XPath`:
+### XPath
 
 - [@ByXPath](/cypress-selectors/api-reference/selectors#byxpath)
 - [@ByName](/cypress-selectors/api-reference/selectors#byname)
@@ -11,7 +11,7 @@ The library supports two selector engines `XPath` and `CSS`. Below is the list o
 - [@ByExactLinkText](/cypress-selectors/api-reference/selectors#byexactlinktext)
 - [@ByPartialLinkText](/cypress-selectors/api-reference/selectors#bypartiallinktext)
 
-`CSS`:
+### CSS
 
 - [@BySelector](/cypress-selectors/api-reference/selectors#byselector)
 - [@ById](/cypress-selectors/api-reference/selectors#byid)
@@ -19,4 +19,4 @@ The library supports two selector engines `XPath` and `CSS`. Below is the list o
 - [@ByClass](/cypress-selectors/api-reference/selectors#byclass)
 - [@ByAttribute](/cypress-selectors/api-reference/selectors#byattribute)
 
-If you want to use "full selectors" selectors, use [@BySelector](/cypress-selectors/api-reference/selectors#byselector) for specifying `CSS` selectors and [@ByXPath](/cypress-selectors/api-reference/selectors#byxpath) for `XPath` selectors.
+You can query elements using `CSS` selectors via [@BySelector](/cypress-selectors/api-reference/selectors#byselector) and XPath selectors via [@ByXPath](/cypress-selectors/api-reference/selectors#byxpath).

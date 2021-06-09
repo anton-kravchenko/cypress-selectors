@@ -85,10 +85,10 @@ Select DOM elements by exact or partial text.
 ```typescript
 class Selectors {
   /* By default, text selectors match text and case */
-  @ByExactText('Saul Goodman') static saulGoodman: Chainable;
+  @ByExactText('Saul Goodman') static saulGoodman: Selector;
 
   /* To ignore case use `ignoreCase` attribute */
-  @ByPartialText('jessy', { ignoreCase: true }) static jessy: Chainable;
+  @ByPartialText('jessy', { ignoreCase: true }) static jessy: Selector;
 }
 ```
 

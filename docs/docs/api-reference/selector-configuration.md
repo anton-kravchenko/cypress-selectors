@@ -49,7 +49,7 @@ Allows referencing parent of a selector via reference to another selector.
 
 1. This kind of _child-parent_ relationship doesn't have 'one-class' limitation and works across all classes with selectors.
 2. It is possible to use the `XPath` selector as a parent for the `CSS` selector and vise versa.
-3. `XPath` selectors that specify parents, should use relative location path (e.g. `./div` instead or `//div`). Otherwise, `parent` attribute for `XPath` selector that uses absolute location path is going to be ignored.
+3. `XPath` selectors that specify parents, should use relative location path (e.g. `./div` instead or `//div`). Otherwise, the `parent` attribute for `XPath` selector that uses absolute location path is going to be ignored.
 
 :::
 

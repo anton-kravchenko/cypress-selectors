@@ -1,9 +1,11 @@
 # [cypress-selectors](https://anton-kravchenko.github.io/cypress-selectors/)
 
-[![Verify](https://github.com/anton-kravchenko/cypress-selectors/actions/workflows/verify.yml/badge.svg?branch=main&event=push)](https://github.com/anton-kravchenko/cypress-selectors/actions/workflows/verify.yml)
 [![npm package](https://img.shields.io/npm/v/cypress-selectors?style=flat)](https://www.npmjs.com/package/cypress-selectors)
+[![Verify](https://github.com/anton-kravchenko/cypress-selectors/actions/workflows/verify.yml/badge.svg?branch=main&event=push)](https://github.com/anton-kravchenko/cypress-selectors/actions/workflows/verify.yml)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/anton-kravchenko/cypress-selectors/blob/main/LICENSE)
 [![Cypress.io](https://img.shields.io/badge/tested%20with-Cypress-04C38E.svg)](https://www.cypress.io/)
+[![Monthly downloads](https://img.shields.io/npm/dt/cypress-selectors?style=flat)](https://www.npmjs.com/package/cypress-selectors)
+[![Downloads](https://img.shields.io/npm/dm/cypress-selectors.svg?style=flat)](https://www.npmjs.com/package/cypress-selectors)
 
 `cypress-selectors` is a library that provides a bunch of convenient declarative selectors for Cypress.
 

@@ -522,6 +522,24 @@
           </div>`,
       },
       {
+        id: '8.7',
+        type: 'ByXPath',
+        case: '3 divs with same class and different text',
+        html: `
+          <div class="button">first button</div>
+          <div class="button">second button</div>
+          <div class="button">third button</div>
+            `,
+      },
+      {
+        id: '8.8',
+        type: 'ByXPath',
+        case: '1 div',
+        html: `
+          <div class="button">first button</div>
+        `,
+      },
+      {
         id: '9.0',
         type: 'ByExactText',
         case: '3 divs with different texts',
@@ -746,6 +764,39 @@
             <a href="/#b">B-LINK 2</a>
           </div>
           `,
+      },
+      {
+        id: '14.0',
+        type: 'Parent selectors',
+        case: '2 divs with same class inside different parents',
+        html: `
+          <div id="parent-a">
+            <div class="child">inside parent a</div>
+          </div>
+
+          <div id="parent-b">
+            <div class="child">inside parent b</div>
+          </div>
+        `,
+      },
+
+      {
+        id: '15.0',
+        type: 'Parent selectors',
+        case: '4 nested divs',
+        html: `
+          <div id="parent">
+            <div class="child">
+              <span>
+                <div class="text">the-children</div>
+              </span>
+            </div>
+          </div>
+
+          <div class="text">wrong children</div>
+          <div class="child">wrong child</div>
+          <span>wrong element</span>
+        `,
       },
     ];
   </script>

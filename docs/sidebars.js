@@ -33,7 +33,11 @@ module.exports = {
       label: 'Recipes',
       id: 'recipes',
     },
-
+    {
+      type: 'doc',
+      label: 'XPath vs CSS',
+      id: 'xpath_vs_css',
+    },
     {
       type: 'doc',
       label: 'Caveats',

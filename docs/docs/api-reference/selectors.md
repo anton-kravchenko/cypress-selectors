@@ -72,6 +72,12 @@ class Selectors {
 }
 ```
 
+:::note
+Fox [XPath](https://www.w3schools.com/xml/xpath_syntax.asp) selectors, that do not specify `parent`, use absolute location path (e.g. `//div`).
+
+For `children` selectors, that specify `parent` selector, use relative location path (e.g. `./div`).
+:::
+
 ### @ByName
 
 Selects an element by `name` attribute:

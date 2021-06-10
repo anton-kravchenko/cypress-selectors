@@ -77,3 +77,31 @@ class SearchPagePO {
 ```
 
 [PageObject is considered to be an anti-pattern](https://www.cypress.io/blog/2019/01/03/stop-using-page-objects-and-start-using-app-actions/) although.
+
+### Selecting elements by text
+
+Select DOM elements by exact or partial text.
+
+```typescript
+class Selectors {
+  /* By default, text selectors match text and case */
+  @ByExactText('Saul Goodman') static saulGoodman: Selector;
+
+  /* To ignore case use `ignoreCase` attribute */
+  @ByPartialText('jessy', { ignoreCase: true }) static jessy: Selector;
+}
+```
+
+### Selecting links by text
+
+Select links by exact or partial text.
+
+```typescript
+class Selectors {
+  /* By default, text selectors match text and case */
+  @ByExactLinkText('home') static home: Selector;
+
+  /* To ignore case use `ignoreCase` attribute */
+  @ByPartialLinkText('menu', { ignoreCase: true }) static menu: Selector;
+}
+```

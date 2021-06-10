@@ -232,12 +232,25 @@ const mapSelectorConfigsToSelectorsChain = (
     configuration,
   );
 
-  return mappedSelectors.reduce((chain, selector) => {
+  return mappedSelectors.reduce((chain, selector, index) => {
     const options = { timeout: selector.timeout };
 
-    if (selector.engine === 'XPath')
-      chain = (chain as any).__cypress_selectors_xpath(selector.selector, options, selector.type);
-    else chain = chain.get(selector.selector, options);
+    if (selector.engine === 'XPath') {
+      const { eq } = selector;
+
+      chain =
+        typeof eq === 'number'
+          ? (chain as any)
+              .__cypress_selectors_xpath(selector.selector, options, selector.type)
+              .eq(eq)
+          : (chain as any).__cypress_selectors_xpath(selector.selector, options, selector.type);
+    } else {
+      const isFirstInChain = 0 === index;
+
+      chain = isFirstInChain
+        ? chain.get(selector.selector, options)
+        : chain.find(selector.selector, options);
+    }
 
     return chain;
   }, cy as Cypress.Chainable);
@@ -247,8 +260,14 @@ const mapSelectorsByType = (
   groupedByEngine: Array<SelectorsByEngine>,
   configuration: Configuration,
 ): Array<
-  | { engine: 'CSS'; selector: string; timeout?: number }
-  | { engine: 'XPath' | 'CSS'; selector: string; timeout?: number; type: SelectorType }
+  | { engine: 'CSS'; selector: string; timeout: number }
+  | {
+      engine: 'XPath';
+      selector: string;
+      timeout: number;
+      type: SelectorType;
+      eq: number | undefined;
+    }
 > => {
   return groupedByEngine.map((group) =>
     group.engine === 'XPath'
@@ -257,6 +276,7 @@ const mapSelectorsByType = (
           selector: mapSelectorConfigsToSelectorString([group.selector], configuration),
           timeout: group.selector.config.timeout ?? Cypress.config().defaultCommandTimeout,
           type: group.selector.type,
+          eq: group.selector.config.eq,
         }
       : {
           engine: 'CSS' as const,
@@ -299,7 +319,9 @@ const mapSelectorToString = (selector: Selector, configuration: Configuration): 
   const stringifiedSelector = mapSelectorByType(selector, configuration);
 
   const { eq } = selector.config;
-  return typeof eq === 'number' ? `${stringifiedSelector}:eq(${eq})` : stringifiedSelector;
+  return typeof eq === 'number' && selector.engine === 'CSS'
+    ? `${stringifiedSelector}:eq(${eq})`
+    : stringifiedSelector;
 };
 
 const mapSelectorByType = (selector: Selector, configuration: Configuration) => {

@@ -1,8 +1,8 @@
 {
   "name": "cypress-selectors",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Declarative selectors for Cypress.",
-  "homepage": "https://github.com/anton-kravchenko/cypress-selectors#readme",
+  "homepage": "https://anton-kravchenko.github.io/cypress-selectors/",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {

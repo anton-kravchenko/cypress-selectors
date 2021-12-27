@@ -21,7 +21,7 @@ class Selectors {
 }
 ```
 
-You will get the `Cannot access 'Bar' before initialization` error, **while being transpiled via `ts-loader` it works as expected**.
+You will get the `cannot access 'parent' before initialization` error, **while being transpiled via `ts-loader` it works as expected**.
 
 However, extracting the `parent` selector could fix this example as following:
 

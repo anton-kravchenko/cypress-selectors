@@ -41,6 +41,8 @@ module.exports = {
 This is the preferred way of setting up the project. `child-parent` linking doesn't work if the code is being transpiled via `babel-loader`.
 :::
 
+Checkout https://github.com/anton-kravchenko/cypress-page-object-example for a complete set up example with TypeScript.
+
 ### Configuring `babel-loader`
 
 If you're not using [TypeScript](https://www.typescriptlang.org/) or can't use [ts-loader](https://github.com/TypeStrong/ts-loader), you can also configure transpiling via [babel](https://babeljs.io/).
@@ -61,6 +63,7 @@ Configure `.babelrc` to enable support of `decorators` and `class properties`:
 If you're using `babel-loader` for transpiling your tests, `child-parent` linking [via reference](/cypress-selectors/recipes#linking-parent-element-via-reference) is not going to work. See [caveats](/cypress-selectors/caveats#children-parent-linking-via-reference) page for more details.
 
 :::
+Checkout https://github.com/anton-kravchenko/cypress-page-object-example-js for a complete set up example with Babel + JavaScript.
 
 ### Configuring `TypeScript`
 

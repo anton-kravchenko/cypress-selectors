@@ -201,7 +201,7 @@ ResetSelectorsConfiguration();
    }
    ```
 
-   you will get `Cannot access 'Bar' before initialization` error, **while if being transpiled via `ts-loader` it works as expected**.
+   you will get `cannot access 'parent' before initialization` error, **while if being transpiled via `ts-loader` it works as expected**.
 
    However, this example could be fixed by just extracting `parent` selector to a separate class as following:
 

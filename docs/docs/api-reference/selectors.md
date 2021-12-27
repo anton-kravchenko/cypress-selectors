@@ -35,7 +35,7 @@ class Selectors {
 
 ### @ByAttribute
 
-Selects an element by attribute.:
+Selects an element by attribute:
 
 ```typescript
 class Selectors {
@@ -90,7 +90,7 @@ class Selectors {
 
 ### @ByExactText
 
-Selects an element that has specified text:
+Selects an element that has specified exact text:
 
 ```typescript
 class Selectors {
@@ -103,7 +103,7 @@ By default, `ByExactText` is case sensitive. To ignore case sensitivity, set `ig
 
 ### @ByPartialText
 
-Selects an element that contains specified text:
+Selects an element that contains specified partial text:
 
 ```typescript
 class Selectors {
@@ -116,7 +116,7 @@ By default, `ByPartialText` is case sensitive. To ignore case sensitivity, set `
 
 ### @ByExactLinkText
 
-Selects a link that has specified text:
+Selects a link that has specified exact text:
 
 ```typescript
 class Selectors {
@@ -129,7 +129,7 @@ By default, `ByExactLinkText` is case sensitive. To ignore case sensitivity, set
 
 ### @ByPartialLinkText
 
-Selects a link that contains specified text:
+Selects a link that contains specified partial text:
 
 ```typescript
 class Selectors {

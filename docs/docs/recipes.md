@@ -76,7 +76,7 @@ class SearchPagePO {
 }
 ```
 
-[PageObject is considered to be an anti-pattern](https://www.cypress.io/blog/2019/01/03/stop-using-page-objects-and-start-using-app-actions/) although.
+Checkout [the article](https://medium.com/geekculture/using-pageobject-pattern-with-cypress-6d9907850522) explaining how to efficiently utilize PageObject pattering using [cypress-selectors](https://anton-kravchenko.github.io/cypress-selectors/).
 
 ### Selecting elements by text
 

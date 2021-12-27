@@ -16,7 +16,7 @@ ConfigureSelectors({
 
 #### `defaultAttribute`
 
-The attribute value to be used be default by `ByAttribute` selector.
+The attribute value to be used by default by `ByAttribute` selector.
 
 _Default_: `cypress-id`
 

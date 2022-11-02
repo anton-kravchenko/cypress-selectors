@@ -19,6 +19,7 @@ type InternalSelectorConfig = {
   eq?: number;
   timeout?: number;
   ignoreCase?: boolean;
+  includeShadowDom?: boolean;
 };
 type SelectorType =
   | 'attribute'
@@ -233,7 +234,10 @@ const mapSelectorConfigsToSelectorsChain = (
   );
 
   return mappedSelectors.reduce((chain, selector, index) => {
-    const options = { timeout: selector.timeout };
+    const options = {
+      timeout: selector.timeout,
+      includeShadowDom: selector.engine === 'CSS' ? selector.includeShadowDom : false,
+    };
 
     if (selector.engine === 'XPath') {
       const { eq } = selector;
@@ -260,7 +264,7 @@ const mapSelectorsByType = (
   groupedByEngine: Array<SelectorsByEngine>,
   configuration: Configuration,
 ): Array<
-  | { engine: 'CSS'; selector: string; timeout: number }
+  | { engine: 'CSS'; selector: string; timeout: number; includeShadowDom: boolean }
   | {
       engine: 'XPath';
       selector: string;
@@ -282,6 +286,7 @@ const mapSelectorsByType = (
           engine: 'CSS' as const,
           selector: mapSelectorConfigsToSelectorString(group.selectors, configuration),
           timeout: getMaxTimeout(group.selectors),
+          includeShadowDom: group.selectors.some((selector) => selector.config.includeShadowDom),
         },
   );
 };

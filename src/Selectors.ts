@@ -38,6 +38,7 @@ export type ExternalSelectorConfig = {
   timeout?: number;
   parent?: Selector;
   ignoreCase?: boolean;
+  includeShadowDom?: boolean;
 };
 
 const BuildSelectorBy = (type: SelectorType, engine: SelectorsEngine) => (
@@ -54,6 +55,7 @@ const BuildSelectorBy = (type: SelectorType, engine: SelectorsEngine) => (
     'timeout',
     'parent',
     'ignoreCase',
+    'includeShadowDom',
   ];
   const safeConfig: ExternalSelectorConfig = pick(externalConfig, configAttributes);
 
@@ -67,7 +69,11 @@ const BuildSelectorBy = (type: SelectorType, engine: SelectorsEngine) => (
     const internalAlias = makeInternalAlias(hostID, property);
     const internalParentAlias = selectorConfig.parent && selectorConfig.parent[internalAliasKey];
 
-    const config: InternalSelectorConfig = { ...selectorConfig, internalAlias };
+    const config: InternalSelectorConfig = {
+      ...selectorConfig,
+      internalAlias,
+      includeShadowDom: safeConfig.includeShadowDom,
+    };
     if (internalParentAlias) config.internalParentAlias = internalParentAlias;
 
     const meta: SelectorMeta = { host, property, hostID };

@@ -44,6 +44,7 @@ const validate = (
     shouldProvideParentDefinedOnlyViaCypressSelectors,
     shouldNotProvideIgnoreCaseForNonTextSelectors,
     shouldNotProvideAttributeConfigForSelectorsThatDoNotSupportIt,
+    shouldNotProvideNonBooleanIncludeShadowDom,
   );
 
   const { externalConfig: sanitizedConfig } = validate({ externalConfig, displayProperty, type });
@@ -225,6 +226,20 @@ const shouldNotProvideAttributeConfigForSelectorsThatDoNotSupportIt = ({
     warnAboutRedundantAttributeParam(displayProperty, type);
     delete externalConfig['attribute'];
   }
+
+  return { externalConfig, displayProperty, type };
+};
+
+const shouldNotProvideNonBooleanIncludeShadowDom = ({
+  externalConfig,
+  displayProperty,
+  type,
+}: ExtConfigWithDisplayProp): ExtConfigWithDisplayProp => {
+  externalConfig = shouldHaveType(
+    'includeShadowDom',
+    { externalConfig, displayProperty, type },
+    'boolean',
+  );
 
   return { externalConfig, displayProperty, type };
 };
